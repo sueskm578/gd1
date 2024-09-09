@@ -21,7 +21,6 @@ var gameStarted = false; // To track if the game has started
 function startGame() {
     if (!gameStarted) {
         myGamePiece = new gameObject(20, 10, "orange", 10, 120);
-        character2 = new gameObject(20, 20, "yellow", 20, 150);
         
         myGamePiece.gravity = 0.02;
         myScore = new gameObject("30px", "Consolas", "black", 280, 40, "text");
@@ -150,7 +149,6 @@ function updateGameArea() {
     myScore.update();
     myGamePiece.newPos();
     myGamePiece.update();
-    character2.update();
 }
 
 function everyinterval(n) {
