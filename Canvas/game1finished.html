@@ -21,7 +21,8 @@ canvas {
 </head>
 <body>
 <div id="game-container">
-    <audio id="background-music" src=https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3 loop></audio>
+    <audio id="background-music" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3" loop></audio>
+    <audio id="game-over-sound" src="https://github.com/your-username/your-repository/raw/main/audio/game-over-sound.mp3"https://github.com/sueskm578/sueskm578.github.io/raw/main/mixkit-arcade-retro-game-over-213.wav></audio>
     <script>
     var myGamePiece;
     var myObstacles = [];
@@ -207,6 +208,8 @@ canvas {
     function endGame(message) {
         myGameArea.pause(); // Stop the game
         document.getElementById('background-music').pause(); // Stop background music
+        var gameOverSound = document.getElementById('game-over-sound');
+        gameOverSound.play(); // Play game over sound
         alert(message); // Show game over message
     }
 
