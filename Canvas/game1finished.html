@@ -21,6 +21,7 @@ canvas {
 </head>
 <body>
 <div id="game-container">
+    <audio id="background-music" src="your-audio-file.mp3" loop></audio>
     <script>
     var myGamePiece;
     var myObstacles = [];
@@ -44,6 +45,7 @@ canvas {
                 myGameArea.keys[e.keyCode] = false;
             });
             gameStarted = true;
+            document.getElementById('background-music').play(); // Play background music
         }
     }
 
@@ -204,7 +206,8 @@ canvas {
 
     function endGame(message) {
         myGameArea.pause(); // Stop the game
-        alert(message); // Show the game over message
+        document.getElementById('background-music').pause(); // Stop background music
+        alert(message); // Show game over message
     }
 
     function accelerate(n) {
@@ -229,6 +232,7 @@ canvas {
         gamePaused = false;
         document.getElementById("pauseBtn").textContent = "Pause"; // Reset the pause button text
         initializeGame(); // Reinitialize game without starting interval
+        document.getElementById('background-music').play(); // Restart background music
     }
 
     </script>
