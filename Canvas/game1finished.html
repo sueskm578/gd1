@@ -15,6 +15,7 @@ canvas {
 var myGamePiece;
 var myObstacles = [];
 var myScore;
+var spikeyObstacle;
 var gamePaused = false; // To track if the game is paused
 var gameStarted = false; // To track if the game has started
 var isRising = false;    // To track if the player is holding down the rise button
@@ -43,6 +44,7 @@ function initializeGame() {
     myObstacles = []; // Reset obstacles
     obstacleGenerationRate = 150; // Reset obstacle generation rate
     obstacleSpeed = 1; // Reset obstacle speed
+    spikeyObstacle = new gameObject(320, 20, "red", 0, myGameArea.canvas.height - 20); // Spikey obstacle at the bottom
     myGameArea.start();
 }
 
@@ -140,9 +142,16 @@ function updateGameArea() {
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;
     for (i = 0; i < myObstacles.length; i += 1) {
         if (myGamePiece.crashWith(myObstacles[i])) {
+            endGame();
             return;
         } 
     }
+    // Check if the player object hits the spikey obstacle
+    if (myGamePiece.crashWith(spikeyObstacle)) {
+        endGame();
+        return;
+    }
+
     myGameArea.clear();
     myGameArea.frameNo += 1;
 
@@ -176,6 +185,7 @@ function updateGameArea() {
     myScore.update();
     myGamePiece.newPos();
     myGamePiece.update();
+    spikeyObstacle.update(); // Update spikey obstacle display
 }
 
 function everyinterval(n) {
@@ -205,6 +215,11 @@ function restartGame() {
     gamePaused = false;
     document.getElementById("pauseBtn").textContent = "Pause"; // Reset the pause button text
     initializeGame(); // Reinitialize game without starting interval
+}
+
+function endGame() {
+    alert("Game Over! Your score is " + myGameArea.frameNo);
+    restartGame(); // Restart game after showing game over alert
 }
 
 </script>
