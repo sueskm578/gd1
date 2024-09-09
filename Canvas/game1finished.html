@@ -14,8 +14,8 @@ canvas {
 
 var myGamePiece;
 var myObstacles = [];
+var redObstacle; // Red obstacle at the bottom
 var myScore;
-var spikeyObstacle;
 var gamePaused = false; // To track if the game is paused
 var gameStarted = false; // To track if the game has started
 var isRising = false;    // To track if the player is holding down the rise button
@@ -38,13 +38,14 @@ function startGame() {
 }
 
 function initializeGame() {
-    myGamePiece = new gameObject(20, 10, "orange", 160, 120); // Position the player horizontally centered
+    myGamePiece = new gameObject(20, 10, "orange", 160, 0); // Position the player at the top of the canvas
     myGamePiece.gravity = 0.05; // Gravity pulls the object downward
     myScore = new gameObject("20px", "Consolas", "black", 160, 40, "text"); // Smaller font size for score
     myObstacles = []; // Reset obstacles
     obstacleGenerationRate = 150; // Reset obstacle generation rate
     obstacleSpeed = 1; // Reset obstacle speed
-    spikeyObstacle = new gameObject(320, 20, "red", 0, myGameArea.canvas.height - 20); // Spikey obstacle at the bottom
+    // Ensure redObstacle is at the bottom and stays there
+    redObstacle = new gameObject(myGameArea.canvas.width, 20, "red", 0, myGameArea.canvas.height - 20); // Red obstacle at the bottom
     myGameArea.start();
 }
 
@@ -140,18 +141,21 @@ function gameObject(width, height, color, x, y, type) {
 function updateGameArea() {
     if (gamePaused) return; // Skip updating the game if paused
     var x, height, gap, minHeight, maxHeight, minGap, maxGap;
-    for (i = 0; i < myObstacles.length; i += 1) {
-        if (myGamePiece.crashWith(myObstacles[i])) {
-            endGame();
-            return;
-        } 
-    }
-    // Check if the player object hits the spikey obstacle
-    if (myGamePiece.crashWith(spikeyObstacle)) {
-        endGame();
+    
+    // Check for collision with the red obstacle
+    if (myGamePiece.crashWith(redObstacle)) {
+        endGame("Game Over! You hit the red obstacle.");
         return;
     }
 
+    // Check for collision with blue obstacles
+    for (i = 0; i < myObstacles.length; i += 1) {
+        if (myGamePiece.crashWith(myObstacles[i])) {
+            endGame("Game Over! You hit a blue obstacle.");
+            return;
+        } 
+    }
+    
     myGameArea.clear();
     myGameArea.frameNo += 1;
 
@@ -169,28 +173,28 @@ function updateGameArea() {
         minGap = 50;
         maxGap = 100;
         gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
-        myObstacles.push(new gameObject(width, 10, "blue", Math.random() * (myGameArea.canvas.width - width), y)); // Obstacle
+        myObstacles.push(new gameObject(width, 10, "blue", Math.random() * (myGameArea.canvas.width - width), y)); // Blue obstacle
     }
     for (i = 0; i < myObstacles.length; i += 1) {
         myObstacles[i].y += obstacleSpeed; // Move obstacles downwards at variable speed
         myObstacles[i].update();
     }
     
-    // Keyboard controls (left and right movement)
+    // Keyboard controls (left and right movement with faster speed)
     myGamePiece.speedX = 0;
-    if (myGameArea.keys && myGameArea.keys[37]) {myGamePiece.speedX = -1; } // Left arrow
-    if (myGameArea.keys && myGameArea.keys[39]) {myGamePiece.speedX = 1; }  // Right arrow
+    if (myGameArea.keys && myGameArea.keys[37]) {myGamePiece.speedX = -3; } // Left arrow - faster speed
+    if (myGameArea.keys && myGameArea.keys[39]) {myGamePiece.speedX = 3; }  // Right arrow - faster speed
 
     myScore.text = "SCORE: " + myGameArea.frameNo;
     myScore.update();
     myGamePiece.newPos();
     myGamePiece.update();
-    spikeyObstacle.update(); // Update spikey obstacle display
+    redObstacle.update(); // Update the red obstacle position
 }
 
-function everyinterval(n) {
-    if ((myGameArea.frameNo / n) % 1 == 0) {return true;}
-    return false;
+function endGame(message) {
+    myGameArea.pause(); // Stop the game
+    alert(message); // Show the game over message
 }
 
 function accelerate(n) {
@@ -215,11 +219,6 @@ function restartGame() {
     gamePaused = false;
     document.getElementById("pauseBtn").textContent = "Pause"; // Reset the pause button text
     initializeGame(); // Reinitialize game without starting interval
-}
-
-function endGame() {
-    alert("Game Over! Your score is " + myGameArea.frameNo);
-    restartGame(); // Restart game after showing game over alert
 }
 
 </script>
