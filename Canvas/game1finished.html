@@ -21,11 +21,21 @@ canvas {
 </head>
 <body>
 <div id="game-container">
-    <audio id="background-music" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3" loop></audio>
-    <audio id="game-over-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/mixkit-arcade-retro-game-over-213.wav></audio>
+    <audio id="background-music" src=https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3 loop></audio>
     <script>
     var myGamePiece;
     var myObstacles = [];
+
+    
+          
+            
+    
+
+          
+          Expand Down
+    
+    
+  
     var redObstacle; // Red obstacle at the bottom
     var myScore;
     var gamePaused = false; // To track if the game is paused
@@ -34,7 +44,6 @@ canvas {
     var obstacleGenerationRate = 150; // Initial rate of obstacle generation
     var difficultyIncreaseRate = 200; // Interval for increasing difficulty
     var obstacleSpeed = 1; // Initial speed of obstacles
-
     function startGame() {
         if (!gameStarted) {
             initializeGame();
@@ -49,7 +58,6 @@ canvas {
             document.getElementById('background-music').play(); // Play background music
         }
     }
-
     function initializeGame() {
         myGamePiece = new gameObject(20, 10, "orange", 160, 0); // Position the player at the top of the canvas
         myGamePiece.gravity = 0.05; // Gravity pulls the object downward
@@ -61,7 +69,6 @@ canvas {
         redObstacle = new gameObject(myGameArea.canvas.width, 20, "red", 0, myGameArea.canvas.height - 20); // Red obstacle at the bottom
         myGameArea.start();
     }
-
     var myGameArea = {
         canvas : document.createElement("canvas"),
         start : function() {
@@ -86,7 +93,6 @@ canvas {
             this.interval = setInterval(updateGameArea, 20);
         }
     }
-
     function gameObject(width, height, color, x, y, type) {
         this.type = type;
         this.score = 0;
@@ -112,15 +118,12 @@ canvas {
         }
         this.newPos = function() {
             this.gravitySpeed += this.gravity; // Gravity effect
-
             // Apply upward force if the player is holding the rise button
             if (isRising) {
                 this.gravitySpeed = -0.2; // Rise when button is held
             }
-
             this.x += this.speedX; // Move horizontally based on arrow keys
             this.y += this.gravitySpeed; // Update the object's Y position based on gravity and speed
-
             this.hitBottom();
         }
         this.hitBottom = function() {
@@ -150,7 +153,6 @@ canvas {
             return crash;
         }
     }
-
     function updateGameArea() {
         if (gamePaused) return; // Skip updating the game if paused
         var x, height, gap, minHeight, maxHeight, minGap, maxGap;
@@ -160,7 +162,6 @@ canvas {
             endGame("Game Over! You hit the red obstacle.");
             return;
         }
-
         // Check for collision with blue obstacles
         for (i = 0; i < myObstacles.length; i += 1) {
             if (myGamePiece.crashWith(myObstacles[i])) {
@@ -171,13 +172,11 @@ canvas {
         
         myGameArea.clear();
         myGameArea.frameNo += 1;
-
         // Increase difficulty by adding more obstacles over time
         if (myGameArea.frameNo % difficultyIncreaseRate === 0) {
             obstacleGenerationRate = Math.max(50, obstacleGenerationRate - 5); // Increase difficulty
             obstacleSpeed += 0.5; // Increase obstacle speed
         }
-
         if (myGameArea.frameNo % obstacleGenerationRate === 0) {
             y = 0; // Start obstacles at the top of the canvas
             minWidth = 20;
@@ -197,27 +196,21 @@ canvas {
         myGamePiece.speedX = 0;
         if (myGameArea.keys && myGameArea.keys[37]) {myGamePiece.speedX = -3; } // Left arrow - faster speed
         if (myGameArea.keys && myGameArea.keys[39]) {myGamePiece.speedX = 3; }  // Right arrow - faster speed
-
         myScore.text = "SCORE: " + myGameArea.frameNo;
         myScore.update();
         myGamePiece.newPos();
         myGamePiece.update();
         redObstacle.update(); // Update the red obstacle position
     }
-
     function endGame(message) {
         myGameArea.pause(); // Stop the game
         document.getElementById('background-music').pause(); // Stop background music
-        var gameOverSound = document.getElementById('game-over-sound');
-        gameOverSound.play(); // Play game over sound
         alert(message); // Show game over message
     }
-
     function accelerate(n) {
         isRising = n < 0; // Set rising state based on button press
         myGamePiece.gravity = n > 0 ? 0.05 : myGamePiece.gravity; // Set default gravity when not rising
     }
-
     function togglePause() {
         if (gamePaused) {
             myGameArea.continue();
@@ -229,7 +222,6 @@ canvas {
             document.getElementById("pauseBtn").textContent = "Continue";
         }
     }
-
     function restartGame() {
         gameStarted = false;
         gamePaused = false;
@@ -237,9 +229,7 @@ canvas {
         initializeGame(); // Reinitialize game without starting interval
         document.getElementById('background-music').play(); // Restart background music
     }
-
     </script>
-
     <!-- Buttons to control the game -->
     <br>
     <button onclick="startGame()">Start Game</button>
