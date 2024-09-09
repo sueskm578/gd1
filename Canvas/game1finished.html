@@ -17,14 +17,14 @@ var myObstacles = [];
 var myScore;
 var gamePaused = false; // To track if the game is paused
 var gameStarted = false; // To track if the game has started
+var isRising = false;    // To track if the player is holding down the rise button
+var obstacleGenerationRate = 150; // Initial rate of obstacle generation
+var difficultyIncreaseRate = 200; // Interval for increasing difficulty
+var obstacleSpeed = 1; // Initial speed of obstacles
 
 function startGame() {
     if (!gameStarted) {
-        myGamePiece = new gameObject(20, 10, "orange", 10, 120);
-        
-        myGamePiece.gravity = 0.02;
-        myScore = new gameObject("30px", "Consolas", "black", 280, 40, "text");
-        myGameArea.start();
+        initializeGame();
         window.addEventListener('keydown', function(e) {
             myGameArea.keys = (myGameArea.keys || []);
             myGameArea.keys[e.keyCode] = true;
@@ -36,14 +36,27 @@ function startGame() {
     }
 }
 
+function initializeGame() {
+    myGamePiece = new gameObject(20, 10, "orange", 160, 120); // Position the player horizontally centered
+    myGamePiece.gravity = 0.05; // Gravity pulls the object downward
+    myScore = new gameObject("20px", "Consolas", "black", 160, 40, "text"); // Smaller font size for score
+    myObstacles = []; // Reset obstacles
+    obstacleGenerationRate = 150; // Reset obstacle generation rate
+    obstacleSpeed = 1; // Reset obstacle speed
+    myGameArea.start();
+}
+
 var myGameArea = {
     canvas : document.createElement("canvas"),
     start : function() {
-        this.canvas.width = 480;
-        this.canvas.height = 270;
+        this.canvas.width = 320; // Shorter width
+        this.canvas.height = 540; // Longer height
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
+        if (this.interval) {
+            clearInterval(this.interval); // Clear any existing intervals (for restart)
+        }
         this.interval = setInterval(updateGameArea, 20);
         this.keys = [];
     },
@@ -72,7 +85,7 @@ function gameObject(width, height, color, x, y, type) {
     this.bounce = 0.6;
     this.update = function() {
         ctx = myGameArea.context;
-      if (this.type == "text") {
+        if (this.type == "text") {
             ctx.font = this.width + " " + this.height;
             ctx.fillStyle = color;
             ctx.fillText(this.text, this.x, this.y);
@@ -82,16 +95,27 @@ function gameObject(width, height, color, x, y, type) {
         }
     }
     this.newPos = function() {
-        this.gravitySpeed += this.gravity;
-        this.x += this.speedX;
-        this.y += this.speedY + this.gravitySpeed;
+        this.gravitySpeed += this.gravity; // Gravity effect
+
+        // Apply upward force if the player is holding the rise button
+        if (isRising) {
+            this.gravitySpeed = -0.2; // Rise when button is held
+        }
+
+        this.x += this.speedX; // Move horizontally based on arrow keys
+        this.y += this.gravitySpeed; // Update the object's Y position based on gravity and speed
+
         this.hitBottom();
     }
     this.hitBottom = function() {
-        var rockbottom = myGameArea.canvas.height - this.height;
-        if (this.y > rockbottom) {
-            this.y = rockbottom;
-            this.gravitySpeed = -(this.gravitySpeed * this.bounce);
+        var bottom = myGameArea.canvas.height - this.height; // Set the bottom boundary
+        if (this.y > bottom) {
+            this.y = bottom; // Prevent falling through the bottom
+            this.gravitySpeed = 0; // Stop gravity from increasing
+        }
+        if (this.y < 0) {
+            this.y = 0; // Prevent going above the canvas
+            this.gravitySpeed = 0; // Stop upward momentum
         }
     }
     this.crashWith = function(otherobj) {
@@ -121,31 +145,34 @@ function updateGameArea() {
     }
     myGameArea.clear();
     myGameArea.frameNo += 1;
-    if (myGameArea.frameNo == 1 || everyinterval(150)) {
-        x = myGameArea.canvas.width;
-        minHeight = 20;
-        maxHeight = 200;
-        height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight);
+
+    // Increase difficulty by adding more obstacles over time
+    if (myGameArea.frameNo % difficultyIncreaseRate === 0) {
+        obstacleGenerationRate = Math.max(50, obstacleGenerationRate - 5); // Increase difficulty
+        obstacleSpeed += 0.5; // Increase obstacle speed
+    }
+
+    if (myGameArea.frameNo % obstacleGenerationRate === 0) {
+        y = 0; // Start obstacles at the top of the canvas
+        minWidth = 20;
+        maxWidth = 80; // Adjust obstacle width for new canvas size
+        width = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
         minGap = 50;
-        maxGap = 200;
-        gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
-        myObstacles.push(new gameObject(10, height, "blue", x, 0));
-        myObstacles.push(new gameObject(10, x - height - gap, "blue", x, height + gap));
+        maxGap = 100;
+        gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
+        myObstacles.push(new gameObject(width, 10, "blue", Math.random() * (myGameArea.canvas.width - width), y)); // Obstacle
     }
     for (i = 0; i < myObstacles.length; i += 1) {
-        myObstacles[i].x += -1;
+        myObstacles[i].y += obstacleSpeed; // Move obstacles downwards at variable speed
         myObstacles[i].update();
     }
     
-    // Keyboard controls
+    // Keyboard controls (left and right movement)
     myGamePiece.speedX = 0;
-    myGamePiece.speedY = 0;
     if (myGameArea.keys && myGameArea.keys[37]) {myGamePiece.speedX = -1; } // Left arrow
     if (myGameArea.keys && myGameArea.keys[39]) {myGamePiece.speedX = 1; }  // Right arrow
-    if (myGameArea.keys && myGameArea.keys[38]) {myGamePiece.speedY = -1; } // Up arrow
-    if (myGameArea.keys && myGameArea.keys[40]) {myGamePiece.speedY = 1; }  // Down arrow
 
-    myScore.text="SCORE: " + myGameArea.frameNo;
+    myScore.text = "SCORE: " + myGameArea.frameNo;
     myScore.update();
     myGamePiece.newPos();
     myGamePiece.update();
@@ -157,7 +184,8 @@ function everyinterval(n) {
 }
 
 function accelerate(n) {
-    myGamePiece.gravity = n;
+    isRising = n < 0; // Set rising state based on button press
+    myGamePiece.gravity = n > 0 ? 0.05 : myGamePiece.gravity; // Set default gravity when not rising
 }
 
 function togglePause() {
@@ -172,12 +200,20 @@ function togglePause() {
     }
 }
 
+function restartGame() {
+    gameStarted = false;
+    gamePaused = false;
+    document.getElementById("pauseBtn").textContent = "Pause"; // Reset the pause button text
+    initializeGame(); // Reinitialize game without starting interval
+}
+
 </script>
 
 <!-- Buttons to control the game -->
 <br>
 <button onclick="startGame()">Start Game</button>
 <button id="pauseBtn" onclick="togglePause()">Pause</button>
+<button onclick="restartGame()">Restart Game</button> <!-- New restart button -->
 <br><br>
 
 <button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.05)">RISE</button>
