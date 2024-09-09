@@ -20,11 +20,7 @@ var gameStarted = false; // To track if the game has started
 
 function startGame() {
     if (!gameStarted) {
-        myGamePiece = new gameObject(20, 10, "orange", 10, 120);
-        
-        myGamePiece.gravity = 0.02;
-        myScore = new gameObject("30px", "Consolas", "black", 280, 40, "text");
-        myGameArea.start();
+        initializeGame();
         window.addEventListener('keydown', function(e) {
             myGameArea.keys = (myGameArea.keys || []);
             myGameArea.keys[e.keyCode] = true;
@@ -34,6 +30,16 @@ function startGame() {
         });
         gameStarted = true;
     }
+}
+
+function initializeGame() {
+    myGamePiece = new gameObject(20, 10, "orange", 10, 120);
+    myObstacles = [];
+    myGamePiece.gravity = 0.02;
+    myScore = new gameObject("30px", "Consolas", "black", 280, 40, "text");
+    myGameArea.frameNo = 0;
+    myGameArea.clear();
+    myGameArea.start();
 }
 
 var myGameArea = {
@@ -55,6 +61,9 @@ var myGameArea = {
     },
     continue : function() {
         this.interval = setInterval(updateGameArea, 20);
+    },
+    stop : function() {
+        clearInterval(this.interval);
     }
 }
 
@@ -172,12 +181,20 @@ function togglePause() {
     }
 }
 
+function restartGame() {
+    myGameArea.stop();   // Stop the current game loop
+    initializeGame();    // Reset the game state
+    gamePaused = false;
+    document.getElementById("pauseBtn").textContent = "Pause"; // Reset the pause button text
+}
+
 </script>
 
 <!-- Buttons to control the game -->
 <br>
 <button onclick="startGame()">Start Game</button>
 <button id="pauseBtn" onclick="togglePause()">Pause</button>
+<button onclick="restartGame()">Restart Game</button>
 <br><br>
 
 <button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.05)">RISE</button>
