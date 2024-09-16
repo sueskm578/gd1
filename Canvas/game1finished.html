@@ -50,17 +50,16 @@ canvas {
     }
 
     function initializeGame() {
-        // Initialize background image
-        background = new gameObject(myGameArea.canvas.width, myGameArea.canvas.height, "https://github.com/sueskm578/sueskm578.github.io/raw/main/space png.png", 0, 0, "image");
-        background.width = myGameArea.canvas.width;
-        background.height = myGameArea.canvas.height;
-
         myGamePiece = new gameObject(40, 40, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0, "image"); 
         myGamePiece.gravity = 0.02;
         myScore = new gameObject("20px", "Consolas", "black", 160, 40, "text");
         myObstacles = [];
         obstacleGenerationRate = 150;
         obstacleSpeed = 1;
+
+        // Initialize background image
+        background = new gameObject(myGameArea.canvas.width, myGameArea.canvas.height, "https://github.com/sueskm578/sueskm578.github.io/raw/main/space png.png", 0, 0, "image");
+        
         myGameArea.start();
     }
 
@@ -114,8 +113,8 @@ canvas {
                 ctx.fillText(this.text, this.x, this.y);
             } else if (this.type === "image") {
                 if (this.image.complete) {
-                    // Draw image stretched to fit canvas size if necessary
-                    ctx.drawImage(this.image, this.x, this.y, this.width, this.height); 
+                    // Draw the image stretched to fit the canvas size
+                    ctx.drawImage(this.image, 0, 0, myGameArea.canvas.width, myGameArea.canvas.height);
                 }
             } else {
                 ctx.fillStyle = this.color;
