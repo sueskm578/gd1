@@ -25,7 +25,6 @@ canvas {
     <script>
     var myGamePiece;
     var myObstacles = [];
-    var redObstacle; // Red obstacle at the bottom
     var myScore;
     var gamePaused = false; // To track if the game is paused
     var gameStarted = false; // To track if the game has started
@@ -33,6 +32,7 @@ canvas {
     var obstacleGenerationRate = 150; // Initial rate of obstacle generation
     var difficultyIncreaseRate = 200; // Interval for increasing difficulty
     var obstacleSpeed = 1; // Initial speed of obstacles
+    
     function startGame() {
         if (!gameStarted) {
             initializeGame();
@@ -54,8 +54,6 @@ canvas {
         myObstacles = []; // Reset obstacles
         obstacleGenerationRate = 150; // Reset obstacle generation rate
         obstacleSpeed = 1; // Reset obstacle speed
-        // Ensure redObstacle is at the bottom and stays there
-        redObstacle = new gameObject(myGameArea.canvas.width, 20, "red", 0, myGameArea.canvas.height - 20); // Red obstacle at the bottom
         myGameArea.start();
     }
     var myGameArea = {
@@ -74,7 +72,6 @@ canvas {
         },
         clear : function() {
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            redObstacle.update(); // Keep the red obstacle fixed at the bottom during clear
         },
         pause : function() {
             clearInterval(this.interval);
@@ -119,8 +116,7 @@ canvas {
         this.hitBottom = function() {
             var bottom = myGameArea.canvas.height - this.height; // Set the bottom boundary
             if (this.y > bottom) {
-                this.y = bottom; // Prevent falling through the bottom
-                this.gravitySpeed = 0; // Stop gravity from increasing
+                endGame("Game Over! You fell off the screen."); // Game over if it hits the bottom
             }
             if (this.y < 0) {
                 this.y = 0; // Prevent going above the canvas
@@ -147,11 +143,6 @@ canvas {
         if (gamePaused) return; // Skip updating the game if paused
         var x, height, gap, minHeight, maxHeight, minGap, maxGap;
         
-        // Check for collision with the red obstacle
-        if (myGamePiece.crashWith(redObstacle)) {
-            endGame("Game Over! You hit the red obstacle.");
-            return;
-        }
         // Check for collision with blue obstacles
         for (i = 0; i < myObstacles.length; i += 1) {
             if (myGamePiece.crashWith(myObstacles[i])) {
@@ -231,4 +222,3 @@ canvas {
 </div>
 </body>
 </html>
-
