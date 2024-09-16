@@ -58,7 +58,7 @@ canvas {
         obstacleSpeed = 1;
 
         // Initialize background image to fit the canvas
-        background = new gameObject(myGameArea.canvas.width, myGameArea.canvas.height, "https://github.com/sueskm578/sueskm578.github.io/raw/main/space png.png", 0, 0, "image");
+        background = new gameObject(myGameArea.canvas.width, myGameArea.canvas.height, "https://github.com/sueskm578/sueskm578.github.io/raw/main/space png.png", 0, 0, "background");
         
         myGameArea.start();
     }
@@ -99,7 +99,7 @@ canvas {
         this.bounce = 0.6;
         this.image = new Image();
 
-        if (this.type === "image") {
+        if (this.type === "image" || this.type === "background") {
             this.image.src = imageSrc;
         } else {
             this.color = imageSrc;
@@ -111,9 +111,9 @@ canvas {
                 ctx.font = this.width + " " + this.height;
                 ctx.fillStyle = this.color;
                 ctx.fillText(this.text, this.x, this.y);
-            } else if (this.type === "image") {
+            } else if (this.type === "image" || this.type === "background") {
                 if (this.image.complete) {
-                    if (this.width === myGameArea.canvas.width && this.height === myGameArea.canvas.height) {
+                    if (this.type === "background") {
                         // Stretch background image to fit the canvas size
                         ctx.drawImage(this.image, 0, 0, myGameArea.canvas.width, myGameArea.canvas.height);
                     } else {
