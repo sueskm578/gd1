@@ -7,9 +7,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Full viewport height */
+    height: 100vh;
     margin: 0;
-    background-color: #f1f1f1; /* Background color for the page */
+    background-color: #f1f1f1;
 }
 #game-container {
     text-align: center;
@@ -49,7 +49,7 @@ canvas {
     }
 
     function initializeGame() {
-        myGamePiece = new gameObject(40, 40, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0, "image"); // 
+        myGamePiece = new gameObject(40, 40, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0, "image"); 
         myGamePiece.gravity = 0.02;
         myScore = new gameObject("20px", "Consolas", "black", 160, 40, "text");
         myObstacles = [];
@@ -108,7 +108,7 @@ canvas {
                 ctx.fillText(this.text, this.x, this.y);
             } else if (this.type === "image") {
                 if (this.image.complete) {
-                    ctx.drawImage(this.image, this.x, this.y, this.width, this.height); // Draw image when loaded
+                    ctx.drawImage(this.image, this.x, this.y, this.width, this.height); 
                 }
             } else {
                 ctx.fillStyle = this.color;
@@ -156,30 +156,31 @@ canvas {
 
     function updateGameArea() {
         if (gamePaused) return;
-        var x, height, gap, minHeight, maxHeight, minGap, maxGap;
 
         for (i = 0; i < myObstacles.length; i += 1) {
             if (myGamePiece.crashWith(myObstacles[i])) {
-                endGame("Game Over! You hit a blue obstacle.");
+                endGame("Game Over! You hit a meteor.");
                 return;
             }
         }
+
         myGameArea.clear();
         myGameArea.frameNo += 1;
+
         if (myGameArea.frameNo % difficultyIncreaseRate === 0) {
             obstacleGenerationRate = Math.max(50, obstacleGenerationRate - 5);
             obstacleSpeed += 0.5;
         }
+
         if (myGameArea.frameNo % obstacleGenerationRate === 0) {
             y = 0;
             minWidth = 20;
             maxWidth = 80;
             width = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
-            minGap = 50;
-            maxGap = 100;
-            gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
-            myObstacles.push(new gameObject(width, 10, "blue", Math.random() * (myGameArea.canvas.width - width), y));
+            var meteorImage = "https://github.com/sueskm578.github.io/meteor_PNG37.png"; //
+            myObstacles.push(new gameObject(width, width, meteorImage, Math.random() * (myGameArea.canvas.width - width), y, "image"));
         }
+
         for (i = 0; i < myObstacles.length; i += 1) {
             myObstacles[i].y += obstacleSpeed;
             myObstacles[i].update();
@@ -188,6 +189,7 @@ canvas {
         myGamePiece.speedX = 0;
         if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.speedX = -3; }
         if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 3; }
+
         myScore.text = "SCORE: " + myGameArea.frameNo;
         myScore.update();
         myGamePiece.newPos();
