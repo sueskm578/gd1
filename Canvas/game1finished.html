@@ -21,7 +21,7 @@ canvas {
 </head>
 <body>
 <div id="game-container">
-    <audio id="background-music" src=https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3 loop></audio>
+    <audio id="background-music" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3" loop></audio>
     <script>
     var myGamePiece;
     var myObstacles = [];
@@ -74,6 +74,7 @@ canvas {
         },
         clear : function() {
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            redObstacle.update(); // Keep the red obstacle fixed at the bottom during clear
         },
         pause : function() {
             clearInterval(this.interval);
@@ -189,7 +190,6 @@ canvas {
         myScore.update();
         myGamePiece.newPos();
         myGamePiece.update();
-        redObstacle.update(); // Update the red obstacle position
     }
     function endGame(message) {
         myGameArea.pause(); // Stop the game
@@ -231,3 +231,4 @@ canvas {
 </div>
 </body>
 </html>
+
