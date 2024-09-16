@@ -26,12 +26,13 @@ canvas {
     var myGamePiece;
     var myObstacles = [];
     var myScore;
-    var gamePaused = false; // To track if the game is paused
-    var gameStarted = false; // To track if the game has started
-    var isRising = false;    // To track if the player is holding down the rise button
-    var obstacleGenerationRate = 150; // Initial rate of obstacle generation
-    var difficultyIncreaseRate = 200; // Interval for increasing difficulty
-    var obstacleSpeed = 1; // Initial speed of obstacles
+    var gamePaused = false;
+    var gameStarted = false;
+    var isRising = false;
+    var obstacleGenerationRate = 150;
+    var difficultyIncreaseRate = 200;
+    var obstacleSpeed = 1;
+
     function startGame() {
         if (!gameStarted) {
             initializeGame();
@@ -43,28 +44,30 @@ canvas {
                 myGameArea.keys[e.keyCode] = false;
             });
             gameStarted = true;
-            document.getElementById('background-music').play(); // Play background music
+            document.getElementById('background-music').play();
         }
     }
+
     function initializeGame() {
-        myGamePiece = new gameObject(40, 40, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0);
-        myGamePiece.gravity = 0.02; // Lighter gravity to slow down falling
-        myScore = new gameObject("20px", "Consolas", "black", 160, 40, "text"); // Smaller font size for score
-        myObstacles = []; // Reset obstacles
-        obstacleGenerationRate = 150; // Reset obstacle generation rate
-        obstacleSpeed = 1; // Reset obstacle speed
+        myGamePiece = new gameObject(40, 40, "https://via.placeholder.com/40", 160, 0, "image"); // Use an image
+        myGamePiece.gravity = 0.02;
+        myScore = new gameObject("20px", "Consolas", "black", 160, 40, "text");
+        myObstacles = [];
+        obstacleGenerationRate = 150;
+        obstacleSpeed = 1;
         myGameArea.start();
     }
+
     var myGameArea = {
         canvas: document.createElement("canvas"),
         start: function() {
-            this.canvas.width = 320; // Shorter width
-            this.canvas.height = 540; // Longer height
+            this.canvas.width = 320;
+            this.canvas.height = 540;
             this.context = this.canvas.getContext("2d");
             document.getElementById("game-container").appendChild(this.canvas);
             this.frameNo = 0;
             if (this.interval) {
-                clearInterval(this.interval); // Clear any existing intervals (for restart)
+                clearInterval(this.interval);
             }
             this.interval = setInterval(updateGameArea, 20);
             this.keys = [];
@@ -79,7 +82,8 @@ canvas {
             this.interval = setInterval(updateGameArea, 20);
         }
     }
-    function gameObject(width, height, colorOrImageSrc, x, y, type) {
+
+    function gameObject(width, height, imageSrc, x, y, type) {
         this.type = type;
         this.width = width;
         this.height = height;
@@ -88,23 +92,24 @@ canvas {
         this.gravity = 0;
         this.gravitySpeed = 0;
         this.bounce = 0.6;
+        this.image = new Image();
 
-        // Load image if it's a PNG
-        if (colorOrImageSrc.endsWith(".png")) {
-            this.image = new Image();
-            this.image.src = colorOrImageSrc;
+        if (this.type === "image") {
+            this.image.src = imageSrc;
         } else {
-            this.color = colorOrImageSrc;
+            this.color = imageSrc;
         }
 
         this.update = function() {
-            ctx = myGameArea.context;
+            var ctx = myGameArea.context;
             if (this.type == "text") {
                 ctx.font = this.width + " " + this.height;
                 ctx.fillStyle = this.color;
                 ctx.fillText(this.text, this.x, this.y);
-            } else if (this.image) {
-                ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+            } else if (this.type === "image") {
+                if (this.image.complete) {
+                    ctx.drawImage(this.image, this.x, this.y, this.width, this.height); // Draw image when loaded
+                }
             } else {
                 ctx.fillStyle = this.color;
                 ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -148,6 +153,7 @@ canvas {
             return crash;
         }
     }
+
     function updateGameArea() {
         if (gamePaused) return;
         var x, height, gap, minHeight, maxHeight, minGap, maxGap;
@@ -187,15 +193,18 @@ canvas {
         myGamePiece.newPos();
         myGamePiece.update();
     }
+
     function endGame(message) {
         myGameArea.pause();
         document.getElementById('background-music').pause();
         alert(message);
     }
+
     function accelerate(n) {
         isRising = n < 0;
         myGamePiece.gravity = n > 0 ? 0.02 : myGamePiece.gravity;
     }
+
     function togglePause() {
         if (gamePaused) {
             myGameArea.continue();
@@ -207,6 +216,7 @@ canvas {
             document.getElementById("pauseBtn").textContent = "Continue";
         }
     }
+
     function restartGame() {
         gameStarted = false;
         gamePaused = false;
