@@ -49,7 +49,7 @@ canvas {
     }
     function initializeGame() {
         myGamePiece = new gameObject(20, 10, "orange", 160, 0); // Position the player at the top of the canvas
-        myGamePiece.gravity = 0.05; // Gravity pulls the object downward
+        myGamePiece.gravity = 0.02; // Lighter gravity to slow down falling
         myScore = new gameObject("20px", "Consolas", "black", 160, 40, "text"); // Smaller font size for score
         myObstacles = []; // Reset obstacles
         obstacleGenerationRate = 150; // Reset obstacle generation rate
@@ -107,7 +107,7 @@ canvas {
             this.gravitySpeed += this.gravity; // Gravity effect
             // Apply upward force if the player is holding the rise button
             if (isRising) {
-                this.gravitySpeed = -0.2; // Rise when button is held
+                this.gravitySpeed = -0.3; // Stronger rise when button is held
             }
             this.x += this.speedX; // Move horizontally based on arrow keys
             this.y += this.gravitySpeed; // Update the object's Y position based on gravity and speed
@@ -189,7 +189,7 @@ canvas {
     }
     function accelerate(n) {
         isRising = n < 0; // Set rising state based on button press
-        myGamePiece.gravity = n > 0 ? 0.05 : myGamePiece.gravity; // Set default gravity when not rising
+        myGamePiece.gravity = n > 0 ? 0.02 : myGamePiece.gravity; // Set default gravity when not rising
     }
     function togglePause() {
         if (gamePaused) {
@@ -216,7 +216,7 @@ canvas {
     <button id="pauseBtn" onclick="togglePause()">Pause</button>
     <button onclick="restartGame()">Restart Game</button> <!-- New restart button -->
     <br><br>
-    <button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.05)">RISE</button>
+    <button onmousedown="accelerate(-0.3)" onmouseup="accelerate(0.02)">RISE</button>
     <p>Use the RISE button to stay alive!!!</p>
     <p>How long can you keep going?</p>
 </div>
