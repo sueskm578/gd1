@@ -26,13 +26,13 @@ canvas {
     var myGamePiece;
     var myObstacles = [];
     var myScore;
-    var gamePaused = false; // To track if the game is paused
-    var gameStarted = false; // To track if the game has started
-    var isRising = false;    // To track if the player is holding down the rise button
-    var obstacleGenerationRate = 150; // Initial rate of obstacle generation
-    var difficultyIncreaseRate = 200; // Interval for increasing difficulty
-    var obstacleSpeed = 1; // Initial speed of obstacles
-    
+    var gamePaused = false;
+    var gameStarted = false;
+    var isRising = false;
+    var obstacleGenerationRate = 150;
+    var difficultyIncreaseRate = 200;
+    var obstacleSpeed = 1;
+
     function startGame() {
         if (!gameStarted) {
             initializeGame();
@@ -44,94 +44,107 @@ canvas {
                 myGameArea.keys[e.keyCode] = false;
             });
             gameStarted = true;
-            document.getElementById('background-music').play(); // Play background music
+            document.getElementById('background-music').play();
         }
     }
+
     function initializeGame() {
-        myGamePiece = new gameObject(20, 10, "orange", 160, 0); // Position the player at the top of the canvas
-        myGamePiece.gravity = 0.02; // Lighter gravity to slow down falling
-        myScore = new gameObject("20px", "Consolas", "black", 160, 40, "text"); // Smaller font size for score
-        myObstacles = []; // Reset obstacles
-        obstacleGenerationRate = 150; // Reset obstacle generation rate
-        obstacleSpeed = 1; // Reset obstacle speed
+        myGamePiece = new gameObject(40, 40, "orange", 160, 0, "image", "sueskm578.github.io/spaceship-removebg-preview.pn"); 
+        myGamePiece.gravity = 0.02;
+        myScore = new gameObject("20px", "Consolas", "black", 160, 40, "text");
+        myObstacles = [];
+        obstacleGenerationRate = 150;
+        obstacleSpeed = 1;
         myGameArea.start();
     }
+
     var myGameArea = {
-        canvas : document.createElement("canvas"),
-        start : function() {
-            this.canvas.width = 320; // Shorter width
-            this.canvas.height = 540; // Longer height
+        canvas: document.createElement("canvas"),
+        start: function() {
+            this.canvas.width = 320;
+            this.canvas.height = 540;
             this.context = this.canvas.getContext("2d");
             document.getElementById("game-container").appendChild(this.canvas);
             this.frameNo = 0;
             if (this.interval) {
-                clearInterval(this.interval); // Clear any existing intervals (for restart)
+                clearInterval(this.interval);
             }
             this.interval = setInterval(updateGameArea, 20);
             this.keys = [];
         },
-        clear : function() {
+        clear: function() {
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         },
-        pause : function() {
+        pause: function() {
             clearInterval(this.interval);
         },
-        continue : function() {
+        continue: function() {
             this.interval = setInterval(updateGameArea, 20);
         }
     }
-    function gameObject(width, height, color, x, y, type) {
+
+    function gameObject(width, height, color, x, y, type, imageSrc) {
         this.type = type;
         this.score = 0;
         this.width = width;
         this.height = height;
         this.speedX = 0;
-        this.speedY = 0;    
+        this.speedY = 0;
         this.x = x;
         this.y = y;
         this.gravity = 0;
         this.gravitySpeed = 0;
         this.bounce = 0.6;
+
+        if (this.type == "image") {
+            this.image = new Image();
+            this.image.src = imageSrc; // Load the image from the given URL
+        }
+
         this.update = function() {
             ctx = myGameArea.context;
             if (this.type == "text") {
                 ctx.font = this.width + " " + this.height;
                 ctx.fillStyle = color;
                 ctx.fillText(this.text, this.x, this.y);
+            } else if (this.type == "image") {
+                ctx.drawImage(this.image, this.x, this.y, this.width, this.height); // Draw the image
             } else {
                 ctx.fillStyle = color;
                 ctx.fillRect(this.x, this.y, this.width, this.height);
             }
         }
+
         this.newPos = function() {
-            this.gravitySpeed += this.gravity; // Gravity effect
-            // Apply upward force if the player is holding the rise button
+            this.gravitySpeed += this.gravity;
             if (isRising) {
-                this.gravitySpeed = -0.3; // Stronger rise when button is held
+                this.gravitySpeed = -0.3;
             }
-            this.x += this.speedX; // Move horizontally based on arrow keys
-            this.y += this.gravitySpeed; // Update the object's Y position based on gravity and speed
+            this.x += this.speedX;
+            this.y += this.gravitySpeed;
             this.hitBottom();
         }
+
         this.hitBottom = function() {
-            var bottom = myGameArea.canvas.height - this.height; // Set the bottom boundary
+            var bottom = myGameArea.canvas.height - this.height;
             if (this.y > bottom) {
-                endGame("Game Over! You fell off the screen."); // Game over if it hits the bottom
+                endGame("Game Over! You fell off the screen.");
             }
             if (this.y < 0) {
-                this.y = 0; // Prevent going above the canvas
-                this.gravitySpeed = 0; // Stop upward momentum
+                this.y = 0;
+                this.gravitySpeed = 0;
             }
         }
+
         this.crashWith = function(otherobj) {
             var myleft = this.x;
-            var myright = this.x + (this.width);
+            var myright = this.x + this.width;
             var mytop = this.y;
-            var mybottom = this.y + (this.height);
+            var mybottom = this.y + this.height;
             var otherleft = otherobj.x;
-            var otherright = otherobj.x + (otherobj.width);
+            var otherright = otherobj.x + otherobj.width;
             var othertop = otherobj.y;
-            var otherbottom = otherobj.y + (otherobj.height);
+            var otherbottom = otherobj.y + otherobj.height;
             var crash = true;
             if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
                 crash = false;
@@ -139,58 +152,59 @@ canvas {
             return crash;
         }
     }
+
     function updateGameArea() {
-        if (gamePaused) return; // Skip updating the game if paused
+        if (gamePaused) return;
         var x, height, gap, minHeight, maxHeight, minGap, maxGap;
-        
-        // Check for collision with blue obstacles
+
         for (i = 0; i < myObstacles.length; i += 1) {
             if (myGamePiece.crashWith(myObstacles[i])) {
                 endGame("Game Over! You hit a blue obstacle.");
                 return;
-            } 
+            }
         }
-        
+
         myGameArea.clear();
         myGameArea.frameNo += 1;
-        // Increase difficulty by adding more obstacles over time
         if (myGameArea.frameNo % difficultyIncreaseRate === 0) {
-            obstacleGenerationRate = Math.max(50, obstacleGenerationRate - 5); // Increase difficulty
-            obstacleSpeed += 0.5; // Increase obstacle speed
+            obstacleGenerationRate = Math.max(50, obstacleGenerationRate - 5);
+            obstacleSpeed += 0.5;
         }
         if (myGameArea.frameNo % obstacleGenerationRate === 0) {
-            y = 0; // Start obstacles at the top of the canvas
+            y = 0;
             minWidth = 20;
-            maxWidth = 80; // Adjust obstacle width for new canvas size
+            maxWidth = 80;
             width = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
             minGap = 50;
             maxGap = 100;
             gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
-            myObstacles.push(new gameObject(width, 10, "blue", Math.random() * (myGameArea.canvas.width - width), y)); // Blue obstacle
+            myObstacles.push(new gameObject(width, 10, "blue", Math.random() * (myGameArea.canvas.width - width), y));
         }
         for (i = 0; i < myObstacles.length; i += 1) {
-            myObstacles[i].y += obstacleSpeed; // Move obstacles downwards at variable speed
+            myObstacles[i].y += obstacleSpeed;
             myObstacles[i].update();
         }
-        
-        // Keyboard controls (left and right movement with faster speed)
+
         myGamePiece.speedX = 0;
-        if (myGameArea.keys && myGameArea.keys[37]) {myGamePiece.speedX = -3; } // Left arrow - faster speed
-        if (myGameArea.keys && myGameArea.keys[39]) {myGamePiece.speedX = 3; }  // Right arrow - faster speed
+        if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.speedX = -3; }
+        if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 3; }
         myScore.text = "SCORE: " + myGameArea.frameNo;
         myScore.update();
         myGamePiece.newPos();
         myGamePiece.update();
     }
+
     function endGame(message) {
-        myGameArea.pause(); // Stop the game
-        document.getElementById('background-music').pause(); // Stop background music
-        alert(message); // Show game over message
+        myGameArea.pause();
+        document.getElementById('background-music').pause();
+        alert(message);
     }
+
     function accelerate(n) {
-        isRising = n < 0; // Set rising state based on button press
-        myGamePiece.gravity = n > 0 ? 0.02 : myGamePiece.gravity; // Set default gravity when not rising
+        isRising = n < 0;
+        myGamePiece.gravity = n > 0 ? 0.02 : myGamePiece.gravity;
     }
+
     function togglePause() {
         if (gamePaused) {
             myGameArea.continue();
@@ -202,19 +216,19 @@ canvas {
             document.getElementById("pauseBtn").textContent = "Continue";
         }
     }
+
     function restartGame() {
         gameStarted = false;
         gamePaused = false;
-        document.getElementById("pauseBtn").textContent = "Pause"; // Reset the pause button text
-        initializeGame(); // Reinitialize game without starting interval
-        document.getElementById('background-music').play(); // Restart background music
+        document.getElementById("pauseBtn").textContent = "Pause";
+        initializeGame();
+        document.getElementById('background-music').play();
     }
     </script>
-    <!-- Buttons to control the game -->
     <br>
     <button onclick="startGame()">Start Game</button>
     <button id="pauseBtn" onclick="togglePause()">Pause</button>
-    <button onclick="restartGame()">Restart Game</button> <!-- New restart button -->
+    <button onclick="restartGame()">Restart Game</button>
     <br><br>
     <button onmousedown="accelerate(-0.3)" onmouseup="accelerate(0.02)">RISE</button>
     <p>Use the RISE button to stay alive!!!</p>
