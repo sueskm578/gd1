@@ -36,6 +36,7 @@ canvas {
     var obstacleGenerationRate = 150;
     var difficultyIncreaseRate = 200;
     var obstacleSpeed = 1;
+    
     function startGame() {
         if (!gameStarted) {
             initializeGame();
@@ -52,10 +53,10 @@ canvas {
     }
 
     function initializeGame() {
-        // Increase spaceship size
-        myGamePiece = new gameObject(60, 60, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0, "image"); 
+        // Decrease spaceship size
+        myGamePiece = new gameObject(40, 40, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0, "image"); 
         myGamePiece.gravity = 0.02;
-        myScore = new gameObject("20px", "Consolas", "black", 160, 40, "text");
+        myScore = new gameObject("20px", "Consolas", "white", 160, 40, "text"); // Changed score text color to white
         myObstacles = [];
         obstacleGenerationRate = 150;
         obstacleSpeed = 1;
@@ -64,6 +65,7 @@ canvas {
         
         myGameArea.start();
     }
+
     var myGameArea = {
         canvas: document.createElement("canvas"),
         start: function() {
@@ -88,6 +90,7 @@ canvas {
             this.interval = setInterval(updateGameArea, 20);
         }
     }
+
     function gameObject(width, height, imageSrc, x, y, type) {
         this.type = type;
         this.width = width;
@@ -159,6 +162,7 @@ canvas {
             return crash;
         }
     }
+
     function updateGameArea() {
         if (gamePaused) return;
 
@@ -197,15 +201,18 @@ canvas {
         myGamePiece.newPos();
         myGamePiece.update();
     }
+
     function endGame(message) {
         myGameArea.pause();
         document.getElementById('background-music').pause();
         alert(message);
     }
+
     function accelerate(n) {
         isRising = n < 0;
         myGamePiece.gravity = n > 0 ? 0.02 : myGamePiece.gravity;
     }
+
     function togglePause() {
         if (gamePaused) {
             myGameArea.continue();
@@ -217,6 +224,7 @@ canvas {
             document.getElementById("pauseBtn").textContent = "Continue";
         }
     }
+
     function restartGame() {
         gameStarted = false;
         gamePaused = false;
@@ -235,4 +243,4 @@ canvas {
     <p>How long can you keep going?</p>
 </div>
 </body>
-</html
+</html>
