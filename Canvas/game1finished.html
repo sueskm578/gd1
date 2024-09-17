@@ -19,13 +19,13 @@ body {
 }
 #title {
     position: absolute;
-    left: 10px; /* Adjust as needed */
-    top: 10px;  /* Adjust as needed */
+    left: 10px;
+    top: 10px;
 }
 #score-container {
     position: absolute;
-    right: 10px; /* Adjust as needed */
-    top: 10px;  /* Adjust as needed */
+    right: 10px;
+    top: 10px;
     text-align: right;
     color: white;
     font-family: Consolas, sans-serif;
@@ -229,68 +229,55 @@ canvas {
                 minWidth = 20;
                 maxWidth = 80;
                 width = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
-                var meteorImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/meteor_PNG37.png";
-                myObstacles.push(new gameObject(width, width, meteorImage, Math.random() * (myGameArea.canvas.width - width), y, "image"));
+                myObstacles.push(new gameObject(width, 20, "https://github.com/sueskm578/sueskm578.github.io/raw/main/meteor.png", Math.random() * (myGameArea.canvas.width - width), y, "image"));
             }
-            if (myGameArea.frameNo % (obstacleGenerationRate * 2) === 0) {
-                var coinImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/coin.jfif"; // Replace with your coin image URL
-                myCoins.push(new gameObject(20, 20, coinImage, Math.random() * (myGameArea.canvas.width - 20), 0, "image"));
+
+            // Generate coins less frequently than obstacles
+            if (myGameArea.frameNo % (obstacleGenerationRate * 3) === 0) {
+                y = 0;
+                myCoins.push(new gameObject(20, 20, "https://github.com/sueskm578/sueskm578.github.io/raw/main/coin.webp", Math.random() * (myGameArea.canvas.width - 20), y, "image"));
             }
+
             for (i = 0; i < myObstacles.length; i += 1) {
                 myObstacles[i].y += obstacleSpeed;
                 myObstacles[i].update();
             }
+
             for (i = 0; i < myCoins.length; i += 1) {
                 myCoins[i].y += obstacleSpeed;
                 myCoins[i].update();
             }
-            myGamePiece.speedX = 0;
-            if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.speedX = -3; }
-            if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 3; }
-            updateScoreDisplay(); // Update score and coin count display
+
             myGamePiece.newPos();
             myGamePiece.update();
+            updateScoreDisplay();
         }
 
         function endGame(message) {
-            myGameArea.pause();
-            document.getElementById('background-music').pause();
             alert(message);
-        }
-
-        function accelerate(n) {
-            isRising = n < 0;
-            myGamePiece.gravity = n > 0 ? 0.02 : myGamePiece.gravity;
-        }
-
-        function togglePause() {
-            if (gamePaused) {
-                myGameArea.continue();
-                gamePaused = false;
-                document.getElementById("pauseBtn").textContent = "Pause";
-            } else {
-                myGameArea.pause();
-                gamePaused = true;
-                document.getElementById("pauseBtn").textContent = "Continue";
-            }
-        }
-
-        function restartGame() {
-            gameStarted = false;
-            gamePaused = false;
-            document.getElementById("pauseBtn").textContent = "Pause";
+            document.getElementById('background-music').pause();
             initializeGame();
-            document.getElementById('background-music').play();
         }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space' && !gamePaused) {
+                isRising = true;
+            }
+        });
+
+        document.addEventListener('keyup', function(event) {
+            if (event.code === 'Space') {
+                isRising = false;
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Enter') {
+                startGame();
+            }
+        });
+
         </script>
-        <br>
-        <button onclick="startGame()">Start Game</button>
-        <button id="pauseBtn" onclick="togglePause()">Pause</button>
-        <button onclick="restartGame()">Restart Game</button>
-        <br><br>
-        <button onmousedown="accelerate(-0.3)" onmouseup="accelerate(0.02)">RISE</button>
-        <p>Use the RISE button to stay alive!!!</p>
-        <p>How long can you keep going?</p>
     </div>
 </div>
 </body>
