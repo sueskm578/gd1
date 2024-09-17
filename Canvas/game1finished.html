@@ -9,7 +9,9 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #f1f1f1;
+    background-image: url("https://github.com/sueskm578/sueskm578.github.io/raw/main/color.webp");
+    background-size: cover;
+    background-position: center;
 }
 #game-container {
     text-align: center;
@@ -22,6 +24,7 @@ canvas {
 <body>
 <div id="game-container">
     <audio id="background-music" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3" loop></audio>
+    <audio id="explosion-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/medium-explosion-40472 (1).mp3"></audio> <!-- Replace with your explosion sound URL -->
     <script>
     var myGamePiece;
     var myObstacles = [];
@@ -50,7 +53,8 @@ canvas {
     }
 
     function initializeGame() {
-        myGamePiece = new gameObject(40, 40, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0, "image"); 
+        // Increase spaceship size
+        myGamePiece = new gameObject(60, 60, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0, "image"); 
         myGamePiece.gravity = 0.02;
         myScore = new gameObject("20px", "Consolas", "black", 160, 40, "text");
         myObstacles = [];
@@ -170,6 +174,7 @@ canvas {
 
         for (i = 0; i < myObstacles.length; i += 1) {
             if (myGamePiece.crashWith(myObstacles[i])) {
+                document.getElementById('explosion-sound').play(); // Play explosion sound
                 endGame("Game Over! You hit a meteor.");
                 return;
             }
