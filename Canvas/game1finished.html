@@ -9,36 +9,22 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #f1f1f1;
+    background-image: url("https://github.com/sueskm578/sueskm578.github.io/raw/main/color.webp");
+    background-size: cover;
+    background-position: center;
 }
 #game-container {
-    text-align: center;
-    position: relative;
+    text-align: center;  
 }
 canvas {
     border:1px solid #d3d3d3;
-}
-#controls {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    text-align: left;
-}
-#title {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
 }
 </style>
 </head>
 <body>
 <div id="game-container">
-    <div id="title">
-        <img src="https://github.com/sueskm578/sueskm578.github.io/raw/main/cooltext466343104737857.png" alt="Game Title">
-    </div>
     <audio id="background-music" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3" loop></audio>
-    <audio id="explosion-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/medium-explosion-40472 (1).mp3"></audio>
+    <audio id="explosion-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/medium-explosion-40472 (1).mp3"></audio> <!-- Replace with your explosion sound URL -->
     <script>
     var myGamePiece;
     var myObstacles = [];
@@ -50,7 +36,6 @@ canvas {
     var obstacleGenerationRate = 150;
     var difficultyIncreaseRate = 200;
     var obstacleSpeed = 1;
-
     function startGame() {
         if (!gameStarted) {
             initializeGame();
@@ -67,19 +52,18 @@ canvas {
     }
 
     function initializeGame() {
+        // Increase spaceship size
         myGamePiece = new gameObject(60, 60, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0, "image"); 
         myGamePiece.gravity = 0.02;
-        myScore = new gameObject("20px", "Consolas", "white", 160, 40, "text");
+        myScore = new gameObject("20px", "Consolas", "black", 160, 40, "text");
         myObstacles = [];
         obstacleGenerationRate = 150;
         obstacleSpeed = 1;
-
         // Initialize background image to fit the canvas
         background = new gameObject(myGameArea.canvas.width, myGameArea.canvas.height, "https://github.com/sueskm578/sueskm578.github.io/raw/main/space png.png", 0, 0, "background");
         
         myGameArea.start();
     }
-
     var myGameArea = {
         canvas: document.createElement("canvas"),
         start: function() {
@@ -104,7 +88,6 @@ canvas {
             this.interval = setInterval(updateGameArea, 20);
         }
     }
-
     function gameObject(width, height, imageSrc, x, y, type) {
         this.type = type;
         this.width = width;
@@ -115,13 +98,11 @@ canvas {
         this.gravitySpeed = 0;
         this.bounce = 0.6;
         this.image = new Image();
-
         if (this.type === "image" || this.type === "background") {
             this.image.src = imageSrc;
         } else {
             this.color = imageSrc;
         }
-
         this.update = function() {
             var ctx = myGameArea.context;
             if (this.type === "text") {
@@ -143,21 +124,18 @@ canvas {
                 ctx.fillRect(this.x, this.y, this.width, this.height);
             }
         }
-
         this.newPos = function() {
             this.gravitySpeed += this.gravity;
             if (isRising) {
-                this.gravitySpeed = -0.5;  // Increased rise speed
+                this.gravitySpeed = -0.3;
             }
             this.x += this.speedX;
             this.y += this.gravitySpeed;
             this.hitBottom();
         }
-
         this.hitBottom = function() {
             var bottom = myGameArea.canvas.height - this.height;
             if (this.y > bottom) {
-                document.getElementById('explosion-sound').play();  // Play explosion sound
                 endGame("Game Over! You fell off the screen.");
             }
             if (this.y < 0) {
@@ -165,7 +143,6 @@ canvas {
                 this.gravitySpeed = 0;
             }
         }
-
         this.crashWith = function(otherobj) {
             var myleft = this.x;
             var myright = this.x + (this.width);
@@ -182,30 +159,24 @@ canvas {
             return crash;
         }
     }
-
     function updateGameArea() {
         if (gamePaused) return;
 
         for (i = 0; i < myObstacles.length; i += 1) {
             if (myGamePiece.crashWith(myObstacles[i])) {
-                document.getElementById('explosion-sound').play();  // Play explosion sound
+                document.getElementById('explosion-sound').play(); // Play explosion sound
                 endGame("Game Over! You hit a meteor.");
                 return;
             }
         }
-
         myGameArea.clear();
-
         // Draw the background first
         background.update();
-
         myGameArea.frameNo += 1;
-
         if (myGameArea.frameNo % difficultyIncreaseRate === 0) {
             obstacleGenerationRate = Math.max(50, obstacleGenerationRate - 5);
             obstacleSpeed += 0.5;
         }
-
         if (myGameArea.frameNo % obstacleGenerationRate === 0) {
             y = 0;
             minWidth = 20;
@@ -214,39 +185,54 @@ canvas {
             var meteorImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/meteor_PNG37.png";
             myObstacles.push(new gameObject(width, width, meteorImage, Math.random() * (myGameArea.canvas.width - width), y, "image"));
         }
-
         for (i = 0; i < myObstacles.length; i += 1) {
             myObstacles[i].y += obstacleSpeed;
             myObstacles[i].update();
         }
-
         myGamePiece.speedX = 0;
         if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.speedX = -3; }
         if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 3; }
-
         myScore.text = "SCORE: " + myGameArea.frameNo;
         myScore.update();
         myGamePiece.newPos();
         myGamePiece.update();
     }
-
     function endGame(message) {
         myGameArea.pause();
         document.getElementById('background-music').pause();
-        document.getElementById('explosion-sound').play();  // Play explosion sound on game over
         alert(message);
     }
-
     function accelerate(n) {
         isRising = n < 0;
-        myGamePiece.gravity = n > 0 ? 0.02 : -0.5;  // Increased rise speed
+        myGamePiece.gravity = n > 0 ? 0.02 : myGamePiece.gravity;
+    }
+    function togglePause() {
+        if (gamePaused) {
+            myGameArea.continue();
+            gamePaused = false;
+            document.getElementById("pauseBtn").textContent = "Pause";
+        } else {
+            myGameArea.pause();
+            gamePaused = true;
+            document.getElementById("pauseBtn").textContent = "Continue";
+        }
+    }
+    function restartGame() {
+        gameStarted = false;
+        gamePaused = false;
+        document.getElementById("pauseBtn").textContent = "Pause";
+        initializeGame();
+        document.getElementById('background-music').play();
     }
     </script>
-    <div id="controls">
-        <button onclick="startGame()">Start Game</button>
-        <button onclick="accelerate(1)">Rise</button>
-        <button onclick="accelerate(-1)">Fall</button>
-    </div>
+    <br>
+    <button onclick="startGame()">Start Game</button>
+    <button id="pauseBtn" onclick="togglePause()">Pause</button>
+    <button onclick="restartGame()">Restart Game</button>
+    <br><br>
+    <button onmousedown="accelerate(-0.3)" onmouseup="accelerate(0.02)">RISE</button>
+    <p>Use the RISE button to stay alive!!!</p>
+    <p>How long can you keep going?</p>
 </div>
 </body>
-</html>
+</html
