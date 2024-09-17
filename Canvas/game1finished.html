@@ -33,9 +33,11 @@ canvas {
     <div id="game-content">
         <audio id="background-music" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3" loop></audio>
         <audio id="explosion-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/medium-explosion-40472 (1).mp3"></audio> <!-- Replace with your explosion sound URL -->
+        <audio id="coin-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/retro-coin-1-236677.mp3"></audio> <!-- Replace with your coin collection sound URL -->
         <script>
         var myGamePiece;
         var myObstacles = [];
+        var myCoins = []; // Array to store coin objects
         var myScore;
         var background;
         var gamePaused = false;
@@ -44,7 +46,8 @@ canvas {
         var obstacleGenerationRate = 150;
         var difficultyIncreaseRate = 200;
         var obstacleSpeed = 1;
-        
+        var coinCount = 0;
+
         function startGame() {
             if (!gameStarted) {
                 initializeGame();
@@ -61,14 +64,14 @@ canvas {
         }
 
         function initializeGame() {
-            // Decrease spaceship size
-            myGamePiece = new gameObject(40, 40, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0, "image"); 
+            myGamePiece = new gameObject(40, 40, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0, "image");
             myGamePiece.gravity = 0.02;
             myScore = new gameObject("20px", "Consolas", "white", 160, 40, "text"); // Changed score text color to white
             myObstacles = [];
+            myCoins = []; // Initialize the coin array
+            coinCount = 0; // Initialize coin count
             obstacleGenerationRate = 150;
             obstacleSpeed = 1;
-            // Initialize background image to fit the canvas
             background = new gameObject(myGameArea.canvas.width, myGameArea.canvas.height, "https://github.com/sueskm578/sueskm578.github.io/raw/main/space png.png", 0, 0, "background");
             
             myGameArea.start();
@@ -123,10 +126,8 @@ canvas {
                 } else if (this.type === "image" || this.type === "background") {
                     if (this.image.complete) {
                         if (this.type === "background") {
-                            // Stretch background image to fit the canvas size
                             ctx.drawImage(this.image, 0, 0, myGameArea.canvas.width, myGameArea.canvas.height);
                         } else {
-                            // Draw other images as they are
                             ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
                         }
                     }
@@ -181,6 +182,18 @@ canvas {
                     return;
                 }
             }
+
+            for (i = 0; i < myCoins.length; i += 1) {
+                if (myGamePiece.crashWith(myCoins[i])) {
+                    document.getElementById('coin-sound').play(); // Play coin collection sound
+                    myCoins.splice(i, 1); // Remove coin from array
+                    coinCount += 1; // Increase coin count
+                    myScore.text = "SCORE: " + myGameArea.frameNo + " | COINS: " + coinCount; // Update score with coin count
+                    myScore.update();
+                    break; // Exit loop to prevent multiple increments for one collision
+                }
+            }
+
             myGameArea.clear();
             // Draw the background first
             background.update();
@@ -197,14 +210,21 @@ canvas {
                 var meteorImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/meteor_PNG37.png";
                 myObstacles.push(new gameObject(width, width, meteorImage, Math.random() * (myGameArea.canvas.width - width), y, "image"));
             }
+            if (myGameArea.frameNo % (obstacleGenerationRate * 2) === 0) {
+                var coinImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/coin.jfif"; // Replace with your coin image URL
+                myCoins.push(new gameObject(20, 20, coinImage, Math.random() * (myGameArea.canvas.width - 20), 0, "image"));
+            }
             for (i = 0; i < myObstacles.length; i += 1) {
                 myObstacles[i].y += obstacleSpeed;
                 myObstacles[i].update();
             }
+            for (i = 0; i < myCoins.length; i += 1) {
+                myCoins[i].y += obstacleSpeed;
+                myCoins[i].update();
+            }
             myGamePiece.speedX = 0;
             if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.speedX = -3; }
             if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 3; }
-            myScore.text = "SCORE: " + myGameArea.frameNo;
             myScore.update();
             myGamePiece.newPos();
             myGamePiece.update();
