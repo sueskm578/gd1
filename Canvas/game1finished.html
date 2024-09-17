@@ -104,7 +104,7 @@ canvas {
                 if (this.interval) {
                     clearInterval(this.interval);
                 }
-                this.interval = setInterval(updateGameArea, 20);
+                this.interval = setInterval(updateGameArea, 20); // Use requestAnimationFrame for smoother updates
                 this.keys = [];
             },
             clear: function() {
@@ -142,10 +142,8 @@ canvas {
                 } else if (this.type === "image" || this.type === "background") {
                     if (this.image.complete) {
                         if (this.type === "background") {
-                            // Stretch background image to fit the canvas size
                             ctx.drawImage(this.image, 0, 0, myGameArea.canvas.width, myGameArea.canvas.height);
                         } else {
-                            // Draw other images as they are
                             ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
                         }
                     }
@@ -198,32 +196,18 @@ canvas {
         function updateGameArea() {
             if (gamePaused) return;
 
-            for (i = 0; i < myObstacles.length; i += 1) {
-                if (myGamePiece.crashWith(myObstacles[i])) {
-                    document.getElementById('explosion-sound').play(); // Play explosion sound
-                    endGame("Game Over! You hit a meteor.");
-                    return;
-                }
-            }
-
-            for (i = 0; i < myCoins.length; i += 1) {
-                if (myGamePiece.crashWith(myCoins[i])) {
-                    document.getElementById('coin-sound').play(); // Play coin collection sound
-                    myCoins.splice(i, 1); // Remove coin from array
-                    coinCount += 1; // Increase coin count
-                    updateScoreDisplay(); // Update score and coin count display
-                    break; // Exit loop to prevent multiple increments for one collision
-                }
-            }
-
             myGameArea.clear();
-            // Draw the background first
+            // Update background first
             background.update();
             myGameArea.frameNo += 1;
+            
+            // Adjust difficulty over time
             if (myGameArea.frameNo % difficultyIncreaseRate === 0) {
                 obstacleGenerationRate = Math.max(50, obstacleGenerationRate - 5);
                 obstacleSpeed += 0.5;
             }
+
+            // Generate obstacles at a regular rate
             if (myGameArea.frameNo % obstacleGenerationRate === 0) {
                 y = 0;
                 minWidth = 20;
@@ -238,15 +222,28 @@ canvas {
                 myCoins.push(new gameObject(20, 20, "https://github.com/sueskm578/sueskm578.github.io/raw/main/coin.webp", Math.random() * (myGameArea.canvas.width - 20), y, "image"));
             }
 
-            for (i = 0; i < myObstacles.length; i += 1) {
-                myObstacles[i].y += obstacleSpeed;
-                myObstacles[i].update();
-            }
+            // Efficiently update obstacles and check for collisions
+            myObstacles = myObstacles.filter(function(obstacle) {
+                obstacle.y += obstacleSpeed;
+                obstacle.update();
+                if (myGamePiece.crashWith(obstacle)) {
+                    document.getElementById('explosion-sound').play();
+                    endGame("Game Over! You hit an obstacle.");
+                }
+                return obstacle.y <= myGameArea.canvas.height;
+            });
 
-            for (i = 0; i < myCoins.length; i += 1) {
-                myCoins[i].y += obstacleSpeed;
-                myCoins[i].update();
-            }
+            // Efficiently update coins, check for collection
+            myCoins = myCoins.filter(function(coin) {
+                coin.y += obstacleSpeed;
+                coin.update();
+                if (myGamePiece.crashWith(coin)) {
+                    document.getElementById('coin-sound').play();
+                    coinCount++;
+                    return false; // Remove the coin after collection
+                }
+                return coin.y <= myGameArea.canvas.height;
+            });
 
             myGamePiece.newPos();
             myGamePiece.update();
@@ -276,7 +273,6 @@ canvas {
                 startGame();
             }
         });
-
         </script>
     </div>
 </div>
