@@ -47,7 +47,7 @@ canvas {
         </div>
         <audio id="background-music" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3" loop></audio>
         <audio id="explosion-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/medium-explosion-40472 (1).mp3"></audio> <!-- Replace with your explosion sound URL -->
-        <audio id="coin-sound" src="URL_OF_YOUR_COIN_SOUND.mp3"></audio> <!-- Replace with your coin collection sound URL -->
+        <audio id="coin-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/retro-coin-1-236677.mp3"></audio> <!-- Replace with your coin collection sound URL -->
         <script>
         var myGamePiece;
         var myObstacles = [];
@@ -233,7 +233,7 @@ canvas {
                 myObstacles.push(new gameObject(width, width, meteorImage, Math.random() * (myGameArea.canvas.width - width), y, "image"));
             }
             if (myGameArea.frameNo % (obstacleGenerationRate * 2) === 0) {
-                var coinImage = "URL_OF_YOUR_COIN_IMAGE.png"; // Replace with your coin image URL
+                var coinImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/coin.jfif"; // Replace with your coin image URL
                 myCoins.push(new gameObject(20, 20, coinImage, Math.random() * (myGameArea.canvas.width - 20), 0, "image"));
             }
             for (i = 0; i < myObstacles.length; i += 1) {
