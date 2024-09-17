@@ -14,9 +14,11 @@ body {
     background-position: center;
 }
 #game-container {
+    position: relative; /* Allows score container to be positioned on top of canvas */
     display: flex;
+    justify-content: center;
     align-items: center;
-    position: relative; /* Ensures score container can be positioned over the canvas */
+    flex-direction: column;
 }
 #title {
     position: absolute;
@@ -25,51 +27,48 @@ body {
 }
 #score-container {
     position: absolute;
-    right: 10px; /* Adjust as needed */
-    top: 10px;  /* Adjust as needed */
-    text-align: right;
+    top: 10px; 
+    left: 10px; /* Adjust as needed */
     color: white;
     font-family: Consolas, sans-serif;
     font-size: 20px;
-    z-index: 1; /* Ensures the score is visible on top of the canvas */
+    z-index: 10; /* Ensures the score is displayed above the canvas */
 }
 canvas {
     border: 1px solid #d3d3d3;
+    display: block;
+    margin-top: 50px; /* Gives space for the score display */
 }
 </style>
 </head>
 <body>
 <div id="game-container">
-    <img id="title" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/title.png" alt="Game Title"/>
+    <img id="title" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/title.png" alt="Game Title"/> <!-- Replace with your title image URL -->
     
-    <div id="game-content">
-        <!-- Score and coin count displayed on top of canvas -->
-        <div id="score-container">
-            <div id="score">SCORE: 0</div>
-            <div id="coin-count">COINS: 0</div>
-        </div>
+    <!-- Score and coin count -->
+    <div id="score-container">
+        <div id="score">SCORE: 0</div>
+        <div id="coin-count">COINS: 0</div>
+    </div>
 
-        <!-- Game content, including canvas and audio -->
+    <!-- Game content, including canvas and audio -->
+    <div id="game-content">
         <audio id="background-music" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3" loop></audio>
         <audio id="explosion-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/medium-explosion-40472 (1).mp3"></audio>
         <audio id="coin-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/retro-coin-1-236677.mp3"></audio>
-
-        <!-- Canvas will be appended here via JavaScript -->
     </div>
+
+    <br>
+    <button onclick="startGame()">Start Game</button>
+    <button id="pauseBtn" onclick="togglePause()">Pause</button>
+    <button onclick="restartGame()">Restart Game</button>
+    <br><br>
+    <button onmousedown="accelerate(-0.3)" onmouseup="accelerate(0.02)">RISE</button>
+    <p>Use the RISE button to stay alive!!!</p>
+    <p>How long can you keep going?</p>
 </div>
 
-<!-- Buttons and other controls -->
-<br>
-<button onclick="startGame()">Start Game</button>
-<button id="pauseBtn" onclick="togglePause()">Pause</button>
-<button onclick="restartGame()">Restart Game</button>
-<br><br>
-<button onmousedown="accelerate(-0.3)" onmouseup="accelerate(0.02)">RISE</button>
-<p>Use the RISE button to stay alive!!!</p>
-<p>How long can you keep going?</p>
-
 <script>
-// JavaScript game logic, including dynamic score update
 var myGamePiece, myObstacles = [], myCoins = [], myScore, background;
 var gamePaused = false, gameStarted = false, isRising = false;
 var obstacleGenerationRate = 150, difficultyIncreaseRate = 200, obstacleSpeed = 1;
@@ -130,7 +129,72 @@ var myGameArea = {
 }
 
 function gameObject(width, height, imageSrc, x, y, type) {
-    // ... rest of the gameObject constructor
+    this.type = type;
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;
+    this.gravity = 0;
+    this.gravitySpeed = 0;
+    this.image = new Image();
+    if (this.type === "image" || this.type === "background") {
+        this.image.src = imageSrc;
+    } else {
+        this.color = imageSrc;
+    }
+    this.update = function() {
+        var ctx = myGameArea.context;
+        if (this.type === "text") {
+            ctx.font = this.width + " " + this.height;
+            ctx.fillStyle = this.color;
+            ctx.fillText(this.text, this.x, this.y);
+        } else if (this.type === "image" || this.type === "background") {
+            if (this.image.complete) {
+                if (this.type === "background") {
+                    ctx.drawImage(this.image, 0, 0, myGameArea.canvas.width, myGameArea.canvas.height);
+                } else {
+                    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+                }
+            }
+        } else {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+    }
+    this.newPos = function() {
+        this.gravitySpeed += this.gravity;
+        if (isRising) {
+            this.gravitySpeed = -0.3;
+        }
+        this.x += this.speedX;
+        this.y += this.gravitySpeed;
+        this.hitBottom();
+    }
+    this.hitBottom = function() {
+        var bottom = myGameArea.canvas.height - this.height;
+        if (this.y > bottom) {
+            endGame("Game Over! You fell off the screen.");
+        }
+        if (this.y < 0) {
+            this.y = 0;
+            this.gravitySpeed = 0;
+        }
+    }
+    this.crashWith = function(otherobj) {
+        var myleft = this.x;
+        var myright = this.x + (this.width);
+        var mytop = this.y;
+        var mybottom = this.y + (this.height);
+        var otherleft = otherobj.x;
+        var otherright = otherobj.x + (otherobj.width);
+        var othertop = otherobj.y;
+        var otherbottom = otherobj.y + (otherobj.height);
+        var crash = true;
+        if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
+            crash = false;
+        }
+        return crash;
+    }
 }
 
 function updateScoreDisplay() {
@@ -139,7 +203,40 @@ function updateScoreDisplay() {
 }
 
 function updateGameArea() {
-    // ... main game loop, including collision detection
+    if (gamePaused) return;
+
+    for (i = 0; i < myObstacles.length; i += 1) {
+        if (myGamePiece.crashWith(myObstacles[i])) {
+            document.getElementById('explosion-sound').play();
+            endGame("Game Over! You hit a meteor.");
+            return;
+        }
+    }
+
+    for (i = 0; i < myCoins.length; i += 1) {
+        if (myGamePiece.crashWith(myCoins[i])) {
+            document.getElementById('coin-sound').play();
+            myCoins.splice(i, 1);
+            coinCount += 1;
+            updateScoreDisplay();
+            break;
+        }
+    }
+
+    myGameArea.clear();
+    background.update();
+    myGameArea.frameNo += 1;
+    if (myGameArea.frameNo % difficultyIncreaseRate === 0) {
+        obstacleSpeed += 0.5;
+    }
+    if (myGameArea.frameNo === 1 || everyinterval(obstacleGenerationRate)) {
+        var x = myGameArea.canvas.width;
+        var minHeight = 20;
+        var maxHeight = 200;
+        var height = Math.floor(Math.random() * (maxHeight - minHeight + 1) + minHeight);
+        myObstacles.push(new gameObject(10, height, "green", x, 0));
+    }
+
     updateScoreDisplay(); // Update score and coin count each frame
 }
 
