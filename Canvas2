@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url("https://github.com/sueskm578/sueskm578.github.io/raw/main/color.webp");
+    background-size: cover;
+    background-position: center;
+}
+#game-container {
+    display: flex;
+    align-items: center;
+}
+#title {
+    position: absolute;
+    left: 10px; /* Adjust as needed */
+    top: 10px;  /* Adjust as needed */
+}
+canvas {
+    border:1px solid #d3d3d3;
+}
+</style>
+</head>
+<body>
+<div id="game-container">
+    <img id="title" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/title.png" alt="Game Title"/> <!-- Replace with your title image URL -->
+    <div id="game-content">
+        <audio id="background-music" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3" loop></audio>
+        <audio id="explosion-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/medium-explosion-40472 (1).mp3"></audio> <!-- Replace with your explosion sound URL -->
+        <audio id="coin-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/retro-coin-1-236677.mp3"></audio> <!-- Replace with your coin collection sound URL -->
+        <script>
+        var myGamePiece;
+        var myObstacles = [];
+        var myCoins = []; // Array to store coin objects
+        var myScore;
+        var background;
+        var gamePaused = false;
+        var gameStarted = false;
+        var isRising = false;
+        var obstacleGenerationRate = 150;
+        var difficultyIncreaseRate = 200;
+        var obstacleSpeed = 1;
+        var coinCount = 0;
+        function startGame() {
+            if (!gameStarted) {
+                initializeGame();
+                window.addEventListener('keydown', function(e) {
+                    myGameArea.keys = (myGameArea.keys || []);
+                    myGameArea.keys[e.keyCode] = true;
+                });
+                window.addEventListener('keyup', function(e) {
+                    myGameArea.keys[e.keyCode] = false;
+                });
+                gameStarted = true;
+                document.getElementById('background-music').play();
+            }
+        }
+        function initializeGame() { 
+            myGamePiece = new gameObject(40, 40, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0, "image");
+            myGamePiece.gravity = 0.02;
+            myScore = new gameObject("20px", "Consolas", "white", 5, 20, "text"); // Changed score text color to white
+            myObstacles = [];
+            myCoins = []; // Initialize the coin array
+            coinCount = 0; // Initialize coin count
+            obstacleGenerationRate = 150;
+            obstacleSpeed = 1;
+            background = new gameObject(myGameArea.canvas.width, myGameArea.canvas.height, "https://github.com/sueskm578/sueskm578.github.io/raw/main/space png.png", 0, 0, "background");
+            myGameArea.start();
+        }
+        var myGameArea = {
+            canvas: document.createElement("canvas"),
+            start: function() {
+                this.canvas.width = 320;
+                this.canvas.height = 540;
+                this.context = this.canvas.getContext("2d");
+                document.getElementById("game-content").appendChild(this.canvas);
+                this.frameNo = 0;
+                if (this.interval) {
+                    clearInterval(this.interval);
+                }
+                this.interval = setInterval(updateGameArea, 20);
+                this.keys = [];
+            },
+            clear: function() {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            },
+            pause: function() {
+                clearInterval(this.interval);
+            },
+            continue: function() {
+                this.interval = setInterval(updateGameArea, 20);
+            }
+        }
+        function gameObject(width, height, imageSrc, x, y, type) {
+            this.type = type;
+            this.width = width;
+            this.height = height;
+            this.x = x;
+            this.y = y;
+            this.gravity = 0;
+            this.gravitySpeed = 0;
+            this.bounce = 0.6;
+            this.image = new Image();
+            if (this.type === "image" || this.type === "background") {
+                this.image.src = imageSrc;
+            } else {
+                this.color = imageSrc;
+            }
+            this.update = function() {
+                var ctx = myGameArea.context;
+                if (this.type === "text") {
+                    ctx.font = this.width + " " + this.height;
+                    ctx.fillStyle = this.color;
+                    ctx.fillText(this.text, this.x, this.y);
+                } else if (this.type === "image" || this.type === "background") {
+                    if (this.image.complete) {
+                        if (this.type === "background") {
+                            ctx.drawImage(this.image, 0, 0, myGameArea.canvas.width, myGameArea.canvas.height);
+                        } else {
+                            ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+                        }
+                    }
+                } else {
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                }
+            }
+            this.newPos = function() {
+                this.gravitySpeed += this.gravity;
+                if (isRising) {
+                    this.gravitySpeed = -0.3;
+                }
+                this.x += this.speedX;
+                this.y += this.gravitySpeed;
+                this.hitBottom();
+            }
+            this.hitBottom = function() {
+                var bottom = myGameArea.canvas.height - this.height;
+                if (this.y > bottom) {
+                    endGame("Game Over! You fell off the screen.");
+                }
+                if (this.y < 0) {
+                    this.y = 0;
+                    this.gravitySpeed = 0;
+                }
+            }
+            this.crashWith = function(otherobj) {
+                var myleft = this.x;
+                var myright = this.x + (this.width);
+                var mytop = this.y;
+                var mybottom = this.y + (this.height);
+                var otherleft = otherobj.x;
+                var otherright = otherobj.x + (otherobj.width);
+                var othertop = otherobj.y;
+                var otherbottom = otherobj.y + (otherobj.height);
+                var crash = true;
+                if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
+                    crash = false;
+                }
+                return crash;
+            }
+        }
+        function updateGameArea() {
+            if (gamePaused) return;
+            for (i = 0; i < myObstacles.length; i += 1) {
+                if (myGamePiece.crashWith(myObstacles[i])) {
+                    document.getElementById('explosion-sound').play(); // Play explosion sound
+                    endGame("Game Over! You hit a meteor.");
+                    return;
+                }
+            }
+            for (i = 0; i < myCoins.length; i += 1) {
+                if (myGamePiece.crashWith(myCoins[i])) {
+                    document.getElementById('coin-sound').play(); // Play coin collection sound
+                    myCoins.splice(i, 1); // Remove coin from array
+                    coinCount += 1; // Increase coin count
+                    myScore.text = "SCORE: " + myGameArea.frameNo + " | COINS: " + coinCount; // Update score with coin count
+                    myScore.update();
+                    break; // Exit loop to prevent multiple increments for one collision
+                }
+            }
+            myGameArea.clear();
+            // Draw the background first
+            background.update();
+            myGameArea.frameNo += 1;
+            if (myGameArea.frameNo % difficultyIncreaseRate === 0) {
+                obstacleGenerationRate = Math.max(50, obstacleGenerationRate - 5);
+                obstacleSpeed += 0.5;
+            }
+            if (myGameArea.frameNo % obstacleGenerationRate === 0) {
+                y = 0;
+                minWidth = 20;
+                maxWidth = 80;
+                width = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
+                var meteorImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/meteor_PNG37.png";
+                myObstacles.push(new gameObject(width, width, meteorImage, Math.random() * (myGameArea.canvas.width - width), y, "image"));
+            }
+            if (myGameArea.frameNo % (obstacleGenerationRate * 2) === 0) {
+                var coinImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/coin.jfif"; // Replace with your coin image URL
+                myCoins.push(new gameObject(20, 20, coinImage, Math.random() * (myGameArea.canvas.width - 20), 0, "image"));
+            }
+            for (i = 0; i < myObstacles.length; i += 1) {
+                myObstacles[i].y += obstacleSpeed;
+                myObstacles[i].update();
+            }
+            for (i = 0; i < myCoins.length; i += 1) {
+                myCoins[i].y += obstacleSpeed;
+                myCoins[i].update();
+            }
+            myGamePiece.speedX = 0;
+            if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.speedX = -3; }
+            if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 3; }
+            myScore.update();
+            myGamePiece.newPos();
+            myGamePiece.update();
+        }
+        function endGame(message) {
+            myGameArea.pause();
+            document.getElementById('background-music').pause();
+            alert(message);
+        }
+        function accelerate(n) {
+            isRising = n < 0;
+            myGamePiece.gravity = n > 0 ? 0.02 : myGamePiece.gravity;
+        }
+        function togglePause() {
+            if (gamePaused) {
+                myGameArea.continue();
+                gamePaused = false;
+                document.getElementById("pauseBtn").textContent = "Pause";
+            } else {
+                myGameArea.pause();
+                gamePaused = true;
+                document.getElementById("pauseBtn").textContent = "Continue";
+            }
+        }
+        function restartGame() {
+            gameStarted = false;
+            gamePaused = false;
+            document.getElementById("pauseBtn").textContent = "Pause";
+            initializeGame();
+            document.getElementById('background-music').play();
+        }
+        </script>
+        <br>
+        <button onclick="startGame()">Start Game</button>
+        <button id="pauseBtn" onclick="togglePause()">Pause</button>
+        <button onclick="restartGame()">Restart Game</button>
+        <br><br>
+        <button onmousedown="accelerate(-0.3)" onmouseup="accelerate(0.02)">RISE</button>
+        <p>Use the RISE button to stay alive!!!</p>
+        <p>How long can you keep going?</p>
+    </div>
+</div>
+</body>
+</html>
