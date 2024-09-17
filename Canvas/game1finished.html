@@ -24,13 +24,13 @@ body {
 }
 #score-container {
     position: absolute;
-    top: 10px;
-    left: 10px; /* Move the score and coin count to the left */
+    left: 10px; /* Position score container to the left */
+    top: 10px;  /* Position score container to the top */
+    text-align: left;
     color: white;
     font-family: Consolas, sans-serif;
     font-size: 20px;
-    z-index: 10; /* Ensure it displays above the game canvas */
-    display: none; /* Initially hidden */
+    display: none; /* Hide by default */
 }
 canvas {
     border:1px solid #d3d3d3;
@@ -41,12 +41,14 @@ canvas {
 <div id="game-container">
     <img id="title" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/title.png" alt="Game Title"/> <!-- Replace with your title image URL -->
     <div id="game-content">
+        <!-- Add a container for score and coin count -->
+        <div id="score-container">
+            <div id="score"></div>
+            <div id="coin-count"></div>
+        </div>
         <audio id="background-music" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3" loop></audio>
         <audio id="explosion-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/medium-explosion-40472 (1).mp3"></audio> <!-- Replace with your explosion sound URL -->
         <audio id="coin-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/retro-coin-1-236677.mp3"></audio> <!-- Replace with your coin collection sound URL -->
-
-        <div id="score-container">SCORE: 0 | COINS: 0</div>
-
         <script>
         var myGamePiece;
         var myObstacles = [];
@@ -63,8 +65,8 @@ canvas {
 
         function startGame() {
             if (!gameStarted) {
-                document.getElementById('score-container').style.display = "block"; // Show score container
                 initializeGame();
+                document.getElementById('score-container').style.display = 'block'; // Show score container
                 window.addEventListener('keydown', function(e) {
                     myGameArea.keys = (myGameArea.keys || []);
                     myGameArea.keys[e.keyCode] = true;
@@ -76,8 +78,7 @@ canvas {
                 document.getElementById('background-music').play();
             }
         }
-
-        function initializeGame() { 
+        function initializeGame() {
             myGamePiece = new gameObject(40, 40, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0, "image");
             myGamePiece.gravity = 0.02;
             myScore = new gameObject("20px", "Consolas", "white", 160, 40, "text"); // Changed score text color to white
@@ -89,7 +90,6 @@ canvas {
             background = new gameObject(myGameArea.canvas.width, myGameArea.canvas.height, "https://github.com/sueskm578/sueskm578.github.io/raw/main/space png.png", 0, 0, "background");
             myGameArea.start();
         }
-        
         var myGameArea = {
             canvas: document.createElement("canvas"),
             start: function() {
@@ -114,7 +114,6 @@ canvas {
                 this.interval = setInterval(updateGameArea, 20);
             }
         }
-
         function gameObject(width, height, imageSrc, x, y, type) {
             this.type = type;
             this.width = width;
@@ -184,7 +183,6 @@ canvas {
                 return crash;
             }
         }
-
         function updateGameArea() {
             if (gamePaused) return;
             for (i = 0; i < myObstacles.length; i += 1) {
@@ -200,7 +198,10 @@ canvas {
                     document.getElementById('coin-sound').play(); // Play coin collection sound
                     myCoins.splice(i, 1); // Remove coin from array
                     coinCount += 1; // Increase coin count
-                    document.getElementById('score-container').textContent = "SCORE: " + myGameArea.frameNo + " | COINS: " + coinCount; // Update score with coin count
+                    myScore.text = "SCORE: " + myGameArea.frameNo + " | COINS: " + coinCount; // Update score with coin count
+                    myScore.update();
+                    document.getElementById('score').textContent = "SCORE: " + myGameArea.frameNo; // Update score display
+                    document.getElementById('coin-count').textContent = "COINS: " + coinCount; // Update coin count display
                     break; // Exit loop to prevent multiple increments for one collision
                 }
             }
@@ -218,68 +219,55 @@ canvas {
                 minWidth = 20;
                 maxWidth = 80;
                 width = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
-                var meteorImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/meteor_PNG37.png";
-                myObstacles.push(new gameObject(width, width, meteorImage, Math.random() * (myGameArea.canvas.width - width), -width, "image"));
-            }
-            if (myGameArea.frameNo % (obstacleGenerationRate * 2) === 0) {
-                var coinImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/coin.png"; // Replace with your coin image URL
-                myCoins.push(new gameObject(20, 20, coinImage, Math.random() * (myGameArea.canvas.width - 20), 0, "image"));
+                height = Math.floor(Math.random() * 20) + 20;
+                var x = Math.floor(Math.random() * (myGameArea.canvas.width - width));
+                var color = "brown";
+                myObstacles.push(new gameObject(width, height, color, x, y, "color"));
             }
             for (i = 0; i < myObstacles.length; i += 1) {
                 myObstacles[i].y += obstacleSpeed;
                 myObstacles[i].update();
             }
+            if (Math.random() < 0.02) {
+                var coinX = Math.floor(Math.random() * myGameArea.canvas.width);
+                var coinY = -20;
+                var coinWidth = 20;
+                var coinHeight = 20;
+                myCoins.push(new gameObject(coinWidth, coinHeight, "https://github.com/sueskm578/sueskm578.github.io/raw/main/coin.png", coinX, coinY, "image")); // Replace with coin image URL
+            }
             for (i = 0; i < myCoins.length; i += 1) {
                 myCoins[i].y += obstacleSpeed;
                 myCoins[i].update();
             }
-            myGamePiece.speedX = 0;
-            if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.speedX = -3; }
-            if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 3; }
-            document.getElementById('score-container').textContent = "SCORE: " + myGameArea.frameNo + " | COINS: " + coinCount;
             myGamePiece.newPos();
             myGamePiece.update();
+            myScore.update();
         }
-
         function endGame(message) {
             document.getElementById('background-music').pause();
-            document.getElementById('explosion-sound').pause();
+            myGameArea.pause();
             alert(message);
-            myGameArea.clear();
+            location.reload(); // Reload the page to restart the game
+        }
+        function pauseGame() {
             gamePaused = true;
+            myGameArea.pause();
         }
-
-        function togglePause() {
-            if (gamePaused) {
-                myGameArea.continue();
-                gamePaused = false;
-            } else {
-                myGameArea.pause();
-                gamePaused = true;
-            }
+        function continueGame() {
+            gamePaused = false;
+            myGameArea.continue();
         }
-
-        function createCoin() {
-            var coinImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/coin.png";
-            var coin = new gameObject(20, 20, coinImage, Math.random() * (myGameArea.canvas.width - 20), Math.random() * (myGameArea.canvas.height - 20), "image");
-            myCoins.push(coin);
+        function rise() {
+            isRising = true;
         }
-
-        // Add a function to periodically create coins
-        setInterval(createCoin, 10000); // Create a new coin every 10 seconds
-
-        document.addEventListener('DOMContentLoaded', (event) => {
-            document.getElementById('start-game-button').addEventListener('click', startGame);
-        });
+        function stopRise() {
+            isRising = false;
+        }
         </script>
-        <br>
-        <button id="start-game-button">Start Game</button>
-        <button id="pauseBtn" onclick="togglePause()">Pause</button>
-        <button onclick="restartGame()">Restart Game</button>
-        <br><br>
-        <button onmousedown="accelerate(-0.3)" onmouseup="accelerate(0.02)">RISE</button>
-        <p>Use the RISE button to stay alive!!!</p>
-        <p>How long can you keep going?</p>
+        <button onclick="startGame()">Start Game</button>
+        <button onclick="pauseGame()">Pause</button>
+        <button onclick="continueGame()">Continue</button>
+        <button onclick="rise()" onmouseup="stopRise()">Rise</button>
     </div>
 </div>
 </body>
