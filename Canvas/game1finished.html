@@ -22,16 +22,6 @@ body {
     left: 10px; /* Adjust as needed */
     top: 10px;  /* Adjust as needed */
 }
-#score-container {
-    position: absolute;
-    left: 10px; /* Position score container to the left */
-    top: 10px;  /* Position score container to the top */
-    text-align: left;
-    color: white;
-    font-family: Consolas, sans-serif;
-    font-size: 20px;
-    display: none; /* Hide by default */
-}
 canvas {
     border:1px solid #d3d3d3;
 }
@@ -41,11 +31,6 @@ canvas {
 <div id="game-container">
     <img id="title" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/title.png" alt="Game Title"/> <!-- Replace with your title image URL -->
     <div id="game-content">
-        <!-- Add a container for score and coin count -->
-        <div id="score-container">
-            <div id="score"></div>
-            <div id="coin-count"></div>
-        </div>
         <audio id="background-music" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3" loop></audio>
         <audio id="explosion-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/medium-explosion-40472 (1).mp3"></audio> <!-- Replace with your explosion sound URL -->
         <audio id="coin-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/retro-coin-1-236677.mp3"></audio> <!-- Replace with your coin collection sound URL -->
@@ -66,7 +51,6 @@ canvas {
         function startGame() {
             if (!gameStarted) {
                 initializeGame();
-                document.getElementById('score-container').style.display = 'block'; // Show score container
                 window.addEventListener('keydown', function(e) {
                     myGameArea.keys = (myGameArea.keys || []);
                     myGameArea.keys[e.keyCode] = true;
@@ -78,7 +62,7 @@ canvas {
                 document.getElementById('background-music').play();
             }
         }
-        function initializeGame() {
+        function initializeGame() { 
             myGamePiece = new gameObject(40, 40, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0, "image");
             myGamePiece.gravity = 0.02;
             myScore = new gameObject("20px", "Consolas", "white", 160, 40, "text"); // Changed score text color to white
@@ -192,7 +176,6 @@ canvas {
                     return;
                 }
             }
-            
             for (i = 0; i < myCoins.length; i += 1) {
                 if (myGamePiece.crashWith(myCoins[i])) {
                     document.getElementById('coin-sound').play(); // Play coin collection sound
@@ -200,12 +183,9 @@ canvas {
                     coinCount += 1; // Increase coin count
                     myScore.text = "SCORE: " + myGameArea.frameNo + " | COINS: " + coinCount; // Update score with coin count
                     myScore.update();
-                    document.getElementById('score').textContent = "SCORE: " + myGameArea.frameNo; // Update score display
-                    document.getElementById('coin-count').textContent = "COINS: " + coinCount; // Update coin count display
                     break; // Exit loop to prevent multiple increments for one collision
                 }
             }
-            
             myGameArea.clear();
             // Draw the background first
             background.update();
@@ -219,55 +199,64 @@ canvas {
                 minWidth = 20;
                 maxWidth = 80;
                 width = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
-                height = Math.floor(Math.random() * 20) + 20;
-                var x = Math.floor(Math.random() * (myGameArea.canvas.width - width));
-                var color = "brown";
-                myObstacles.push(new gameObject(width, height, color, x, y, "color"));
+                var meteorImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/meteor_PNG37.png";
+                myObstacles.push(new gameObject(width, width, meteorImage, Math.random() * (myGameArea.canvas.width - width), y, "image"));
+            }
+            if (myGameArea.frameNo % (obstacleGenerationRate * 2) === 0) {
+                var coinImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/coin.jfif"; // Replace with your coin image URL
+                myCoins.push(new gameObject(20, 20, coinImage, Math.random() * (myGameArea.canvas.width - 20), 0, "image"));
             }
             for (i = 0; i < myObstacles.length; i += 1) {
                 myObstacles[i].y += obstacleSpeed;
                 myObstacles[i].update();
             }
-            if (Math.random() < 0.02) {
-                var coinX = Math.floor(Math.random() * myGameArea.canvas.width);
-                var coinY = -20;
-                var coinWidth = 20;
-                var coinHeight = 20;
-                myCoins.push(new gameObject(coinWidth, coinHeight, "https://github.com/sueskm578/sueskm578.github.io/raw/main/coin.png", coinX, coinY, "image")); // Replace with coin image URL
-            }
             for (i = 0; i < myCoins.length; i += 1) {
                 myCoins[i].y += obstacleSpeed;
                 myCoins[i].update();
             }
+            myGamePiece.speedX = 0;
+            if (myGameArea.keys && myGameArea.keys[37]) { myGamePiece.speedX = -3; }
+            if (myGameArea.keys && myGameArea.keys[39]) { myGamePiece.speedX = 3; }
+            myScore.update();
             myGamePiece.newPos();
             myGamePiece.update();
-            myScore.update();
         }
         function endGame(message) {
+            myGameArea.pause();
             document.getElementById('background-music').pause();
-            myGameArea.pause();
             alert(message);
-            location.reload(); // Reload the page to restart the game
         }
-        function pauseGame() {
-            gamePaused = true;
-            myGameArea.pause();
+        function accelerate(n) {
+            isRising = n < 0;
+            myGamePiece.gravity = n > 0 ? 0.02 : myGamePiece.gravity;
         }
-        function continueGame() {
+        function togglePause() {
+            if (gamePaused) {
+                myGameArea.continue();
+                gamePaused = false;
+                document.getElementById("pauseBtn").textContent = "Pause";
+            } else {
+                myGameArea.pause();
+                gamePaused = true;
+                document.getElementById("pauseBtn").textContent = "Continue";
+            }
+        }
+        function restartGame() {
+            gameStarted = false;
             gamePaused = false;
-            myGameArea.continue();
-        }
-        function rise() {
-            isRising = true;
-        }
-        function stopRise() {
-            isRising = false;
+            document.getElementById("pauseBtn").textContent = "Pause";
+            initializeGame();
+            document.getElementById('background-music').play();
         }
         </script>
+        <br>
         <button onclick="startGame()">Start Game</button>
-        <button onclick="pauseGame()">Pause</button>
-        <button onclick="continueGame()">Continue</button>
-        <button onclick="rise()" onmouseup="stopRise()">Rise</button>
+        <button id="pauseBtn" onclick="togglePause()">Pause</button>
+        <button onclick="restartGame()">Restart Game</button>
+        <br><br>
+        <button onmousedown="accelerate(-0.3)" onmouseup="accelerate(0.02)">RISE</button>
+        <p>Use the RISE button to stay alive!!!</p>
+        <p>How long can you keep going?</p>
     </div>
 </div>
 </body>
