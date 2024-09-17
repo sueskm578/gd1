@@ -16,12 +16,21 @@
 
   <script type="text/babel" data-presets="react,stage-3">
     const Example = () => {
-         return React.createElement("div", null, "Hello, World!!!");
-     };
-
-    ReactDOM.render(React.createElement(Example), document.getElementById("root"));
-
-    
+      const [count, setCount] = React.useState(0);
+      React.useEffect(() => {
+        document.title = `You clicked ${count} times`;
+      });
+      return (
+        <div>
+          <p>You clicked {count} times</p>
+          <button onClick={() => setCount(count + 1)}>
+            Click me
+          </button>
+        </div>
+      );
+    };
+    const root = ReactDOM.createRoot(document.getElementById("root"))
+    root.render(<Example />);
   </script>
 </body>
 
