@@ -9,7 +9,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-image: url("https://github.com/sueskm578/sueskm578.github.io/raw/main/color.webp");
+    background-image: url("https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/color.webp");
     background-size: cover;
     background-position: center;
 }
@@ -29,11 +29,11 @@ canvas {
 </head>
 <body>
 <div id="game-container">
-    <img id="title" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/title.png" alt="Game Title"/> <!-- Replace with your title image URL -->
+    <img id="title" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/title.png" alt="Game Title"/> <!-- Replace with your title image URL -->
     <div id="game-content">
-        <audio id="background-music" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/DRIVE(chosic.com).mp3" loop></audio>
-        <audio id="explosion-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/medium-explosion-40472 (1).mp3"></audio> <!-- Replace with your explosion sound URL -->
-        <audio id="coin-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/retro-coin-1-236677.mp3"></audio> <!-- Replace with your coin collection sound URL -->
+        <audio id="background-music" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/DRIVE(chosic.com).mp3" loop></audio>
+        <audio id="explosion-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/medium-explosion-40472 (1).mp3"></audio> <!-- Replace with your explosion sound URL -->
+        <audio id="coin-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/retro-coin-1-236677.mp3"></audio> <!-- Replace with your coin collection sound URL -->
         <script>
         var myGamePiece;
         var myObstacles = [];
@@ -63,7 +63,7 @@ canvas {
             }
         }
         function initializeGame() { 
-            myGamePiece = new gameObject(40, 40, "https://github.com/sueskm578/sueskm578.github.io/raw/main/rocket.webp", 160, 0, "image");
+            myGamePiece = new gameObject(40, 40, "https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/rocket.webp", 160, 0, "image");
             myGamePiece.gravity = 0.02;
             myScore = new gameObject("20px", "Consolas", "white", 30, 20, "text"); // Changed score text color to white
             myObstacles = [];
@@ -71,7 +71,7 @@ canvas {
             coinCount = 0; // Initialize coin count
             obstacleGenerationRate = 150;
             obstacleSpeed = 1;
-            background = new gameObject(myGameArea.canvas.width, myGameArea.canvas.height, "https://github.com/sueskm578/sueskm578.github.io/raw/main/space png.png", 0, 0, "background");
+            background = new gameObject(myGameArea.canvas.width, myGameArea.canvas.height, "https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/space png.png", 0, 0, "background");
             myGameArea.start();
         }
         var myGameArea = {
@@ -199,11 +199,11 @@ canvas {
                 minWidth = 20;
                 maxWidth = 80;
                 width = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
-                var meteorImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/meteor_PNG37.png";
+                var meteorImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/meteor_PNG37.png";
                 myObstacles.push(new gameObject(width, width, meteorImage, Math.random() * (myGameArea.canvas.width - width), y, "image"));
             }
             if (myGameArea.frameNo % (obstacleGenerationRate * 2) === 0) {
-                var coinImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/coin.jfif"; // Replace with your coin image URL
+                var coinImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/coin.jfif"; // Replace with your coin image URL
                 myCoins.push(new gameObject(20, 20, coinImage, Math.random() * (myGameArea.canvas.width - 20), 0, "image"));
             }
             for (i = 0; i < myObstacles.length; i += 1) {
