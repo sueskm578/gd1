@@ -29,15 +29,15 @@ canvas {
 </head>
 <body>
 <div id="game-container">
-    <img id="title" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/title.png" alt="Game Title"/> <!-- Replace with your title image URL -->
+    <img id="title" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/title.png" alt="Game Title"/> 
     <div id="game-content">
         <audio id="background-music" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/DRIVE(chosic.com).mp3" loop></audio>
-        <audio id="explosion-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/medium-explosion-40472 (1).mp3"></audio> <!-- Replace with your explosion sound URL -->
-        <audio id="coin-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/retro-coin-1-236677.mp3"></audio> <!-- Replace with your coin collection sound URL -->
+        <audio id="explosion-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/medium-explosion-40472 (1).mp3"></audio> 
+        <audio id="coin-sound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/retro-coin-1-236677.mp3"></audio> 
         <script>
         var myGamePiece;
         var myObstacles = [];
-        var myCoins = []; // Array to store coin objects
+        var myCoins = []; 
         var myScore;
         var background;
         var gamePaused = false;
@@ -65,10 +65,10 @@ canvas {
         function initializeGame() { 
             myGamePiece = new gameObject(40, 40, "https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/rocket.webp", 160, 0, "image");
             myGamePiece.gravity = 0.02;
-            myScore = new gameObject("20px", "Consolas", "white", 30, 20, "text"); // Changed score text color to white
+            myScore = new gameObject("20px", "Consolas", "white", 30, 20, "text"); 
             myObstacles = [];
-            myCoins = []; // Initialize the coin array
-            coinCount = 0; // Initialize coin count
+            myCoins = []; 
+            coinCount = 0; 
             obstacleGenerationRate = 150;
             obstacleSpeed = 1;
             background = new gameObject(myGameArea.canvas.width, myGameArea.canvas.height, "https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/space.png", 0, 0, "background");
@@ -171,19 +171,19 @@ canvas {
             if (gamePaused) return;
             for (i = 0; i < myObstacles.length; i += 1) {
                 if (myGamePiece.crashWith(myObstacles[i])) {
-                    document.getElementById('explosion-sound').play(); // Play explosion sound
+                    document.getElementById('explosion-sound').play();
                     endGame("Game Over! You hit a meteor.");
                     return;
                 }
             }
             for (i = 0; i < myCoins.length; i += 1) {
                 if (myGamePiece.crashWith(myCoins[i])) {
-                    document.getElementById('coin-sound').play(); // Play coin collection sound
+                    document.getElementById('coin-sound').play(); 
                     myCoins.splice(i, 1); // Remove coin from array
                     coinCount += 1; // Increase coin count
-                    myScore.text = "SCORE: " + myGameArea.frameNo + " | COINS: " + coinCount; // Update score with coin count
+                    myScore.text = "SCORE: " + myGameArea.frameNo + " | COINS: " + coinCount;
                     myScore.update();
-                    break; // Exit loop to prevent multiple increments for one collision
+                    break; 
                 }
             }
             myGameArea.clear();
@@ -203,7 +203,7 @@ canvas {
                 myObstacles.push(new gameObject(width, width, meteorImage, Math.random() * (myGameArea.canvas.width - width), y, "image"));
             }
             if (myGameArea.frameNo % (obstacleGenerationRate * 2) === 0) {
-                var coinImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/coin.jfif"; // Replace with your coin image URL
+                var coinImage = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Canvas/coin.jfif"; 
                 myCoins.push(new gameObject(20, 20, coinImage, Math.random() * (myGameArea.canvas.width - 20), 0, "image"));
             }
             for (i = 0; i < myObstacles.length; i += 1) {
