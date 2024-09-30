@@ -81,18 +81,11 @@
 </head>
 <body>
   <div id="root"></div>
-  <audio id="background-music" loop>
-    <source src="https://example.com/background-music.mp3" type="audio/mpeg" />
-  </audio>
-  <audio id="move-sound">
-    <source src="https://example.com/move-sound.mp3" type="audio/mpeg" />
-  </audio>
-  <audio id="capture-sound">
-    <source src="https://example.com/capture-sound.mp3" type="audio/mpeg" />
-  </audio>
-  <audio id="game-over-sound">
-    <source src="https://example.com/game-over-sound.mp3" type="audio/mpeg" />
-  </audio>
+
+  <audio id="moveSound" src="movhttps://github.com/sueskm578/sueskm578.github.io/raw/main/React/ChessMove.wave.mp3" preload="auto"></audio>
+  <audio id="captureSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/React/Chesscapture.mp3" preload="auto"></audio>
+  <audio id="gameOverSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/React/Chessgameover.mp3" preload="auto"></audio>
+  <audio id="backgroundMusic" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/React/ChessBackgroundmusic.mp3" loop preload="auto"></audio>
 
   <script type="text/babel" data-presets="react,stage-3">
     const initialGameState = [
@@ -189,34 +182,27 @@
       let r = fromRow + rowDirection;
       let c = fromCol + colDirection;
       while (r !== toRow || c !== toCol) {
-        if (game[r][c]) return false; // Path is not clear
+        if (game[r][c]) {
+          return false; // Path is blocked
+        }
         r += rowDirection;
         c += colDirection;
       }
-      return true; // Path is clear
+      return true;
     }
 
-    function checkForCheckmate(game, isWhite) {
-      const kingRow = isWhite ? 0 : 7;
-      const kingCol = game[kingRow].indexOf(isWhite ? 'K' : 'k');
-      return !canMoveAnyPiece(game, kingRow, kingCol, isWhite);
-    }
-
-    function canMoveAnyPiece(game, kingRow, kingCol, isWhite) {
-      for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
-          if ((isWhite && game[row][col] === 'P') || (!isWhite && game[row][col] === 'p')) {
-            for (let r = 0; r < 8; r++) {
-              for (let c = 0; c < 8; c++) {
-                if (isValidMove(game, row, col, r, c, isWhite)) {
-                  return true; // At least one valid move found
-                }
-              }
-            }
-          }
-        }
+    function promotePawn(row, col, piece) {
+      const promotionPiece = prompt("Promote your pawn to (Q, R, B, N):").toUpperCase();
+      const validPieces = ['Q', 'R', 'B', 'N'];
+      if (validPieces.includes(promotionPiece)) {
+        game[row][col] = promotionPiece;
       }
-      return false; // No valid moves found
+    }
+
+    function playSound(soundId) {
+      const sound = document.getElementById(soundId);
+      sound.currentTime = 0; // Rewind to the start
+      sound.play();
     }
 
     class ChessGame extends React.Component {
@@ -224,117 +210,83 @@
         super(props);
         this.state = {
           game: initialGameState,
+          selectedPiece: null,
           selectedSquare: null,
           isWhiteTurn: true,
           gameOver: false,
-          winner: null,
         };
       }
 
-      componentDidMount() {
-        document.getElementById("background-music").play();
-      }
-
       handleSquareClick(row, col) {
-        const { game, selectedSquare, isWhiteTurn, gameOver } = this.state;
-        if (gameOver) return; // Ignore clicks if the game is over
+        const { game, selectedPiece, selectedSquare, isWhiteTurn } = this.state;
+
+        if (this.state.gameOver) return; // Game is over
 
         if (selectedSquare) {
           const [fromRow, fromCol] = selectedSquare;
           if (isValidMove(game, fromRow, fromCol, row, col, isWhiteTurn)) {
-            const piece = game[fromRow][fromCol];
-            const destinationPiece = game[row][col];
-
-            const newGame = game.map(row => row.slice());
-            newGame[row][col] = piece; // Move the piece
-            newGame[fromRow][fromCol] = ''; // Clear the old square
-
-            // Check for captures
-            if (destinationPiece) {
-              document.getElementById("capture-sound").play(); // Play capture sound
-            } else {
-              document.getElementById("move-sound").play(); // Play move sound
+            // Move the piece
+            const newGame = game.map(r => r.slice());
+            newGame[row][col] = newGame[fromRow][fromCol];
+            newGame[fromRow][fromCol] = '';
+            
+            // Check for promotion
+            if ((isWhiteTurn && row === 0) || (!isWhiteTurn && row === 7)) {
+              promotePawn(row, col, newGame[row][col]);
             }
 
-            // Check for game over conditions
-            const checkmate = checkForCheckmate(newGame, !isWhiteTurn);
-            if (checkmate) {
-              this.setState({ gameOver: true, winner: isWhiteTurn ? 'Black' : 'White' });
-              document.getElementById("game-over-sound").play(); // Play game over sound
-              alert(`Game Over! ${isWhiteTurn ? 'White' : 'Black'} wins by checkmate.`);
-            }
+            // Check for checkmate or stalemate
+            // (Add your own logic here)
 
             this.setState({
               game: newGame,
+              selectedPiece: null,
               selectedSquare: null,
               isWhiteTurn: !isWhiteTurn,
             });
+            playSound("moveSound");
           } else {
-            this.setState({ selectedSquare: null });
+            this.setState({ selectedSquare: null }); // Deselect piece if move is invalid
           }
         } else {
-          // Select the square
-          if (game[row][col] && (isWhiteTurn ? game[row][col] === game[row][col].toUpperCase() : game[row][col] === game[row][col].toLowerCase())) {
-            this.setState({ selectedSquare: [row, col] });
+          // Select a piece
+          if (game[row][col] && ((isWhiteTurn && game[row][col] === game[row][col].toUpperCase()) || (!isWhiteTurn && game[row][col] === game[row][col].toLowerCase()))) {
+            this.setState({ selectedPiece: game[row][col], selectedSquare: [row, col] });
           }
         }
       }
 
-      renderSquare(row, col) {
-        const piece = this.state.game[row][col];
-        return (
-          <div
-            key={`${row}-${col}`}
-            onClick={() => this.handleSquareClick(row, col)}
-            style={{
-              width: '50px',
-              height: '50px',
-              backgroundColor: (row + col) % 2 === 0 ? '#eee' : '#777',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              cursor: 'pointer',
-              fontSize: '24px',
-              color: 'black'
-            }}
-          >
-            {piece && <img src={pieceImages[piece]} alt={piece} style={{ width: '80%', height: '80%' }} />}
-          </div>
-        );
-      }
-
-      renderBoard() {
-        return (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 50px)', gridTemplateRows: 'repeat(8, 50px)' }}>
-            {this.state.game.map((row, rowIndex) => (
-              row.map((_, colIndex) => this.renderSquare(rowIndex, colIndex))
-            ))}
-          </div>
-        );
+      handleGameOver() {
+        this.setState({ gameOver: true });
+        playSound("gameOverSound");
       }
 
       render() {
+        const { game } = this.state;
+
         return (
           <div className="full-background">
-            <div className="centered">
-              <div className="chessboard-container">
-                {this.renderBoard()}
+            <div className="chessboard-container">
+              <h1>Chess Game</h1>
+              <div className="chessboard">
+                {game.map((row, rowIndex) => (
+                  <div key={rowIndex} className="row">
+                    {row.map((piece, colIndex) => (
+                      <div key={colIndex} className="square" onClick={() => this.handleSquareClick(rowIndex, colIndex)}>
+                        {piece && <img src={pieceImages[piece]} alt={piece} />}
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
-              {this.state.gameOver && (
-                <div style={{ color: 'white', fontSize: '24px', marginTop: '20px' }}>
-                  {this.state.winner} wins!
-                </div>
-              )}
-              <button className="start-button" onClick={() => window.location.reload()}>
-                Restart Game
-              </button>
             </div>
+            <button className="start-button" onClick={() => playSound("backgroundMusic")}>Start Music</button>
           </div>
         );
       }
     }
 
-    ReactDOM.render(<ChessGame />, document.getElementById("root"));
+    ReactDOM.render(<ChessGame />, document.getElementById('root'));
   </script>
 </body>
 </html>
