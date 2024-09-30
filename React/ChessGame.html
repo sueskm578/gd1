@@ -109,53 +109,46 @@
       'P': 'https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg'
     };
 
+    // Function to check if a move is valid for a given piece
     function isValidMove(game, fromRow, fromCol, toRow, toCol, isWhite) {
       const piece = game[fromRow][fromCol];
-      if (!piece) return false; // No piece selected
+      if (!piece) return false;
       const destinationPiece = game[toRow][toCol];
       const isOpponentPiece = destinationPiece && destinationPiece !== piece.toLowerCase();
       const rowDiff = Math.abs(fromRow - toRow);
       const colDiff = Math.abs(fromCol - toCol);
       const direction = isWhite ? -1 : 1;
-      // Pawn rules
+
       if (piece.toLowerCase() === 'p') {
         const startRow = isWhite ? 6 : 1;
-        // Standard pawn move forward
         if (!destinationPiece && toCol === fromCol && toRow === fromRow + direction) {
           return true;
         }
-        // First move (can move two squares)
         if (!destinationPiece && toCol === fromCol && fromRow === startRow && toRow === fromRow + 2 * direction) {
           return true;
         }
-        // Capture diagonally
         if (isOpponentPiece && Math.abs(toCol - fromCol) === 1 && toRow === fromRow + direction) {
           return true;
         }
       }
-      // Knight rules (L shape: 2 by 1 or 1 by 2)
       if (piece.toLowerCase() === 'n') {
         return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
       }
-      // Bishop rules (diagonal movement)
       if (piece.toLowerCase() === 'b') {
         if (rowDiff === colDiff && isPathClear(game, fromRow, fromCol, toRow, toCol)) {
           return true;
         }
       }
-      // Rook rules (horizontal or vertical movement)
       if (piece.toLowerCase() === 'r') {
         if ((rowDiff === 0 || colDiff === 0) && isPathClear(game, fromRow, fromCol, toRow, toCol)) {
           return true;
         }
       }
-      // Queen rules (combination of rook and bishop)
       if (piece.toLowerCase() === 'q') {
         if ((rowDiff === colDiff || rowDiff === 0 || colDiff === 0) && isPathClear(game, fromRow, fromCol, toRow, toCol)) {
           return true;
         }
       }
-      // King rules (move one square in any direction)
       if (piece.toLowerCase() === 'k') {
         return rowDiff <= 1 && colDiff <= 1;
       }
@@ -169,7 +162,7 @@
       let c = fromCol + colDirection;
       while (r !== toRow || c !== toCol) {
         if (game[r][c]) {
-          return false; // Path is blocked
+          return false;
         }
         r += rowDirection;
         c += colDirection;
@@ -177,6 +170,7 @@
       return true;
     }
 
+    // Additional functionality for checking checkmate, stalemate, and check
     function isInCheck(game, isWhiteTurn) {
       const kingPosition = findKing(game, isWhiteTurn ? 'K' : 'k');
       return isSquareAttacked(game, kingPosition[0], kingPosition[1], !isWhiteTurn);
