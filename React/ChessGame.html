@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chessboard with Piece Images</title>
+  <title>Chess Game</title>
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone@7.10.3/babel.min.js" crossorigin></script>
@@ -22,7 +22,7 @@
     }
 
     .full-background {
-      background-image: url('https://github.com/sueskm578/sueskm578.github.io/raw/main/React/Logo 2 Chess.jpg');
+      background-image: url("https://github.com/sueskm578/sueskm578.github.io/raw/main/React/Logo 2 Chess.jpg");
       background-size: cover;
       background-position: center;
       height: 100%;
@@ -109,22 +109,134 @@
       'P': 'https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg'
     };
 
+    function isValidMove(game, fromRow, fromCol, toRow, toCol, isWhite) {
+      const piece = game[fromRow][fromCol];
+      if (!piece) return false; // No piece selected
+      const destinationPiece = game[toRow][toCol];
+      const isOpponentPiece = destinationPiece && destinationPiece !== piece.toLowerCase();
+
+      const rowDiff = Math.abs(fromRow - toRow);
+      const colDiff = Math.abs(fromCol - toCol);
+      const direction = isWhite ? -1 : 1;
+
+      // Pawn rules
+      if (piece.toLowerCase() === 'p') {
+        const startRow = isWhite ? 6 : 1;
+
+        // Standard pawn move forward
+        if (!destinationPiece && toCol === fromCol && toRow === fromRow + direction) {
+          return true;
+        }
+
+        // First move (can move two squares)
+        if (!destinationPiece && toCol === fromCol && fromRow === startRow && toRow === fromRow + 2 * direction) {
+          return true;
+        }
+
+        // Capture diagonally
+        if (isOpponentPiece && Math.abs(toCol - fromCol) === 1 && toRow === fromRow + direction) {
+          return true;
+        }
+      }
+
+      // Knight rules (L shape: 2 by 1 or 1 by 2)
+      if (piece.toLowerCase() === 'n') {
+        return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
+      }
+
+      // Bishop rules (diagonal movement)
+      if (piece.toLowerCase() === 'b') {
+        if (rowDiff === colDiff && isPathClear(game, fromRow, fromCol, toRow, toCol)) {
+          return true;
+        }
+      }
+
+      // Rook rules (horizontal or vertical movement)
+      if (piece.toLowerCase() === 'r') {
+        if ((rowDiff === 0 || colDiff === 0) && isPathClear(game, fromRow, fromCol, toRow, toCol)) {
+          return true;
+        }
+
+        // Castling rules
+        if (piece.toLowerCase() === 'r' && fromRow === toRow && Math.abs(fromCol - toCol) === 2) {
+          const rookCol = fromCol < toCol ? 7 : 0; // Rook position for castling
+          const kingCol = fromCol < toCol ? 5 : 3; // King position after castling
+          if (game[fromRow][rookCol] === (isWhite ? 'R' : 'r') && !game[fromRow][kingCol] && !game[fromRow][kingCol + (toCol < fromCol ? -1 : 1)]) {
+            return true; // Valid castling move
+          }
+        }
+      }
+
+      // Queen rules (combination of rook and bishop)
+      if (piece.toLowerCase() === 'q') {
+        if ((rowDiff === colDiff || rowDiff === 0 || colDiff === 0) && isPathClear(game, fromRow, fromCol, toRow, toCol)) {
+          return true;
+        }
+      }
+
+      // King rules (move one square in any direction)
+      if (piece.toLowerCase() === 'k') {
+        return rowDiff <= 1 && colDiff <= 1;
+      }
+
+      return false;
+    }
+
+    function isPathClear(game, fromRow, fromCol, toRow, toCol) {
+      const rowDirection = Math.sign(toRow - fromRow);
+      const colDirection = Math.sign(toCol - fromCol);
+
+      let r = fromRow + rowDirection;
+      let c = fromCol + colDirection;
+
+      while (r !== toRow || c !== toCol) {
+        if (game[r][c]) {
+          return false; // Path is blocked
+        }
+        r += rowDirection;
+        c += colDirection;
+      }
+
+      return true;
+    }
+
+    function promotePawn(row, col, piece) {
+      const promotionPiece = prompt("Promote your pawn to (Q, R, B, N):").toUpperCase();
+      const validPieces = ['Q', 'R', 'B', 'N'];
+      if (validPieces.includes(promotionPiece)) {
+        piece = promotionPiece; // Change the piece to the promoted one
+      }
+      return piece;
+    }
+
     function Game() {
       const [game, setGame] = React.useState(initialGameState);
       const [selectedSquare, setSelectedSquare] = React.useState(null);
       const [gameStarted, setGameStarted] = React.useState(false);
+      const [isWhiteTurn, setIsWhiteTurn] = React.useState(true);
 
       function handleClick(row, col) {
         if (selectedSquare) {
           const newGame = game.map(row => row.slice());
           const [selectedRow, selectedCol] = selectedSquare;
 
-          newGame[row][col] = newGame[selectedRow][selectedCol];
-          newGame[selectedRow][selectedCol] = '';
-          setGame(newGame);
-          setSelectedSquare(null);
+          // Check if the move is valid
+          if (isValidMove(newGame, selectedRow, selectedCol, row, col, isWhiteTurn)) {
+            newGame[row][col] = newGame[selectedRow][selectedCol];
+            newGame[selectedRow][selectedCol] = '';
+
+            // Pawn promotion logic
+            if ((newGame[row][col] === 'P' && row === 0) || (newGame[row][col] === 'p' && row === 7)) {
+              newGame[row][col] = promotePawn(row, col, newGame[row][col]);
+            }
+
+            // Switch turns
+            setIsWhiteTurn(!isWhiteTurn);
+            setGame(newGame);
+            setSelectedSquare(null);
+          }
         } else {
-          if (game[row][col]) {
+          if (game[row][col] && (isWhiteTurn ? game[row][col] === game[row][col].toUpperCase() : game[row][col] === game[row][col].toLowerCase())) {
             setSelectedSquare([row, col]);
           }
         }
@@ -133,6 +245,7 @@
       function handleStartGame() {
         setGameStarted(true);
         setGame(initialGameState); // Reset the game state on restart
+        setIsWhiteTurn(true); // White starts the game
       }
 
       return (
@@ -200,3 +313,4 @@
   </script>
 </body>
 </html>
+
