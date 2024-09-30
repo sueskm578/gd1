@@ -148,14 +148,6 @@
         if ((rowDiff === 0 || colDiff === 0) && isPathClear(game, fromRow, fromCol, toRow, toCol)) {
           return true;
         }
-        // Castling rules
-        if (piece.toLowerCase() === 'r' && fromRow === toRow && Math.abs(fromCol - toCol) === 2) {
-          const rookCol = fromCol < toCol ? 7 : 0; // Rook position for castling
-          const kingCol = fromCol < toCol ? 5 : 3; // King position after castling
-          if (game[fromRow][rookCol] === (isWhite ? 'R' : 'r') && !game[fromRow][kingCol] && !game[fromRow][kingCol + (toCol < fromCol ? -1 : 1)]) {
-            return true; // Valid castling move
-          }
-        }
       }
       // Queen rules (combination of rook and bishop)
       if (piece.toLowerCase() === 'q') {
@@ -288,6 +280,8 @@
             } else {
               setStatus('');
             }
+          } else {
+            setSelectedSquare(null); // Deselect if the move is invalid
           }
         } else {
           if (game[row][col] && (isWhiteTurn ? game[row][col] === game[row][col].toUpperCase() : game[row][col] === game[row][col].toLowerCase())) {
