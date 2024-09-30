@@ -13,23 +13,34 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #fafafa;
+      width: 100%;
     }
+
     #root {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      width: 100%;
       height: 100%;
     }
+
+    .full-background {
+      background-image: url('https://github.com/sueskm578/sueskm578.github.io/raw/main/React/Logo 2 Chess.jpg');
+      background-size: cover;
+      background-position: center;
+      height: 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      position: relative;
+    }
+
     .centered {
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
+      width: 100%;
+      height: 100%;
     }
+
     .chessboard-container {
       display: flex;
       justify-content: center;
@@ -39,11 +50,28 @@
       padding: 20px;
       border-radius: 10px;
     }
-    .title-image {
-      width: 300px;
-      height: auto;
-      margin-bottom: 20px;
+
+    .start-button {
+      position: absolute;
+      right: 50px;
+      bottom: 50px;
+      padding: 15px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      background-color: rgba(255, 255, 255, 0.7);
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
     }
+
+    .start-button:hover {
+      background-color: rgba(255, 255, 255, 1);
+    }
+
+    .black-background {
+      background-color: black;
+    }
+
     button {
       padding: 10px 20px;
       font-size: 18px;
@@ -108,12 +136,9 @@
       }
 
       return (
-        <div className="centered">
+        <div className={gameStarted ? "centered black-background" : "full-background"}>
           {!gameStarted ? (
-            <div className="title-screen">
-              <img src="https://github.com/sueskm578/sueskm578.github.io/raw/main/React/Logo 2 Chess.jpg" alt="Game Title" className="title-image" />
-              <button onClick={handleStartGame}>Start Game</button>
-            </div>
+            <button onClick={handleStartGame} className="start-button">Start Game</button>
           ) : (
             <div className="chessboard-container">
               <Board game={game} onSquareClick={handleClick} selectedSquare={selectedSquare} />
