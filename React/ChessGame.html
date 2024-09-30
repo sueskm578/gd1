@@ -169,6 +169,7 @@
       }
       return false;
     }
+
     function isPathClear(game, fromRow, fromCol, toRow, toCol) {
       const rowDirection = Math.sign(toRow - fromRow);
       const colDirection = Math.sign(toCol - fromCol);
@@ -183,6 +184,7 @@
       }
       return true;
     }
+
     function promotePawn(row, col, piece) {
       const promotionPiece = prompt("Promote your pawn to (Q, R, B, N):").toUpperCase();
       const validPieces = ['Q', 'R', 'B', 'N'];
@@ -191,11 +193,72 @@
       }
       return piece;
     }
+
+    function isCheck(game, isWhiteTurn) {
+      // Implement logic to check if the current player's king is in check
+      // This is a simplified version and may not cover all edge cases
+      const king = isWhiteTurn ? 'K' : 'k';
+      let kingPosition = null;
+
+      // Find the king's position
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          if (game[row][col] === king) {
+            kingPosition = [row, col];
+            break;
+          }
+        }
+        if (kingPosition) break;
+      }
+
+      // Check if any opponent piece can move to the king's position
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const piece = game[row][col];
+          if (piece && (isWhiteTurn ? piece === piece.toLowerCase() : piece === piece.toUpperCase())) {
+            if (isValidMove(game, row, col, kingPosition[0], kingPosition[1], !isWhiteTurn)) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+    function isCheckmate(game, isWhiteTurn) {
+      // Implement logic to check if the current player's king is in checkmate
+      // This is a simplified version and may not cover all edge cases
+      if (!isCheck(game, isWhiteTurn)) return false;
+
+      // Check if any valid move can get the king out of check
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const piece = game[row][col];
+          if (piece && (isWhiteTurn ? piece === piece.toUpperCase() : piece === piece.toLowerCase())) {
+            for (let newRow = 0; newRow < 8; newRow++) {
+              for (let newCol = 0; newCol < 8; newCol++) {
+                if (isValidMove(game, row, col, newRow, newCol, isWhiteTurn)) {
+                  const newGame = game.map(row => row.slice());
+                  newGame[newRow][newCol] = newGame[row][col];
+                  newGame[row][col] = '';
+                  if (!isCheck(newGame, isWhiteTurn)) {
+                    return false;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      return true;
+    }
+
     function Game() {
       const [game, setGame] = React.useState(initialGameState);
       const [selectedSquare, setSelectedSquare] = React.useState(null);
       const [gameStarted, setGameStarted] = React.useState(false);
       const [isWhiteTurn, setIsWhiteTurn] = React.useState(true);
+      const [status, setStatus] = React.useState('');
 
       function handleClick(row, col) {
         if (selectedSquare) {
@@ -214,6 +277,17 @@
             setIsWhiteTurn(!isWhiteTurn);
             setGame(newGame);
             setSelectedSquare(null);
+
+            // Check for check/checkmate
+            if (isCheck(newGame, !isWhiteTurn)) {
+              if (isCheckmate(newGame, !isWhiteTurn)) {
+                setStatus(`Checkmate! ${isWhiteTurn ? 'White' : 'Black'} wins!`);
+              } else {
+                setStatus('Check!');
+              }
+            } else {
+              setStatus('');
+            }
           }
         } else {
           if (game[row][col] && (isWhiteTurn ? game[row][col] === game[row][col].toUpperCase() : game[row][col] === game[row][col].toLowerCase())) {
@@ -226,6 +300,7 @@
         setGameStarted(true);
         setGame(initialGameState); // Reset the game state on restart
         setIsWhiteTurn(true); // White starts the game
+        setStatus(''); // Reset status
       }
 
       return (
@@ -236,6 +311,7 @@
             <div className="chessboard-container">
               <Board game={game} onSquareClick={handleClick} selectedSquare={selectedSquare} />
               <button onClick={handleStartGame} style={{ marginTop: '20px' }}>Restart Game</button>
+              {status && <div style={{ color: 'white', marginTop: '20px' }}>{status}</div>}
             </div>
           )}
         </div>
