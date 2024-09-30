@@ -195,8 +195,6 @@
     }
 
     function isCheck(game, isWhiteTurn) {
-      // Implement logic to check if the current player's king is in check
-      // This is a simplified version and may not cover all edge cases
       const king = isWhiteTurn ? 'K' : 'k';
       let kingPosition = null;
 
@@ -226,8 +224,6 @@
     }
 
     function isCheckmate(game, isWhiteTurn) {
-      // Implement logic to check if the current player's king is in checkmate
-      // This is a simplified version and may not cover all edge cases
       if (!isCheck(game, isWhiteTurn)) return false;
 
       // Check if any valid move can get the king out of check
@@ -259,8 +255,11 @@
       const [gameStarted, setGameStarted] = React.useState(false);
       const [isWhiteTurn, setIsWhiteTurn] = React.useState(true);
       const [status, setStatus] = React.useState('');
+      const [isGameOver, setIsGameOver] = React.useState(false);
 
       function handleClick(row, col) {
+        if (isGameOver) return; // Prevent moves if the game is over
+
         if (selectedSquare) {
           const newGame = game.map(row => row.slice());
           const [selectedRow, selectedCol] = selectedSquare;
@@ -282,6 +281,7 @@
             if (isCheck(newGame, !isWhiteTurn)) {
               if (isCheckmate(newGame, !isWhiteTurn)) {
                 setStatus(`Checkmate! ${isWhiteTurn ? 'White' : 'Black'} wins!`);
+                setIsGameOver(true);
               } else {
                 setStatus('Check!');
               }
@@ -301,6 +301,7 @@
         setGame(initialGameState); // Reset the game state on restart
         setIsWhiteTurn(true); // White starts the game
         setStatus(''); // Reset status
+        setIsGameOver(false); // Reset game over state
       }
 
       return (
