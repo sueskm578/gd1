@@ -22,7 +22,7 @@
     }
 
     .full-background {
-      background-image: url('https://github.com/sueskm578/sueskm578.github.io/raw/main/React/Logo 2 Chess.jpg');
+      background-image: url('https://github.com/sueskm578/sueskm578.github.io/raw/main/React/Logo%202%20Chess.jpg');
       background-size: cover;
       background-position: center;
       height: 100%;
@@ -77,6 +77,19 @@
       font-size: 24px;
       margin-top: 20px;
     }
+
+    .promotion-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .promotion-button {
+      margin: 0 5px;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
@@ -121,21 +134,126 @@
       const [gameStarted, setGameStarted] = React.useState(false);
       const [gameOver, setGameOver] = React.useState(false);
       const [winner, setWinner] = React.useState(null);
+      const [promotionSquare, setPromotionSquare] = React.useState(null);
+      const [promotionChoice, setPromotionChoice] = React.useState(null);
 
       function checkGameStatus(newGame) {
-        // Basic check for checkmate - needs proper implementation
-        const checkmate = false; // Replace with actual checkmate logic
-        const check = false; // Replace with actual check logic
+        const whiteInCheck = isInCheck(newGame, 'K');
+        const blackInCheck = isInCheck(newGame, 'k');
 
-        if (checkmate) {
+        if (whiteInCheck && !canMove(newGame, 'K')) {
           setGameOver(true);
           gameOverSound.play();
-          setWinner(selectedSquare[0] === 0 ? 'Black' : 'White');
+          setWinner('Black');
+        } else if (blackInCheck && !canMove(newGame, 'k')) {
+          setGameOver(true);
+          gameOverSound.play();
+          setWinner('White');
+        } else if (!whiteInCheck && !canMove(newGame, 'K') && !blackInCheck) {
+          setGameOver(true);
+          gameOverSound.play();
+          setWinner('Stalemate');
         }
+      }
+
+      function isInCheck(newGame, king) {
+        // Check if the king is in check
+        const kingPosition = findKingPosition(newGame, king);
+        for (let row = 0; row < 8; row++) {
+          for (let col = 0; col < 8; col++) {
+            const piece = newGame[row][col];
+            if (piece && piece.toLowerCase() !== king.toLowerCase()) {
+              if (isValidMove(newGame, piece, row, col, kingPosition[0], kingPosition[1])) {
+                return true; // King is in check
+              }
+            }
+          }
+        }
+        return false; // King is safe
+      }
+
+      function findKingPosition(newGame, king) {
+        for (let row = 0; row < 8; row++) {
+          for (let col = 0; col < 8; col++) {
+            if (newGame[row][col] === king) {
+              return [row, col];
+            }
+          }
+        }
+        return null;
+      }
+
+      function canMove(newGame, king) {
+        const kingPosition = findKingPosition(newGame, king);
+        if (!kingPosition) return false;
+
+        for (let row = 0; row < 8; row++) {
+          for (let col = 0; col < 8; col++) {
+            const piece = newGame[row][col];
+            if (piece && piece.toLowerCase() !== king.toLowerCase()) {
+              if (isValidMove(newGame, piece, row, col, kingPosition[0], kingPosition[1])) {
+                return true; // There is a valid move
+              }
+            }
+          }
+        }
+        return false; // No valid moves
+      }
+
+      function isValidMove(game, piece, fromRow, fromCol, toRow, toCol) {
+        // Basic piece movement validation (simplified)
+        const pieceType = piece.toLowerCase();
+        const direction = piece === piece.toUpperCase() ? 1 : -1;
+
+        // Add more detailed movement rules for each piece type...
+        switch (pieceType) {
+          case 'p':
+            return (toCol === fromCol && toRow === fromRow + direction && !game[toRow][toCol]) || // Move forward
+                   (toCol === fromCol && toRow === fromRow + 2 * direction && fromRow === (piece === 'p' ? 1 : 6) && !game[toRow][toCol] && !game[fromRow + direction][toCol]) || // Double move
+                   (Math.abs(toCol - fromCol) === 1 && toRow === fromRow + direction && game[toRow][toCol] && game[toRow][toCol].toLowerCase() !== pieceType); // Capture
+          case 'r':
+            return (fromRow === toRow || fromCol === toCol) && clearPath(game, fromRow, fromCol, toRow, toCol);
+          case 'n':
+            return (Math.abs(fromRow - toRow) === 2 && Math.abs(fromCol - toCol) === 1) || (Math.abs(fromRow - toRow) === 1 && Math.abs(fromCol - toCol) === 2);
+          case 'b':
+            return Math.abs(fromRow - toRow) === Math.abs(fromCol - toCol) && clearPath(game, fromRow, fromCol, toRow, toCol);
+          case 'q':
+            return (fromRow === toRow || fromCol === toCol || Math.abs(fromRow - toRow) === Math.abs(fromCol - toCol)) && clearPath(game, fromRow, fromCol, toRow, toCol);
+          case 'k':
+            return (Math.abs(fromRow - toRow) <= 1 && Math.abs(fromCol - toCol) <= 1);
+          default:
+            return false;
+        }
+      }
+
+      function clearPath(game, fromRow, fromCol, toRow, toCol) {
+        const rowStep = (toRow - fromRow) === 0 ? 0 : (toRow - fromRow) > 0 ? 1 : -1;
+        const colStep = (toCol - fromCol) === 0 ? 0 : (toCol - fromCol) > 0 ? 1 : -1;
+
+        let row = fromRow + rowStep;
+        let col = fromCol + colStep;
+
+        while (row !== toRow || col !== toCol) {
+          if (game[row][col]) return false; // Path is blocked
+          row += rowStep;
+          col += colStep;
+        }
+        return true; // Path is clear
       }
 
       function handleClick(row, col) {
         if (gameOver) return;
+
+        if (promotionSquare) {
+          // Handle pawn promotion
+          const newGame = game.map(row => row.slice());
+          newGame[promotionSquare[0]][promotionSquare[1]] = promotionChoice;
+          setGame(newGame);
+          setPromotionSquare(null);
+          setPromotionChoice(null);
+          checkGameStatus(newGame);
+          return;
+        }
 
         if (selectedSquare) {
           const newGame = game.map(row => row.slice());
@@ -144,99 +262,100 @@
           const movedPiece = newGame[selectedRow][selectedCol];
           const capturedPiece = newGame[row][col];
 
+          // Castling logic
+          if (movedPiece.toLowerCase() === 'k' && Math.abs(col - selectedCol) === 2) {
+            if (col === 6) { // kingside castling
+              newGame[row][col - 1] = newGame[row][7]; // move rook
+              newGame[row][7] = ''; // empty rook's square
+            } else if (col === 2) { // queenside castling
+              newGame[row][col + 1] = newGame[row][0]; // move rook
+              newGame[row][0] = ''; // empty rook's square
+            }
+          }
+
           newGame[row][col] = movedPiece;
           newGame[selectedRow][selectedCol] = '';
 
           if (capturedPiece) {
-            // Play sound on capture
             captureSound.play();
           } else {
-            // Play sound on move
             moveSound.play();
+          }
+
+          // Handle pawn promotion
+          if (movedPiece.toLowerCase() === 'p' && row === 0) {
+            setPromotionSquare([row, col]);
+            return; // wait for promotion choice
           }
 
           setGame(newGame);
           setSelectedSquare(null);
           checkGameStatus(newGame);
         } else {
-          if (game[row][col]) {
-            setSelectedSquare([row, col]);
-          }
+          // Select square
+          setSelectedSquare([row, col]);
         }
       }
 
-      function handleStartGame() {
+      function handlePromotion(choice) {
+        setPromotionChoice(choice);
+      }
+
+      function handleStart() {
+        setGame(initialGameState);
         setGameStarted(true);
-        setGame(initialGameState); // Reset the game state on restart
         setGameOver(false);
         setWinner(null);
-        backgroundMusic.loop = true;
+        setSelectedSquare(null);
+        setPromotionSquare(null);
+        setPromotionChoice(null);
         backgroundMusic.play();
       }
 
       return (
-        <div className={gameStarted ? "centered black-background" : "full-background"}>
-          {!gameStarted ? (
-            <button onClick={handleStartGame} className="start-button">Start Game</button>
-          ) : (
+        <div className="full-background">
+          <div className="centered">
             <div className="chessboard-container">
-              <Board game={game} onSquareClick={handleClick} selectedSquare={selectedSquare} />
-              <button onClick={handleStartGame} style={{ marginTop: '20px' }}>Restart Game</button>
-              {gameOver && <div className="game-over">{winner ? `${winner} wins!` : 'Game Over'}</div>}
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    function Board({ game, onSquareClick, selectedSquare }) {
-      return (
-        <div>
-          {game.map((row, rowIndex) => (
-            <div key={rowIndex} style={{ display: 'flex' }}>
-              {row.map((value, colIndex) => (
-                <Square
-                  key={colIndex}
-                  value={value}
-                  onClick={() => onSquareClick(rowIndex, colIndex)}
-                  isLight={(rowIndex + colIndex) % 2 === 0}
-                  isSelected={selectedSquare && selectedSquare[0] === rowIndex && selectedSquare[1] === colIndex}
-                />
+              {game.map((row, rowIndex) => (
+                <div key={rowIndex} style={{ display: 'flex' }}>
+                  {row.map((piece, colIndex) => (
+                    <div
+                      key={colIndex}
+                      style={{
+                        width: '60px',
+                        height: '60px',
+                        backgroundColor: (rowIndex + colIndex) % 2 === 0 ? '#fff' : '#ccc',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => handleClick(rowIndex, colIndex)}
+                    >
+                      {piece && <img src={pieceImages[piece]} alt={piece} style={{ width: '50px', height: '50px' }} />}
+                    </div>
+                  ))}
+                </div>
               ))}
+              {promotionSquare && (
+                <div className="promotion-container">
+                  <span>Select promotion: </span>
+                  {['Q', 'R', 'B', 'N'].map(choice => (
+                    <button key={choice} className="promotion-button" onClick={() => handlePromotion(choice)}>
+                      {choice}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {gameOver && <div className="game-over">{winner === 'Stalemate' ? 'Game Over: Stalemate!' : `Game Over: ${winner} Wins!`}</div>}
             </div>
-          ))}
+            <button className="start-button" onClick={handleStart}>Start Game</button>
+          </div>
         </div>
       );
     }
 
-    function Square({ value, onClick, isLight, isSelected }) {
-      const squareStyle = {
-        width: '80px',
-        height: '80px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        cursor: 'pointer',
-        backgroundColor: isSelected ? '#ffeb3b' : (isLight ? '#f0d9b5' : '#b58863'),
-        border: '1px solid #999'
-      };
-
-      const pieceDisplay = () => {
-        if (value) {
-          return <img src={pieceImages[value]} alt={value} style={{ width: '70px', height: '70px' }} />;
-        }
-        return null;
-      };
-
-      return (
-        <button style={squareStyle} onClick={onClick}>
-          {pieceDisplay()}
-        </button>
-      );
-    }
-
-    const root = ReactDOM.createRoot(document.getElementById("root"));
-    root.render(<Game />);
+    ReactDOM.render(<Game />, document.getElementById('root'));
   </script>
 </body>
 </html>
