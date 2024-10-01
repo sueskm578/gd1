@@ -22,7 +22,7 @@
     }
 
     .full-background {
-      background-image: url("https://github.com/sueskm578/sueskm578.github.io/raw/main/React/Logo 2 Chess.jpg");
+      background-image: url("https://github.com/sueskm578/sueskm578.github.io/raw/main/React/Logo%202%20Chess.jpg");
       background-size: cover;
       background-position: center;
       height: 100%;
@@ -77,6 +77,13 @@
       font-size: 18px;
       cursor: pointer;
     }
+
+    .prompt {
+      color: red;
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -117,6 +124,13 @@
       const rowDiff = Math.abs(fromRow - toRow);
       const colDiff = Math.abs(fromCol - toCol);
       const direction = isWhite ? -1 : 1;
+
+      // Prevent placing on top of another piece of the same color
+      if (destinationPiece && ((isWhite && destinationPiece === destinationPiece.toUpperCase()) || 
+                                (!isWhite && destinationPiece === destinationPiece.toLowerCase()))) {
+        return false;
+      }
+
       // Pawn rules
       if (piece.toLowerCase() === 'p') {
         const startRow = isWhite ? 6 : 1;
@@ -186,27 +200,27 @@
       return piece;
     }
 
-    function isCheck(game, isWhiteTurn) {
+    function findKingPosition(game, isWhiteTurn) {
       const king = isWhiteTurn ? 'K' : 'k';
-      let kingPosition = null;
-
-      // Find the king's position
-      for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
+      for (let row = 0; row < game.length; row++) {
+        for (let col = 0; col < game[row].length; col++) {
           if (game[row][col] === king) {
-            kingPosition = [row, col];
-            break;
+            return [row, col];
           }
         }
-        if (kingPosition) break;
       }
+      return null;
+    }
 
-      // Check if any opponent piece can move to the king's position
-      for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
+    function isCheck(game, isWhiteTurn) {
+      const kingPosition = findKingPosition(game, isWhiteTurn);
+      if (!kingPosition) return true; // King is taken
+      const [kingRow, kingCol] = kingPosition;
+      for (let row = 0; row < game.length; row++) {
+        for (let col = 0; col < game[row].length; col++) {
           const piece = game[row][col];
           if (piece && (isWhiteTurn ? piece === piece.toLowerCase() : piece === piece.toUpperCase())) {
-            if (isValidMove(game, row, col, kingPosition[0], kingPosition[1], !isWhiteTurn)) {
+            if (isValidMove(game, row, col, kingRow, kingCol, !isWhiteTurn)) {
               return true;
             }
           }
@@ -216,15 +230,15 @@
     }
 
     function isCheckmate(game, isWhiteTurn) {
-      if (!isCheck(game, isWhiteTurn)) return false;
-
-      // Check if any valid move can get the king out of check
-      for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
+      if (!isCheck(game, isWhiteTurn)) {
+        return false;
+      }
+      for (let row = 0; row < game.length; row++) {
+        for (let col = 0; col < game[row].length; col++) {
           const piece = game[row][col];
           if (piece && (isWhiteTurn ? piece === piece.toUpperCase() : piece === piece.toLowerCase())) {
-            for (let newRow = 0; newRow < 8; newRow++) {
-              for (let newCol = 0; newCol < 8; newCol++) {
+            for (let newRow = 0; newRow < game.length; newRow++) {
+              for (let newCol = 0; newCol < game[newRow].length; newCol++) {
                 if (isValidMove(game, row, col, newRow, newCol, isWhiteTurn)) {
                   const newGame = game.map(row => row.slice());
                   newGame[newRow][newCol] = newGame[row][col];
@@ -241,49 +255,199 @@
       return true;
     }
 
+    function coordinateToChessNotation(row, col) {
+      const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+      return files[col] + (8 - row);
+    }
+
+    function getPieceName(piece) {
+      const pieceNames = {
+        'r': 'Rook',
+        'n': 'Knight',
+        'b': 'Bishop',
+        'q': 'Queen',
+        'k': 'King',
+        'p': 'Pawn',
+        'R': 'Rook',
+        'N': 'Knight',
+        'B': 'Bishop',
+        'Q': 'Queen',
+        'K': 'King',
+        'P': 'Pawn'
+      };
+      return pieceNames[piece];
+    }
+
+    function announceMove(piece, fromRow, fromCol, toRow, toCol, speechEnabled) {
+      if (!speechEnabled) return;
+      const from = coordinateToChessNotation(fromRow, fromCol);
+      const to = coordinateToChessNotation(toRow, toCol);
+      const pieceName = getPieceName(piece);
+      const move = `${pieceName} from ${from} to ${to}`;
+      const utterance = new SpeechSynthesisUtterance(move);
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function getBestMove(game, isWhiteTurn) {
+      const validMoves = [];
+      for (let row = 0; row < game.length; row++) {
+        for (let col = 0; col < game[row].length; col++) {
+          const piece = game[row][col];
+          if (piece && (isWhiteTurn ? piece === piece.toUpperCase() : piece === piece.toLowerCase())) {
+            for (let newRow = 0; newRow < game.length; newRow++) {
+              for (let newCol = 0; newCol < game[newRow].length; newCol++) {
+                if (isValidMove(game, row, col, newRow, newCol, isWhiteTurn)) {
+                  validMoves.push({ fromRow: row, fromCol: col, toRow: newRow, toCol: newCol });
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Prioritize capturing opponent pieces
+      const captureMoves = validMoves.filter(move => {
+        const destinationPiece = game[move.toRow][move.toCol];
+        return destinationPiece && destinationPiece !== (isWhiteTurn ? destinationPiece.toUpperCase() : destinationPiece.toLowerCase());
+      });
+
+      if (captureMoves.length > 0) {
+        return captureMoves[Math.floor(Math.random() * captureMoves.length)];
+      }
+
+      // If no captures, return a random valid move
+      if (validMoves.length > 0) {
+        return validMoves[Math.floor(Math.random() * validMoves.length)];
+      }
+
+      return null; // No valid moves
+    }
+
     function Game() {
       const [game, setGame] = React.useState(initialGameState);
       const [selectedSquare, setSelectedSquare] = React.useState(null);
       const [gameStarted, setGameStarted] = React.useState(false);
       const [isWhiteTurn, setIsWhiteTurn] = React.useState(true);
-      const [status, setStatus] = React.useState('');
-      const [isGameOver, setIsGameOver] = React.useState(false);
+      const [check, setCheck] = React.useState(false);
+      const [checkmate, setCheckmate] = React.useState(false);
+      const [winnerMessage, setWinnerMessage] = React.useState(null);
+      const [musicEnabled, setMusicEnabled] = React.useState(true);
+      const [speechEnabled, setSpeechEnabled] = React.useState(true);
+
+      const moveSound = React.useRef(new Audio("https://github.com/sueskm578/sueskm578.github.io/raw/main/React/ChessMove.wav"));
+      const captureSound = React.useRef(new Audio("https://github.com/sueskm578/sueskm578.github.io/raw/main/React/Chesscapture.mp3"));
+      const botCaptureSound = React.useRef(new Audio("https://github.com/sueskm578/sueskm578.github.io/raw/main/React/blackcapture.wav")); // Replace with actual URL
+      const playerWinSound = React.useRef(new Audio("https://github.com/sueskm578/sueskm578.github.io/raw/main/React/WinGame.mp3")); // Replace with actual URL
+      const botWinSound = React.useRef(new Audio("https://github.com/sueskm578/sueskm578.github.io/raw/main/React/loser.wav")); // Replace with actual URL
+      const backgroundMusic = React.useRef(new Audio("https://github.com/sueskm578/sueskm578.github.io/raw/main/React/ChessBackgroundmusic.mp3"));
+
+      backgroundMusic.current.loop = true;
+
+      React.useEffect(() => {
+        if (gameStarted && musicEnabled) {
+          backgroundMusic.current.play();
+        } else {
+          backgroundMusic.current.pause();
+        }
+      }, [gameStarted, musicEnabled]);
 
       function handleClick(row, col) {
-        if (isGameOver) return; // Prevent moves if the game is over
+        if (checkmate) return; // Prevent moves if the game is in checkmate
 
         if (selectedSquare) {
-          const newGame = game.map(row => row.slice());
           const [selectedRow, selectedCol] = selectedSquare;
+
+          // Check if the clicked square is the same as the selected square
+          if (selectedRow === row && selectedCol === col) {
+            // Deselect the piece
+            setSelectedSquare(null);
+            return; // Exit the function
+          }
+
+          const newGame = game.map(row => row.slice());
 
           // Check if the move is valid
           if (isValidMove(newGame, selectedRow, selectedCol, row, col, isWhiteTurn)) {
-            newGame[row][col] = newGame[selectedRow][selectedCol];
+            const capturedPiece = newGame[row][col];
+            const movingPiece = newGame[selectedRow][selectedCol];
+            newGame[row][col] = movingPiece;
             newGame[selectedRow][selectedCol] = '';
             // Pawn promotion logic
             if ((newGame[row][col] === 'P' && row === 0) || (newGame[row][col] === 'p' && row === 7)) {
               newGame[row][col] = promotePawn(row, col, newGame[row][col]);
             }
-            // Switch turns
-            setIsWhiteTurn(!isWhiteTurn);
+            // Update game state
             setGame(newGame);
             setSelectedSquare(null);
 
-            // Check for check/checkmate
+            // Announce the move
+            announceMove(movingPiece, selectedRow, selectedCol, row, col, speechEnabled);
+
+            // Play move or capture sound
+            if (capturedPiece) {
+              captureSound.current.play(); // Play capture sound
+            } else {
+              moveSound.current.play(); // Play move sound
+            }
+
+            // Check for check and checkmate
             if (isCheck(newGame, !isWhiteTurn)) {
+              setCheck(true);
               if (isCheckmate(newGame, !isWhiteTurn)) {
-                setStatus(`Checkmate! ${isWhiteTurn ? 'White' : 'Black'} wins!`);
-                setIsGameOver(true);
-                alert(`Checkmate! ${isWhiteTurn ? 'White' : 'Black'} wins!`);
-              } else {
-                setStatus('Check!');
-                alert('Check!');
+                setCheckmate(true);
+                setWinnerMessage(isWhiteTurn ? 'Congrats, You Won!!' : 'Black'); // Set winner message
+                backgroundMusic.current.pause(); // Stop background music
+
+                // Play win sound based on the winner
+                if (isWhiteTurn) {
+                  playerWinSound.current.play(); // Play player win sound
+                } else {
+                  botWinSound.current.play(); // Play bot win sound
+                }
               }
             } else {
-              setStatus('');
+              setCheck(false);
+              setCheckmate(false);
             }
-          } else {
-            setSelectedSquare(null); // Deselect if the move is invalid
+
+            // AI's turn after player's move
+            setIsWhiteTurn(false); // Switch to AI's turn
+            setTimeout(() => {
+              const aiMove = getBestMove(newGame, false);
+              if (aiMove) {
+                const { fromRow, fromCol, toRow, toCol } = aiMove;
+                const aiNewGame = newGame.map(row => row.slice());
+                aiNewGame[toRow][toCol] = aiNewGame[fromRow][fromCol];
+                aiNewGame[fromRow][fromCol] = '';
+                
+                // Announce AI move after the piece has moved
+                setTimeout(() => {
+                  announceMove(aiNewGame[toRow][toCol], fromRow, fromCol, toRow, toCol, speechEnabled);
+                }, 100); // Delay for speech to ensure the move is visible
+
+                // Check for check and checkmate after AI's move
+                if (isCheck(aiNewGame, true)) {
+                  setCheck(true);
+                  if (isCheckmate(aiNewGame, true)) {
+                    setCheckmate(true);
+                    setWinnerMessage('Black');
+                    backgroundMusic.current.pause(); // Stop background music
+                    botWinSound.current.play(); // Play bot win sound
+                  }
+                } else {
+                  setCheck(false);
+                  setCheckmate(false);
+                }
+
+                // Play bot capture sound if the bot captures a piece
+                if (newGame[toRow][toCol] && newGame[toRow][toCol] !== aiNewGame[toRow][toCol]) {
+                  botCaptureSound.current.play(); // Play bot capture sound
+                }
+
+                setGame(aiNewGame); // Update the game state with the bot's move
+                setIsWhiteTurn(true); // Switch back to player's turn
+              }
+            }, 1000); // Increased delay for bot's move
           }
         } else {
           if (game[row][col] && (isWhiteTurn ? game[row][col] === game[row][col].toUpperCase() : game[row][col] === game[row][col].toLowerCase())) {
@@ -296,8 +460,18 @@
         setGameStarted(true);
         setGame(initialGameState); // Reset the game state on restart
         setIsWhiteTurn(true); // White starts the game
-        setStatus(''); // Reset status
-        setIsGameOver(false); // Reset game over state
+        setCheck(false);
+        setCheckmate(false);
+        setWinnerMessage(null); // Reset winner message
+        backgroundMusic.current.pause(); // Ensure background music is paused when restarting
+      }
+
+      function toggleMusic() {
+        setMusicEnabled(!musicEnabled);
+      }
+
+      function toggleSpeech() {
+        setSpeechEnabled(!speechEnabled);
       }
 
       return (
@@ -307,8 +481,15 @@
           ) : (
             <div className="chessboard-container">
               <Board game={game} onSquareClick={handleClick} selectedSquare={selectedSquare} />
+              {check && !checkmate && <div className="prompt">Check!</div>}
+              {winnerMessage && <div className="prompt">{winnerMessage} wins!</div>} {/* Display winner message */}
               <button onClick={handleStartGame} style={{ marginTop: '20px' }}>Restart Game</button>
-              {status && <div style={{ color: 'white', marginTop: '20px' }}>{status}</div>}
+              <button onClick={toggleMusic} style={{ marginTop: '20px' }}>
+                {musicEnabled ? 'Turn Off Music' : 'Turn On Music'}
+              </button>
+              <button onClick={toggleSpeech} style={{ marginTop: '20px' }}>
+                {speechEnabled ? 'Turn Off Speech' : 'Turn On Speech'}
+              </button>
             </div>
           )}
         </div>
@@ -336,27 +517,33 @@
     }
 
     function Square({ value, onClick, isLight, isSelected }) {
-      const backgroundColor = isLight ? '#f0d9b5' : '#b58863';
-      const borderColor = isSelected ? 'yellow' : 'transparent';
+      const squareStyle = {
+        width: '60px',
+        height: '60px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        cursor: 'pointer',
+        backgroundColor: isSelected ? '#ffeb3b' : (isLight ? '#f0d9b5' : '#b58863'),
+        border: '1px solid #999'
+      };
+
+      const pieceDisplay = () => {
+        if (value) {
+          return <img src={pieceImages[value]} alt={value} style={{ width: '50px', height: '50px' }} />;
+        }
+        return null;
+      };
+
       return (
-        <div
-          onClick={onClick}
-          style={{
-            width: '60px',
-            height: '60px',
-            backgroundColor,
-            border: `2px solid ${borderColor}`,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          {value && <img src={pieceImages[value]} alt={value} style={{ width: '50px', height: '50px' }} />}
-        </div>
+        <button style={squareStyle} onClick={onClick}>
+          {pieceDisplay()}
+        </button>
       );
     }
 
-    ReactDOM.render(<Game />, document.getElementById('root'));
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<Game />);
   </script>
 </body>
 </html>
