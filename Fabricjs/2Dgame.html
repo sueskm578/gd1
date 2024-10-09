@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Game with Fabric.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <script>
+        const canvas = new fabric.Canvas('gameCanvas');
+        const player = new fabric.Rect({
+            left: 50,
+            top: 300,
+            fill: 'blue',
+            width: 50,
+            height: 50
+        });
+        canvas.add(player);
+
+        let obstacles = [];
+        let score = 0;
+
+        // Function to create obstacles
+        function createObstacle() {
+            const obstacle = new fabric.Rect({
+                left: 800,
+                top: Math.random() < 0.5 ? 350 : 300, // Random height for jump or shoot
+                fill: 'red',
+                width: 30,
+                height: 30
+            });
+            obstacles.push(obstacle);
+            canvas.add(obstacle);
+        }
+
+        // Game loop
+        function gameLoop() {
+            obstacles.forEach((obstacle, index) => {
+                obstacle.left -= 5; // Move obstacle left
+                if (obstacle.left < 0) {
+                    canvas.remove(obstacle);
+                    obstacles.splice(index, 1);
+                    score++;
+                }
+            });
+            canvas.renderAll();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start the game
+        setInterval(createObstacle, 2000); // Create a new obstacle every 2 seconds
+        gameLoop();
+
+        // Keyboard controls
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') { // Jump
+                player.top -= 50; // Jump height
+                setTimeout(() => {
+                    player.top += 50; // Return to ground
+                }, 500);
+            } else if (event.code === 'KeyZ') { // Shoot
+                obstacles.forEach((obstacle, index) => {
+                    if (obstacle.left < player.left + player.width && 
+                        obstacle.left + obstacle.width > player.left) {
+                        canvas.remove(obstacle);
+                        obstacles.splice(index, 1);
+                        score += 10; // Increase score for shooting
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
