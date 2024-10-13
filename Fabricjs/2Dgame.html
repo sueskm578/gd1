@@ -61,11 +61,11 @@
 
         // Function to create obstacles
         function createObstacle() {
-            const obstacleImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png"; // Replace with your obstacle image URL
+            const obstacleImageUrl = "https://example.com/obstacle.png"; // Replace with your obstacle image URL
             fabric.Image.fromURL(obstacleImageUrl, function(img) {
                 img.set({
                     left: canvas.width,
-                    top: Math.random() < 0.5 ? canvas.height - 70 : canvas.height - 50,
+                    top: player.top, // Align with the player image
                     selectable: false
                 });
                 img.scale(0.1); // Scale the image to 10% of its original size
