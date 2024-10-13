@@ -26,9 +26,10 @@
         // Load the player image
         const playerImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png"; // Replace with your image URL
         fabric.Image.fromURL(playerImageUrl, function(img) {
+            img.scale(0.1); // Scale the image to 10% of its original size
             img.set({
                 left: 50,
-                top: canvas.height - 70, // Adjusted to be above the bottom
+                top: canvas.height - img.getScaledHeight() - 20, // Adjusted to be above the bottom
                 selectable: false // Make it non-selectable
             });
             canvas.add(img);
