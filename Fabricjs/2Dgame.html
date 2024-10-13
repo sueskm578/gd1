@@ -65,7 +65,7 @@
             fabric.Image.fromURL(obstacleImageUrl, function(img) {
                 img.set({
                     left: canvas.width,
-                    top: player.top, // Align with the player image
+                    top: window.player.top, // Align with the player image
                     selectable: false
                 });
                 img.scale(0.1); // Scale the image to 10% of its original size
