@@ -1,10 +1,25 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2D Game with Fabric.js</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabrbody {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    margin: 0; /* Remove default margin */
+}
+
+#gameScreen {
+    width: 80%; /* Adjust width as needed */
+    height: 80%; /* Adjust height as needed */
+    max-width: 1200px; /* Optional max width */
+    max-height: 800px; /* Optional max height */
+    border: 2px solid #000; /* Optional border */
+}
+ic.min.js"></script>
     <style>
         canvas {
             border: 1px solid black;
@@ -25,19 +40,61 @@
         canvas.add(player);
 
         let obstacles = [];
+        let projectiles = [];
         let score = 0;
 
         // Function to create obstacles
         function createObstacle() {
             const obstacle = new fabric.Rect({
                 left: 800,
-                top: Math.random() < 0.5 ? 350 : 300, // Random height for jump or shoot
+                top: Math.random() < 0.5 ? 350 : 300,
                 fill: 'red',
                 width: 30,
                 height: 30
             });
             obstacles.push(obstacle);
             canvas.add(obstacle);
+        }
+
+        // Function to create a projectile
+        function createProjectile() {
+            const projectile = new fabric.Circle({
+                left: player.left + player.width,
+                top: player.top + player.height / 2 - 5,
+                fill: 'yellow',
+                radius: 5
+            });
+            projectiles.push(projectile);
+            canvas.add(projectile);
+            moveProjectile(projectile);
+        }
+
+        // Move the projectile
+        function moveProjectile(projectile) {
+            const interval = setInterval(() => {
+                projectile.left += 10; // Move projectile to the right
+                if (projectile.left > canvas.width) {
+                    canvas.remove(projectile);
+                    projectiles.splice(projectiles.indexOf(projectile), 1);
+                    clearInterval(interval);
+                } else {
+                    // Check for collision with obstacles
+                    obstacles.forEach((obstacle, index) => {
+                        if (projectile.left < obstacle.left + obstacle.width &&
+                            projectile.left + projectile.radius * 2 > obstacle.left &&
+                            projectile.top < obstacle.top + obstacle.height &&
+                            projectile.top + projectile.radius * 2 > obstacle.top) {
+                            canvas.remove(obstacle);
+                            canvas.remove(projectile);
+                            obstacles.splice(index, 1);
+                            projectiles.splice(projectiles.indexOf(projectile), 1);
+                            score += 10; // Increase score for shooting
+                            clearInterval(interval);
+                        }
+                    });
+                }
+                canvas.renderAll();
+            }, 30);
         }
 
         // Game loop
@@ -66,14 +123,7 @@
                     player.top += 50; // Return to ground
                 }, 500);
             } else if (event.code === 'KeyZ') { // Shoot
-                obstacles.forEach((obstacle, index) => {
-                    if (obstacle.left < player.left + player.width && 
-                        obstacle.left + obstacle.width > player.left) {
-                        canvas.remove(obstacle);
-                        obstacles.splice(index, 1);
-                        score += 10; // Increase score for shooting
-                    }
-                });
+                createProjectile(); // Create a projectile
             }
         });
     </script>
