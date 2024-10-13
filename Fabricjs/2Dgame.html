@@ -23,14 +23,17 @@
         canvas.setWidth(window.innerWidth); // Set canvas width to viewport width
         canvas.setHeight(window.innerHeight); // Set canvas height to viewport height
 
-        const player = new fabric.Rect({
-            left: 50,
-            top: canvas.height - 70, // Adjusted to be above the bottom
-            fill: 'blue',
-            width: 50,
-            height: 50
+        // Load the player image
+        const playerImageUrl = 'https://example.com/path/to/your/image.png'; // Replace with your image URL
+        fabric.Image.fromURL(playerImageUrl, function(img) {
+            img.set({
+                left: 50,
+                top: canvas.height - 70, // Adjusted to be above the bottom
+                selectable: false // Make it non-selectable
+            });
+            canvas.add(img);
+            window.player = img; // Store the player image globally
         });
-        canvas.add(player);
 
         let obstacles = [];
         let projectiles = [];
