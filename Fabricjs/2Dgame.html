@@ -61,15 +61,17 @@
 
         // Function to create obstacles
         function createObstacle() {
-            const obstacle = new fabric.Rect({
-                left: canvas.width,
-                top: Math.random() < 0.5 ? canvas.height - 70 : canvas.height - 50,
-                fill: 'red',
-                width: 30,
-                height: 30
+            const obstacleImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png"; // Replace with your obstacle image URL
+            fabric.Image.fromURL(obstacleImageUrl, function(img) {
+                img.set({
+                    left: canvas.width,
+                    top: Math.random() < 0.5 ? canvas.height - 70 : canvas.height - 50,
+                    selectable: false
+                });
+                img.scale(0.1); // Scale the image to 10% of its original size
+                obstacles.push(img);
+                canvas.add(img);
             });
-            obstacles.push(obstacle);
-            canvas.add(obstacle);
         }
 
         // Function to create a projectile
@@ -128,7 +130,7 @@
         }
 
         // Start the game
-        setInterval(createObstacle, 2000); // Create a new obstacle every 2 seconds
+        setInterval(createObstacle, 4000); // Create a new obstacle every 4 seconds
         gameLoop();
 
         // Keyboard controls
