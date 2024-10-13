@@ -23,6 +23,20 @@
         canvas.setWidth(window.innerWidth); // Set canvas width to viewport width
         canvas.setHeight(window.innerHeight); // Set canvas height to viewport height
 
+        // Load the background image
+        const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif"; // Replace with your background image URL
+        fabric.Image.fromURL(backgroundImageUrl, function(img) {
+            img.set({
+                left: 0,
+                top: 0,
+                selectable: false,
+                evented: false // Make it non-interactive
+            });
+            img.scaleToWidth(canvas.width);
+            img.scaleToHeight(canvas.height);
+            canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+        });
+
         // Load the player image
         const playerImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/gun guy.png"; // Replace with your image URL
         fabric.Image.fromURL(playerImageUrl, function(img) {
