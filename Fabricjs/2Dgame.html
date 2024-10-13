@@ -32,7 +32,7 @@
                 selectable: false,
                 evented: false // Make it non-interactive
             });
-            img.scaleToWidth(canvas.width * 0.85); // Scale the image to 85% of the canvas width
+            img.scaleToWidth(canvas.width); // Scale the image to the canvas width
             canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
         });
 
