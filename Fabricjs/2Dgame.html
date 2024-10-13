@@ -1,38 +1,31 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2D Game with Fabric.js</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabrbody {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Full viewport height */
-    margin: 0; /* Remove default margin */
-}
-
-#gameScreen {
-    width: 80%; /* Adjust width as needed */
-    height: 80%; /* Adjust height as needed */
-    max-width: 1200px; /* Optional max width */
-    max-height: 800px; /* Optional max height */
-    border: 2px solid #000; /* Optional border */
-}
-ic.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
     <style>
+        body {
+            margin: 0; /* Remove default margin */
+            overflow: hidden; /* Prevent scrollbars */
+        }
         canvas {
-            border: 1px solid black;
+            display: block; /* Remove inline-block spacing */
+            border: 1px solid black; /* Optional border */
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <canvas id="gameCanvas"></canvas>
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
+        canvas.setWidth(window.innerWidth); // Set canvas width to viewport width
+        canvas.setHeight(window.innerHeight); // Set canvas height to viewport height
+
         const player = new fabric.Rect({
             left: 50,
-            top: 300,
+            top: canvas.height - 70, // Adjusted to be above the bottom
             fill: 'blue',
             width: 50,
             height: 50
@@ -46,8 +39,8 @@ ic.min.js"></script>
         // Function to create obstacles
         function createObstacle() {
             const obstacle = new fabric.Rect({
-                left: 800,
-                top: Math.random() < 0.5 ? 350 : 300,
+                left: canvas.width,
+                top: Math.random() < 0.5 ? canvas.height - 70 : canvas.height - 50,
                 fill: 'red',
                 width: 30,
                 height: 30
@@ -125,6 +118,13 @@ ic.min.js"></script>
             } else if (event.code === 'KeyZ') { // Shoot
                 createProjectile(); // Create a projectile
             }
+        });
+
+        // Resize canvas on window resize
+        window.addEventListener('resize', () => {
+            canvas.setWidth(window.innerWidth);
+            canvas.setHeight(window.innerHeight);
+            canvas.renderAll();
         });
     </script>
 </body>
