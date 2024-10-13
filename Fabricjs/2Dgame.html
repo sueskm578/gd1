@@ -72,7 +72,7 @@
         function createBarrier() {
             const barrierImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png"; // Replace with your barrier image URL
             fabric.Image.fromURL(barrierImageUrl, function(img) {
-                img.scale(0.1); // Scale the image to 10% of its original size
+                img.scale(0.05); // Scale the image to 5% of its original size for a smaller barrier
                 img.set({
                     left: canvas.width, // Start at the right side of the canvas
                     top: canvas.height - img.getScaledHeight() - 20, // Ground level (just above the bottom)
@@ -146,7 +146,7 @@
                 } else {
                     createBarrier(); // 50% chance to create a barrier
                 }
-            }, Math.random() * 3000 + 1000); // Random interval between 1 to 4 seconds
+            }, Math.random() * 4000 + 2000); // Random interval between 2 to 6 seconds
         }
 
         // Start the game
