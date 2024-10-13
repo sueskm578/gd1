@@ -23,19 +23,6 @@
         canvas.setWidth(window.innerWidth);
         canvas.setHeight(window.innerHeight);
 
-        // Load the background image
-        const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
-        fabric.Image.fromURL(backgroundImageUrl, function(img) {
-            img.set({
-                left: 0,
-                top: 0,
-                selectable: false,
-                evented: false
-            });
-            img.scaleToWidth(canvas.width);
-            canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-        });
-
         // Load the player image
         const playerImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/gun guy.png";
         let player;
@@ -50,24 +37,7 @@
             canvas.add(img);
         });
 
-        let obstacles = [];
         let projectiles = [];
-        let score = 0;
-
-        // Function to create zombies
-        function createZombie() {
-            const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png";
-            fabric.Image.fromURL(zombieImageUrl, function(img) {
-                img.scale(0.2); // Increased scale to 20%
-                img.set({
-                    left: canvas.width,
-                    top: canvas.height - img.getScaledHeight() - 20,
-                    selectable: false
-                });
-                obstacles.push(img);
-                canvas.add(img);
-            });
-        }
 
         // Function to create a projectile (bullet)
         function createProjectile() {
@@ -93,61 +63,14 @@
                     canvas.remove(projectile);
                     projectiles.splice(projectiles.indexOf(projectile), 1);
                     clearInterval(interval);
-                } else {
-                    // Check for collision with obstacles
-                    obstacles.forEach((obstacle, index) => {
-                        if (projectile.left < obstacle.left + obstacle.width &&
-                            projectile.left + projectile.width > obstacle.left &&
-                            projectile.top < obstacle.top + obstacle.height &&
-                            projectile.top + projectile.height > obstacle.top) {
-                            canvas.remove(obstacle);
-                            canvas.remove(projectile);
-                            obstacles.splice(index, 1);
-                            projectiles.splice(projectiles.indexOf(projectile), 1);
-                            score += 10; // Increase score for shooting
-                            clearInterval(interval);
-                        }
-                    });
                 }
                 canvas.renderAll();
             }, 30);
         }
 
-        // Game loop
-        function gameLoop() {
-            obstacles.forEach((obstacle, index) => {
-                obstacle.left -= 5; // Move obstacle left
-                if (obstacle.left < 0) {
-                    canvas.remove(obstacle);
-                    obstacles.splice(index, 1);
-                    score++;
-                }
-            });
-            canvas.renderAll();
-            requestAnimationFrame(gameLoop);
-        }
-
-        // Function to start creating obstacles at random intervals
-        function startCreatingObstacles() {
-            setInterval(() => {
-                if (Math.random() < 0.5) {
-                    createZombie(); // 50% chance to create a zombie
-                }
-            }, Math.random() * 4000 + 2000); // Random interval between 2 to 6 seconds
-        }
-
-        // Start the game
-        startCreatingObstacles();
-        gameLoop();
-
         // Keyboard controls
         document.addEventListener('keydown', (event) => {
-            if (event.code === 'ArrowUp') { // Jump
-                player.top -= 50; // Jump height
-                setTimeout(() => {
-                    player.top += 50; // Return to ground
-                }, 500);
-            } else if (event.code === 'Space') { // Shoot
+            if (event.code === 'Space') { // Shoot
                 createProjectile(); // Create a projectile
             }
         });
