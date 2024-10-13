@@ -53,15 +53,14 @@
         let projectiles = [];
         let score = 0;
 
-        // Function to create obstacles
+        // Function to create obstacles (zombies) at ground level
         function createObstacle() {
             const obstacleImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png"; // Replace with your obstacle image URL
             fabric.Image.fromURL(obstacleImageUrl, function(img) {
                 img.scale(0.1); // Scale the image to 10% of its original size
-                const randomY = Math.random() * (canvas.height - img.getScaledHeight() - 50); // Random Y position
                 img.set({
-                    left: canvas.width,
-                    top: randomY, // Place the obstacle at a random height
+                    left: canvas.width, // Start at the right side of the canvas
+                    top: canvas.height - img.getScaledHeight() - 20, // Ground level (just above the bottom)
                     selectable: false
                 });
                 obstacles.push(img);
