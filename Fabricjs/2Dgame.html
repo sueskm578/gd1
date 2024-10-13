@@ -20,33 +20,34 @@
     <canvas id="gameCanvas"></canvas>
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
-        canvas.setWidth(window.innerWidth); // Set canvas width to viewport width
-        canvas.setHeight(window.innerHeight); // Set canvas height to viewport height
+        canvas.setWidth(window.innerWidth);
+        canvas.setHeight(window.innerHeight);
 
         // Load the background image
-        const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif"; // Replace with your background image URL
+        const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
         fabric.Image.fromURL(backgroundImageUrl, function(img) {
             img.set({
                 left: 0,
                 top: 0,
                 selectable: false,
-                evented: false // Make it non-interactive
+                evented: false
             });
-            img.scaleToWidth(canvas.width); // Scale the image to the canvas width
+            img.scaleToWidth(canvas.width);
             canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
         });
 
         // Load the player image
-        const playerImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/gun guy.png"; // Replace with your image URL
+        const playerImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/gun guy.png";
+        let player;
         fabric.Image.fromURL(playerImageUrl, function(img) {
-            img.scale(0.1); // Scale the image to 10% of its original size
+            img.scale(0.1);
             img.set({
                 left: 50,
-                top: canvas.height - img.getScaledHeight() - 20, // Adjusted to be above the bottom
-                selectable: false // Make it non-selectable
+                top: canvas.height - img.getScaledHeight() - 20,
+                selectable: false
             });
+            player = img;
             canvas.add(img);
-            window.player = img; // Store the player image globally
         });
 
         let obstacles = [];
@@ -55,27 +56,12 @@
 
         // Function to create zombies
         function createZombie() {
-            const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png"; // Replace with your zombie image URL
+            const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png";
             fabric.Image.fromURL(zombieImageUrl, function(img) {
-                img.scale(0.1); // Scale the image to 10% of its original size
+                img.scale(0.15); // Increased scale to 15%
                 img.set({
-                    left: canvas.width, // Start at the right side of the canvas
-                    top: canvas.height - img.getScaledHeight() - 20, // Ground level (just above the bottom)
-                    selectable: false
-                });
-                obstacles.push(img);
-                canvas.add(img);
-            });
-        }
-
-        // Function to create a barrier
-        function createBarrier() {
-            const barrierImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png"; // Replace with your barrier image URL
-            fabric.Image.fromURL(barrierImageUrl, function(img) {
-                img.scale(0.05); // Scale the image to 5% of its original size for a smaller barrier
-                img.set({
-                    left: canvas.width, // Start at the right side of the canvas
-                    top: canvas.height - img.getScaledHeight() - 20, // Ground level (just above the bottom)
+                    left: canvas.width,
+                    top: canvas.height - img.getScaledHeight() - 20,
                     selectable: false
                 });
                 obstacles.push(img);
@@ -85,12 +71,12 @@
 
         // Function to create a projectile (bullet)
         function createProjectile() {
-            const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png"; // Replace with your bullet image URL
+            const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png";
             fabric.Image.fromURL(bulletImageUrl, function(img) {
-                img.scale(0.05); // Scale the bullet image to your desired size
+                img.scale(0.05);
                 img.set({
-                    left: player.left + player.width, // Start just to the right of the player
-                    top: player.top + player.height / 2 - img.getScaledHeight() / 2, // Center it vertically with the player
+                    left: player.left + player.width,
+                    top: player.top + player.height / 2 - img.getScaledHeight() / 2,
                     selectable: false
                 });
                 projectiles.push(img);
@@ -146,8 +132,6 @@
             setInterval(() => {
                 if (Math.random() < 0.5) {
                     createZombie(); // 50% chance to create a zombie
-                } else {
-                    createBarrier(); // 50% chance to create a barrier
                 }
             }, Math.random() * 4000 + 2000); // Random interval between 2 to 6 seconds
         }
@@ -164,48 +148,6 @@
                     player.top += 50; // Return to ground
                 }, 500);
             } else if (event.code === 'Space') { // Shoot
-                createProjectile(); // Create a projectile
-            }
-        });
-
-        // Resize canvas on window resize
-        window.addEventListener('resize', () => {
-            canvas.setWidth(window.innerWidth);
-            canvas.setHeight(window.innerHeight);
-            canvas.renderAll();
-        });
-    </script>
-</body>
-</html>
-
-            });
-            canvas.renderAll();
-            requestAnimationFrame(gameLoop);
-        }
-
-        // Function to start creating obstacles at random intervals
-        function startCreatingObstacles() {
-            setInterval(() => {
-                if (Math.random() < 0.5) {
-                    createZombie(); // 50% chance to create a zombie
-                } else {
-                    createBarrier(); // 50% chance to create a barrier
-                }
-            }, Math.random() * 4000 + 2000); // Random interval between 2 to 6 seconds
-        }
-
-        // Start the game
-        startCreatingObstacles();
-        gameLoop();
-
-        // Keyboard controls
-        document.addEventListener('keydown', (event) => {
-            if (event.code === 'Space') { // Jump
-                player.top -= 50; // Jump height
-                setTimeout(() => {
-                    player.top += 50; // Return to ground
-                }, 500);
-            } else if (event.code === 'KeyZ') { // Shoot
                 createProjectile(); // Create a projectile
             }
         });
