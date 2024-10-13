@@ -83,17 +83,20 @@
             });
         }
 
-        // Function to create a projectile
+        // Function to create a projectile (bullet)
         function createProjectile() {
-            const projectile = new fabric.Circle({
-                left: player.left + player.width,
-                top: player.top + player.height / 2 - 5,
-                fill: 'yellow',
-                radius: 5
+            const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png"; // Replace with your bullet image URL
+            fabric.Image.fromURL(bulletImageUrl, function(img) {
+                img.scale(0.05); // Scale the bullet image to your desired size
+                img.set({
+                    left: player.left + player.width, // Start just to the right of the player
+                    top: player.top + player.height / 2 - img.getScaledHeight() / 2, // Center it vertically with the player
+                    selectable: false
+                });
+                projectiles.push(img);
+                canvas.add(img);
+                moveProjectile(img);
             });
-            projectiles.push(projectile);
-            canvas.add(projectile);
-            moveProjectile(projectile);
         }
 
         // Move the projectile
@@ -108,9 +111,9 @@
                     // Check for collision with obstacles
                     obstacles.forEach((obstacle, index) => {
                         if (projectile.left < obstacle.left + obstacle.width &&
-                            projectile.left + projectile.radius * 2 > obstacle.left &&
+                            projectile.left + projectile.width > obstacle.left &&
                             projectile.top < obstacle.top + obstacle.height &&
-                            projectile.top + projectile.radius * 2 > obstacle.top) {
+                            projectile.top + projectile.height > obstacle.top) {
                             canvas.remove(obstacle);
                             canvas.remove(projectile);
                             obstacles.splice(index, 1);
@@ -133,6 +136,48 @@
                     obstacles.splice(index, 1);
                     score++;
                 }
+            });
+            canvas.renderAll();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Function to start creating obstacles at random intervals
+        function startCreatingObstacles() {
+            setInterval(() => {
+                if (Math.random() < 0.5) {
+                    createZombie(); // 50% chance to create a zombie
+                } else {
+                    createBarrier(); // 50% chance to create a barrier
+                }
+            }, Math.random() * 4000 + 2000); // Random interval between 2 to 6 seconds
+        }
+
+        // Start the game
+        startCreatingObstacles();
+        gameLoop();
+
+        // Keyboard controls
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'ArrowUp') { // Jump
+                player.top -= 50; // Jump height
+                setTimeout(() => {
+                    player.top += 50; // Return to ground
+                }, 500);
+            } else if (event.code === 'Space') { // Shoot
+                createProjectile(); // Create a projectile
+            }
+        });
+
+        // Resize canvas on window resize
+        window.addEventListener('resize', () => {
+            canvas.setWidth(window.innerWidth);
+            canvas.setHeight(window.innerHeight);
+            canvas.renderAll();
+        });
+    </script>
+</body>
+</html>
+
             });
             canvas.renderAll();
             requestAnimationFrame(gameLoop);
