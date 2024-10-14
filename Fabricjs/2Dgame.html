@@ -29,9 +29,16 @@
         #startScreen h1 {
             color: white;
         }
-        #startGameButton {
+        #startGameButton, #restartButton, #pauseButton {
             padding: 10px 20px;
             font-size: 20px;
+            margin: 5px;
+        }
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
         }
     </style>
 </head>
@@ -41,6 +48,11 @@
         <button id="startGameButton">Start Game</button>
     </div>
     
+    <div id="controls" style="display: none;">
+        <button id="restartButton">Restart</button>
+        <button id="pauseButton">Pause</button>
+    </div>
+
     <canvas id="gameCanvas"></canvas>
 
     <script>
@@ -49,13 +61,14 @@
         canvas.setHeight(window.innerHeight);
 
         let gameOver = false;
+        let isPaused = false;
 
         // Load the background image
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background%20apocalypse.avif";
         fabric.Image.fromURL(backgroundImageUrl, function(img) {
             img.set({
                 left: 0,
-                top: -300,
+                top: 0,
                 selectable: false,
                 evented: false
             });
@@ -142,6 +155,7 @@
         // Move the projectile
         function moveProjectile(projectile) {
             const interval = setInterval(() => {
+                if (isPaused) return; // Pause the projectile movement
                 projectile.left += 10;
                 if (projectile.left > canvas.width) {
                     canvas.remove(projectile);
@@ -183,11 +197,12 @@
             alert("Game Over!");
             canvas.clear();
             document.getElementById('startScreen').style.display = 'flex'; // Show start screen again
+            document.getElementById('controls').style.display = 'none'; // Hide controls
         }
 
         // Game loop
         function gameLoop() {
-            if (!gameOver) {
+            if (!gameOver && !isPaused) {
                 obstacles.forEach((obstacle, index) => {
                     obstacle.img.left -= obstacleSpeed;
                     if (obstacle.img.left < 0) {
@@ -205,17 +220,31 @@
         // Start creating obstacles
         function startCreatingObstacles() {
             setInterval(() => {
-                createObstacle();
-                spawnInterval = Math.max(1000, spawnInterval * 0.98);
-                obstacleSpeed += 0.1;
+                if (!isPaused) {
+                    createObstacle();
+                    spawnInterval = Math.max(1000, spawnInterval * 0.98);
+                    obstacleSpeed += 0.1;
+                }
             }, spawnInterval);
         }
 
         // Start the game when the button is clicked
         document.getElementById('startGameButton').addEventListener('click', () => {
             document.getElementById('startScreen').style.display = 'none'; // Hide start screen
+            document.getElementById('controls').style.display = 'block'; // Show controls
             startCreatingObstacles();
             gameLoop();
+        });
+
+        // Restart the game
+        document.getElementById('restartButton').addEventListener('click', () => {
+            location.reload(); // Reload the page to restart the game
+        });
+
+        // Pause and resume the game
+        document.getElementById('pauseButton').addEventListener('click', () => {
+            isPaused = !isPaused; // Toggle pause state
+            document.getElementById('pauseButton').textContent = isPaused ? 'Resume' : 'Pause'; // Update button text
         });
 
         // Keyboard controls for jumping
