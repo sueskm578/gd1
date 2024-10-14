@@ -75,8 +75,8 @@
             fabric.Image.fromURL(bulletImageUrl, function(img) {
                 img.scale(0.05);
                 img.set({
-                    left: player.left + player.width,
-                    top: player.top + player.height / 2 - img.getScaledHeight() / 2,
+                    left: player.left + player.getScaledWidth(),
+                    top: player.top + player.getScaledHeight() / 2 - img.getScaledHeight() / 2,
                     selectable: false
                 });
                 projectiles.push(img);
@@ -96,10 +96,10 @@
                 } else {
                     // Check for collision with obstacles
                     obstacles.forEach((obstacle, index) => {
-                        if (projectile.left < obstacle.left + obstacle.width &&
-                            projectile.left + projectile.width > obstacle.left &&
-                            projectile.top < obstacle.top + obstacle.height &&
-                            projectile.top + projectile.height > obstacle.top) {
+                        if (projectile.left < obstacle.left + obstacle.getScaledWidth() &&
+                            projectile.left + projectile.getScaledWidth() > obstacle.left &&
+                            projectile.top < obstacle.top + obstacle.getScaledHeight() &&
+                            projectile.top + projectile.getScaledHeight() > obstacle.top) {
                             canvas.remove(obstacle);
                             canvas.remove(projectile);
                             obstacles.splice(index, 1);
