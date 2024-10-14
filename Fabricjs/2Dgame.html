@@ -90,13 +90,12 @@
         let obstacles = [];
         let projectiles = [];
         let player;
-        const playerJumpHeight = 100; // Height for jumping
+        const playerJumpHeight = 150; // Increased height for jumping
         let jumpCount = 0; // Count of jumps
-        const maxJumps = 1; // Number of jumps allowed (1 means jump is allowed)
+        const maxJumps = 1; // Number of jumps allowed
 
         // Load images
         async function loadImages() {
-            // Load player image
             player = await loadImage("https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/gun%20guy.png", 0.1);
             canvas.add(player);
             player.set({
@@ -110,7 +109,6 @@
             canvas.setBackgroundImage(backgroundImage, canvas.renderAll.bind(canvas));
         }
 
-        // Helper function to load images
         function loadImage(url, scale) {
             return new Promise((resolve) => {
                 fabric.Image.fromURL(url, function(img) {
@@ -120,7 +118,6 @@
             });
         }
 
-        // Initialize the game elements
         async function initGame() {
             await loadImages();
             obstacles = [];
@@ -136,19 +133,14 @@
             startScreen.style.display = 'none'; // Hide start screen
         }
 
-        // Show game UI and start game
         startGameButton.addEventListener('click', initGame);
-
-        // Restart button
         restartButton.addEventListener('click', initGame);
 
-        // Pause button
         pauseButton.addEventListener('click', () => {
             gamePaused = !gamePaused;
             pauseButton.textContent = gamePaused ? 'Resume' : 'Pause';
         });
 
-        // Create zombies
         function createZombie() {
             loadImage("https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/zombie.png", 0.2).then(img => {
                 img.set({
@@ -161,7 +153,6 @@
             });
         }
 
-        // Create fire barrier
         function createBarrier() {
             loadImage("https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/vecteezy_bonfire-with_26772683.png", 0.03).then(img => {
                 img.set({
@@ -174,7 +165,6 @@
             });
         }
 
-        // Create an obstacle
         function createObstacle() {
             if (Math.random() < 0.5) {
                 createZombie();
@@ -183,7 +173,6 @@
             }
         }
 
-        // Create a projectile (bullet)
         function createProjectile() {
             loadImage("https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/bullet.png", 0.1).then(img => {
                 img.set({
@@ -197,7 +186,6 @@
             });
         }
 
-        // Move the projectile
         function moveProjectile(projectile) {
             const interval = setInterval(() => {
                 if (!gamePaused) {
@@ -228,7 +216,6 @@
             }, 30);
         }
 
-        // Check if obstacle hits the player
         function checkCollisionWithPlayer(obstacle) {
             return (
                 player.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
@@ -238,7 +225,6 @@
             );
         }
 
-        // End the game
         function endGame() {
             gameOver = true;
             alert("Game Over!");
@@ -247,7 +233,6 @@
             startScreen.style.display = 'flex'; // Show the start screen again
         }
 
-        // Game loop
         function gameLoop() {
             if (!gameOver && !gamePaused) {
                 obstacles.forEach((obstacle, index) => {
@@ -264,7 +249,6 @@
             }
         }
 
-        // Start creating obstacles
         function startCreatingObstacles() {
             setInterval(() => {
                 if (!gamePaused) {
@@ -273,7 +257,6 @@
             }, 2000); // Create a new obstacle every 2 seconds
         }
 
-        // Keyboard controls
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space' && !gamePaused) {
                 createProjectile(); // Shoot bullet when space is pressed
@@ -299,6 +282,9 @@
                 }, 30);
             }
         });
+
+        // Initialize game canvas
+        canvas.renderAll();
     </script>
 </body>
 </html>
