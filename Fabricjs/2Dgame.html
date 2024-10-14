@@ -38,6 +38,16 @@
         #score {
             color: white;
             font-size: 24px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 3;
+        }
+        #controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 3;
         }
         button {
             padding: 10px 20px;
@@ -52,7 +62,7 @@
     </div>
     
     <div id="gameUI">
-        <div>
+        <div id="controls">
             <button id="restartButton">Restart</button>
             <button id="pauseButton">Pause</button>
         </div>
@@ -85,16 +95,22 @@
 
         // Load the background image
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
-        fabric.Image.fromURL(backgroundImageUrl, function(img) {
-            img.set({
-                left: 0,
-                top: 0,
-                selectable: false,
-                evented: false
+        
+        function loadBackground() {
+            return new Promise((resolve) => {
+                fabric.Image.fromURL(backgroundImageUrl, function(img) {
+                    img.set({
+                        left: 0,
+                        top: 0,
+                        selectable: false,
+                        evented: false
+                    });
+                    img.scaleToWidth(canvas.width);
+                    canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+                    resolve(); // Resolve the promise once the image is loaded
+                });
             });
-            img.scaleToWidth(canvas.width);
-            canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-        });
+        }
 
         // Load the player image
         const playerImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/gun guy.png";
@@ -106,11 +122,11 @@
                 selectable: false
             });
             player = img;
-            canvas.add(player); // Add player after it is loaded
         });
 
         // Initialize the game elements
-        function initGame() {
+        async function initGame() {
+            await loadBackground(); // Load the background image
             canvas.clear();  // Clear canvas
             obstacles = [];
             projectiles = [];
@@ -118,7 +134,7 @@
             scoreElement.textContent = `Score: ${score}`;
             gameOver = false;
             gamePaused = false;
-            canvas.add(player);
+            canvas.add(player); // Add player after it is loaded
             startCreatingObstacles();
             gameLoop();
         }
@@ -216,7 +232,7 @@
                                 canvas.remove(projectile);
                                 obstacles.splice(index, 1);
                                 projectiles.splice(projectiles.indexOf(projectile), 1);
-                                score += 10;
+                                score += 1; // Increment score by 1 for hitting a zombie
                                 scoreElement.textContent = `Score: ${score}`;
                                 clearInterval(interval);
                             }
@@ -274,41 +290,6 @@
             }, spawnInterval);
             return intervalId; // Return the interval ID
         }
-
-        // Keyboard controls for jumping and shooting
-        document.addEventListener('keydown', (event) => {
-            if (event.code === 'ArrowUp' && !player.isJumping && !gamePaused) {
-                player.isJumping = true;
-                const originalTop = player.top;
-                const jumpHeight = 300; // Set jump height
-                const hangTime = 300; // Hang time in the air
-
-                player.animate('top', originalTop - jumpHeight, {
-                    duration: 500,
-                    onChange: canvas.renderAll.bind(canvas),
-                    onComplete: () => {
-                        setTimeout(() => {
-                            player.animate('top', originalTop, {
-                                duration: 500,
-                                onChange: canvas.renderAll.bind(canvas),
-                                onComplete: () => {
-                                    player.isJumping = false;
-                                }
-                            });
-                        }, hangTime);
-                    }
-                });
-            } else if (event.code === 'Space' && !gamePaused) {
-                createProjectile();
-            }
-        });
-
-        // Resize canvas on window resize
-        window.addEventListener('resize', () => {
-            canvas.setWidth(window.innerWidth);
-            canvas.setHeight(window.innerHeight);
-            canvas.renderAll();
-        });
     </script>
 </body>
 </html>
