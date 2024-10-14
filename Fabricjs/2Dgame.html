@@ -53,12 +53,14 @@
         let obstacles = [];
         let projectiles = [];
         let score = 0;
+        let spawnInterval = 3000; // Initial spawn interval (3 seconds)
+        let obstacleSpeed = 5; // Initial speed of obstacles
 
         // Function to create zombies
         function createZombie() {
             const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png";
             fabric.Image.fromURL(zombieImageUrl, function(img) {
-                img.scale(0.2); // Increased scale to 20%
+                img.scale(0.2); // Scale zombie
                 img.set({
                     left: canvas.width,
                     top: canvas.height - img.getScaledHeight() - 20,
@@ -67,6 +69,29 @@
                 obstacles.push(img);
                 canvas.add(img);
             });
+        }
+
+        // Function to create barrier box
+        function createBarrier() {
+            const barrier = new fabric.Rect({
+                left: canvas.width,
+                top: canvas.height - 100, // Adjust height based on preference
+                width: 50,
+                height: 100,
+                fill: 'brown',
+                selectable: false
+            });
+            obstacles.push(barrier);
+            canvas.add(barrier);
+        }
+
+        // Randomly choose between zombie and barrier
+        function createObstacle() {
+            if (Math.random() < 0.5) {
+                createZombie();
+            } else {
+                createBarrier();
+            }
         }
 
         // Function to create a projectile (bullet)
@@ -116,7 +141,7 @@
         // Game loop
         function gameLoop() {
             obstacles.forEach((obstacle, index) => {
-                obstacle.left -= 5; // Move obstacle left
+                obstacle.left -= obstacleSpeed; // Move obstacle left, with increasing speed over time
                 if (obstacle.left < 0) {
                     canvas.remove(obstacle);
                     obstacles.splice(index, 1);
@@ -127,13 +152,13 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // Function to start creating obstacles at random intervals
+        // Start creating obstacles at intervals, decreasing over time
         function startCreatingObstacles() {
             setInterval(() => {
-                if (Math.random() < 0.5) {
-                    createZombie(); // 50% chance to create a zombie
-                }
-            }, Math.random() * 4000 + 2000); // Random interval between 2 to 6 seconds
+                createObstacle();
+                spawnInterval = Math.max(1000, spawnInterval * 0.98); // Decrease interval but not below 1 second
+                obstacleSpeed += 0.1; // Gradually increase obstacle speed
+            }, spawnInterval);
         }
 
         // Start the game
