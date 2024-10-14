@@ -62,9 +62,9 @@
 
         let gameOver = false;
         let isPaused = false;
-        let gameLoopId; // Variable to hold the game loop ID
+        let gameLoopId;
+        let obstacleIntervalId; // Store the interval ID for obstacle creation
 
-        // Load the background image
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background%20apocalypse.avif";
         fabric.Image.fromURL(backgroundImageUrl, function(img) {
             img.set({
@@ -77,7 +77,6 @@
             canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
         });
 
-        // Load the player image
         const playerImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/gun%20guy.png";
         let player;
         fabric.Image.fromURL(playerImageUrl, function(img) {
@@ -98,7 +97,6 @@
         let spawnInterval = 3000;
         let obstacleSpeed = 5;
 
-        // Create zombies
         function createZombie() {
             const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png";
             fabric.Image.fromURL(zombieImageUrl, function(img) {
@@ -113,7 +111,6 @@
             });
         }
 
-        // Create fire barrier
         function createBarrier() {
             const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png";
             fabric.Image.fromURL(fireImageUrl, function(img) {
@@ -128,7 +125,6 @@
             });
         }
 
-        // Randomly choose between zombie and fire barrier
         function createObstacle() {
             if (Math.random() < 0.5) {
                 createZombie();
@@ -137,7 +133,6 @@
             }
         }
 
-        // Create a projectile (bullet)
         function createProjectile() {
             const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png";
             fabric.Image.fromURL(bulletImageUrl, function(img) {
@@ -153,10 +148,9 @@
             });
         }
 
-        // Move the projectile
         function moveProjectile(projectile) {
             const interval = setInterval(() => {
-                if (isPaused) return; // Pause the projectile movement
+                if (isPaused) return;
                 projectile.left += 10;
                 if (projectile.left > canvas.width) {
                     canvas.remove(projectile);
@@ -182,7 +176,6 @@
             }, 30);
         }
 
-        // Check if obstacle hits the player
         function checkCollisionWithPlayer(obstacle) {
             return (
                 player.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
@@ -192,17 +185,16 @@
             );
         }
 
-        // End the game
         function endGame() {
             gameOver = true;
             alert("Game Over!");
             canvas.clear();
-            document.getElementById('startScreen').style.display = 'flex'; // Show start screen again
-            document.getElementById('controls').style.display = 'none'; // Hide controls
-            cancelAnimationFrame(gameLoopId); // Stop the game loop
+            document.getElementById('startScreen').style.display = 'flex';
+            document.getElementById('controls').style.display = 'none';
+            cancelAnimationFrame(gameLoopId);
+            clearInterval(obstacleIntervalId); // Clear the obstacle creation interval
         }
 
-        // Game loop
         function gameLoop() {
             if (!gameOver && !isPaused) {
                 obstacles.forEach((obstacle, index) => {
@@ -215,13 +207,12 @@
                     }
                 });
                 canvas.renderAll();
-                gameLoopId = requestAnimationFrame(gameLoop); // Store the loop ID
+                gameLoopId = requestAnimationFrame(gameLoop);
             }
         }
 
-        // Start creating obstacles
         function startCreatingObstacles() {
-            setInterval(() => {
+            obstacleIntervalId = setInterval(() => {
                 if (!isPaused) {
                     createObstacle();
                     spawnInterval = Math.max(1000, spawnInterval * 0.98);
@@ -230,49 +221,51 @@
             }, spawnInterval);
         }
 
-        // Start the game when the button is clicked
         document.getElementById('startGameButton').addEventListener('click', () => {
-            document.getElementById('startScreen').style.display = 'none'; // Hide start screen
-            document.getElementById('controls').style.display = 'block'; // Show controls
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('controls').style.display = 'block';
             startCreatingObstacles();
             gameLoop();
         });
 
-        // Restart the game
         document.getElementById('restartButton').addEventListener('click', () => {
-            location.reload(); // Reload the page to restart the game
+            location.reload();
         });
 
-        // Pause and resume the game
         document.getElementById('pauseButton').addEventListener('click', () => {
-            isPaused = !isPaused; // Toggle pause state
-            document.getElementById('pauseButton').textContent = isPaused ? 'Resume' : 'Pause'; // Update button text
+            if (!isPaused) {
+                isPaused = true;
+                cancelAnimationFrame(gameLoopId);
+                clearInterval(obstacleIntervalId);
+                document.getElementById('pauseButton').textContent = 'Resume';
+            } else {
+                isPaused = false;
+                startCreatingObstacles(); // Restart obstacle creation
+                gameLoop(); // Restart the game loop
+                document.getElementById('pauseButton').textContent = 'Pause';
+            }
         });
 
-        // Keyboard controls for jumping
         document.addEventListener('keydown', (event) => {
             if (event.code === 'ArrowUp' && !player.isJumping) { 
                 player.isJumping = true;
                 const originalTop = player.top;
-                const jumpHeight = 400;  // Higher jump to clear fire
-                const hangTime = 500;    // Time spent at peak of jump
+                const jumpHeight = 400;
+                const hangTime = 500;
 
-                // Jump up
                 player.animate('top', originalTop - jumpHeight, {
-                    duration: 600, // Longer jump up time
+                    duration: 600,
                     onChange: canvas.renderAll.bind(canvas),
                     onComplete: () => {
-                        // Stay in the air for longer
                         setTimeout(() => {
-                            // Descend back down
                             player.animate('top', originalTop, {
-                                duration: 800,  // Slower descent
+                                duration: 800,
                                 onChange: canvas.renderAll.bind(canvas),
                                 onComplete: () => {
                                     player.isJumping = false;
                                 }
                             });
-                        }, hangTime); // Delay at the peak of the jump
+                        }, hangTime);
                     }
                 });
             } else if (event.code === 'Space') { 
@@ -280,7 +273,6 @@
             }
         });
 
-        // Resize canvas on window resize
         window.addEventListener('resize', () => {
             canvas.setWidth(window.innerWidth);
             canvas.setHeight(window.innerHeight);
