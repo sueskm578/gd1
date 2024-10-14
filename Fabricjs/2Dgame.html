@@ -194,11 +194,11 @@
             if (event.code === 'ArrowUp' && !player.isJumping) { // Jump
                 player.isJumping = true; // Set jumping flag
                 const originalTop = player.top;
-                player.top -= 150; // Increased jump height
+                player.top -= 200; // Increased jump height to 200 pixels
                 setTimeout(() => {
                     player.top = originalTop; // Return to ground
                     player.isJumping = false; // Reset jumping flag
-                }, 500);
+                }, 700); // Increased jump time for higher jump
             } else if (event.code === 'Space') { // Shoot
                 createProjectile(); // Create a projectile
             }
