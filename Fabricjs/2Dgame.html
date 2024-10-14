@@ -14,16 +14,75 @@
             display: block;
             border: 1px solid black;
         }
+        #startScreen, #gameUI {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        #startScreen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #gameUI {
+            display: none;
+            justify-content: space-between;
+            padding: 20px;
+        }
+        #score {
+            color: white;
+            font-size: 24px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
+    <div id="startScreen">
+        <h1 style="color: white;">Welcome to the Zombie Game</h1>
+        <button id="startGameButton">Start Game</button>
+    </div>
+    
+    <div id="gameUI">
+        <div>
+            <button id="restartButton">Restart</button>
+            <button id="pauseButton">Pause</button>
+        </div>
+        <div id="score">Score: 0</div>
+    </div>
+
     <canvas id="gameCanvas"></canvas>
+
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
         canvas.setWidth(window.innerWidth);
         canvas.setHeight(window.innerHeight);
 
         let gameOver = false;
+        let gamePaused = false;
+        let score = 0;
+        let spawnInterval = 3000;
+        let obstacleSpeed = 5;
+        let scoreElement = document.getElementById('score');
+
+        const startScreen = document.getElementById('startScreen');
+        const gameUI = document.getElementById('gameUI');
+        const startGameButton = document.getElementById('startGameButton');
+        const restartButton = document.getElementById('restartButton');
+        const pauseButton = document.getElementById('pauseButton');
+
+        let obstacles = [];
+        let projectiles = [];
+        let player;
 
         // Load the background image
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
@@ -40,7 +99,6 @@
 
         // Load the player image
         const playerImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/gun guy.png";
-        let player;
         fabric.Image.fromURL(playerImageUrl, function(img) {
             img.scale(0.1);
             img.set({
@@ -49,15 +107,39 @@
                 selectable: false
             });
             player = img;
-            player.isJumping = false;
-            canvas.add(img);
         });
 
-        let obstacles = [];
-        let projectiles = [];
-        let score = 0;
-        let spawnInterval = 3000;
-        let obstacleSpeed = 5;
+        // Initialize the game elements
+        function initGame() {
+            canvas.clear();  // Clear canvas
+            score = 0;
+            scoreElement.textContent = `Score: ${score}`;
+            gameOver = false;
+            gamePaused = false;
+            obstacles = [];
+            projectiles = [];
+            canvas.add(player);
+            startCreatingObstacles();
+            gameLoop();
+        }
+
+        // Show game UI and start game
+        startGameButton.addEventListener('click', () => {
+            startScreen.style.display = 'none';  // Hide start screen
+            gameUI.style.display = 'flex';       // Show game UI
+            initGame();
+        });
+
+        // Restart button
+        restartButton.addEventListener('click', () => {
+            initGame(); // Restart the game
+        });
+
+        // Pause button
+        pauseButton.addEventListener('click', () => {
+            gamePaused = !gamePaused;
+            pauseButton.textContent = gamePaused ? 'Resume' : 'Pause';
+        });
 
         // Create zombies
         function createZombie() {
@@ -117,28 +199,31 @@
         // Move the projectile
         function moveProjectile(projectile) {
             const interval = setInterval(() => {
-                projectile.left += 10;
-                if (projectile.left > canvas.width) {
-                    canvas.remove(projectile);
-                    projectiles.splice(projectiles.indexOf(projectile), 1);
-                    clearInterval(interval);
-                } else {
-                    obstacles.forEach((obstacle, index) => {
-                        if (obstacle.type === 'zombie' && 
-                            projectile.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
-                            projectile.left + projectile.getScaledWidth() > obstacle.img.left &&
-                            projectile.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
-                            projectile.top + projectile.getScaledHeight() > obstacle.img.top) {
-                            canvas.remove(obstacle.img);
-                            canvas.remove(projectile);
-                            obstacles.splice(index, 1);
-                            projectiles.splice(projectiles.indexOf(projectile), 1);
-                            score += 10;
-                            clearInterval(interval);
-                        }
-                    });
+                if (!gamePaused) {
+                    projectile.left += 10;
+                    if (projectile.left > canvas.width) {
+                        canvas.remove(projectile);
+                        projectiles.splice(projectiles.indexOf(projectile), 1);
+                        clearInterval(interval);
+                    } else {
+                        obstacles.forEach((obstacle, index) => {
+                            if (obstacle.type === 'zombie' && 
+                                projectile.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
+                                projectile.left + projectile.getScaledWidth() > obstacle.img.left &&
+                                projectile.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
+                                projectile.top + projectile.getScaledHeight() > obstacle.img.top) {
+                                canvas.remove(obstacle.img);
+                                canvas.remove(projectile);
+                                obstacles.splice(index, 1);
+                                projectiles.splice(projectiles.indexOf(projectile), 1);
+                                score += 10;
+                                scoreElement.textContent = `Score: ${score}`;
+                                clearInterval(interval);
+                            }
+                        });
+                    }
+                    canvas.renderAll();
                 }
-                canvas.renderAll();
             }, 30);
         }
 
@@ -161,7 +246,7 @@
 
         // Game loop
         function gameLoop() {
-            if (!gameOver) {
+            if (!gameOver && !gamePaused) {
                 obstacles.forEach((obstacle, index) => {
                     obstacle.img.left -= obstacleSpeed;
                     if (obstacle.img.left < 0) {
@@ -182,43 +267,38 @@
         // Start creating obstacles
         function startCreatingObstacles() {
             setInterval(() => {
-                createObstacle();
-                spawnInterval = Math.max(1000, spawnInterval * 0.98);
-                obstacleSpeed += 0.1;
+                if (!gamePaused) {
+                    createObstacle();
+                    spawnInterval = Math.max(1000, spawnInterval * 0.98);
+                    obstacleSpeed += 0.1;
+                }
             }, spawnInterval);
         }
 
-        // Start the game
-        startCreatingObstacles();
-        gameLoop();
-
-        // Keyboard controls for jumping
+        // Keyboard controls for jumping and shooting
         document.addEventListener('keydown', (event) => {
-            if (event.code === 'ArrowUp' && !player.isJumping) { 
+            if (event.code === 'ArrowUp' && !player.isJumping && !gamePaused) {
                 player.isJumping = true;
                 const originalTop = player.top;
-                const jumpHeight = 400;  // Higher jump to clear fire
-                const hangTime = 500;    // Time spent at peak of jump
+                const jumpHeight = 400;
+                const hangTime = 500;
 
-                // Jump up
                 player.animate('top', originalTop - jumpHeight, {
-                    duration: 600, // Longer jump up time
+                    duration: 600,
                     onChange: canvas.renderAll.bind(canvas),
                     onComplete: () => {
-                        // Stay in the air for longer
                         setTimeout(() => {
-                            // Descend back down
                             player.animate('top', originalTop, {
-                                duration: 800,  // Slower descent
+                                duration: 800,
                                 onChange: canvas.renderAll.bind(canvas),
                                 onComplete: () => {
                                     player.isJumping = false;
                                 }
                             });
-                        }, hangTime); // Delay at the peak of the jump
+                        }, hangTime);
                     }
                 });
-            } else if (event.code === 'Space') { 
+            } else if (event.code === 'Space' && !gamePaused) {
                 createProjectile();
             }
         });
