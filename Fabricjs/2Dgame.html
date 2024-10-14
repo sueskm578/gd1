@@ -194,7 +194,7 @@
             if (event.code === 'ArrowUp' && !player.isJumping) { // Jump
                 player.isJumping = true; // Set jumping flag
                 const originalTop = player.top;
-                player.top -= 100; // Jump height
+                player.top -= 150; // Increased jump height
                 setTimeout(() => {
                     player.top = originalTop; // Return to ground
                     player.isJumping = false; // Reset jumping flag
