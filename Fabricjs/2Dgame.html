@@ -71,21 +71,22 @@
             });
         }
 
-        // Function to create barrier box
+        // Function to create fire barrier
         function createBarrier() {
-            const barrier = new fabric.Rect({
-                left: canvas.width,
-                top: canvas.height - 100, // Adjust height based on preference
-                width: 50,
-                height: 100,
-                fill: 'brown',
-                selectable: false
+            const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/fire.png"; // Fire image URL
+            fabric.Image.fromURL(fireImageUrl, function(img) {
+                img.scale(0.15); // Scale the fire image as needed
+                img.set({
+                    left: canvas.width,
+                    top: canvas.height - img.getScaledHeight() - 20, // Positioned at the bottom of the screen
+                    selectable: false
+                });
+                obstacles.push(img);
+                canvas.add(img);
             });
-            obstacles.push(barrier);
-            canvas.add(barrier);
         }
 
-        // Randomly choose between zombie and barrier
+        // Randomly choose between zombie and fire barrier
         function createObstacle() {
             if (Math.random() < 0.5) {
                 createZombie();
