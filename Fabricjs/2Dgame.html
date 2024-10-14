@@ -24,17 +24,16 @@
             justify-content: center;
             align-items: center;
             background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1;
         }
         #startScreen {
-            display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
         }
         #gameUI {
             display: none;
             justify-content: space-between;
             padding: 20px;
+            z-index: 2;
         }
         #score {
             color: white;
@@ -113,12 +112,12 @@
         // Initialize the game elements
         function initGame() {
             canvas.clear();  // Clear canvas
+            obstacles = [];
+            projectiles = [];
             score = 0;
             scoreElement.textContent = `Score: ${score}`;
             gameOver = false;
             gamePaused = false;
-            obstacles = [];
-            projectiles = [];
             canvas.add(player);
             startCreatingObstacles();
             gameLoop();
@@ -256,10 +255,7 @@
                         canvas.remove(obstacle.img);
                         obstacles.splice(index, 1);
                     } else if (checkCollisionWithPlayer(obstacle)) {
-                        if (obstacle.type === 'fire' && player.isJumping) {
-                            return;
-                        }
-                        endGame();
+                        endGame(); // End game on collision
                     }
                 });
                 canvas.renderAll();
@@ -269,13 +265,14 @@
 
         // Start creating obstacles
         function startCreatingObstacles() {
-            setInterval(() => {
+            const intervalId = setInterval(() => {
                 if (!gamePaused) {
                     createObstacle();
                     spawnInterval = Math.max(1000, spawnInterval * 0.98);
                     obstacleSpeed += 0.1;
                 }
             }, spawnInterval);
+            return intervalId; // Return the interval ID
         }
 
         // Keyboard controls for jumping and shooting
@@ -283,16 +280,16 @@
             if (event.code === 'ArrowUp' && !player.isJumping && !gamePaused) {
                 player.isJumping = true;
                 const originalTop = player.top;
-                const jumpHeight = 400;
-                const hangTime = 500;
+                const jumpHeight = 300; // Set jump height
+                const hangTime = 300; // Hang time in the air
 
                 player.animate('top', originalTop - jumpHeight, {
-                    duration: 600,
+                    duration: 500,
                     onChange: canvas.renderAll.bind(canvas),
                     onComplete: () => {
                         setTimeout(() => {
                             player.animate('top', originalTop, {
-                                duration: 800,
+                                duration: 500,
                                 onChange: canvas.renderAll.bind(canvas),
                                 onComplete: () => {
                                     player.isJumping = false;
