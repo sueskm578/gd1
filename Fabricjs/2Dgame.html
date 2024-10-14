@@ -49,6 +49,7 @@
                 selectable: false
             });
             player = img;
+            player.isJumping = false;  // Add isJumping flag
             canvas.add(img);
         });
 
@@ -166,8 +167,12 @@
                     if (obstacle.img.left < 0) {
                         canvas.remove(obstacle.img);
                         obstacles.splice(index, 1);
-                    } else if (checkCollisionWithPlayer(obstacle) && !(obstacle.type === 'fire' && player.isJumping)) {
-                        endGame();
+                    } else if (checkCollisionWithPlayer(obstacle)) {
+                        if (obstacle.type === 'fire' && player.isJumping) {
+                            // Allow player to jump over fire
+                            return;
+                        }
+                        endGame(); // End game for collisions with zombies or non-jumping fire collisions
                     }
                 });
                 canvas.renderAll();
@@ -193,7 +198,7 @@
             if (event.code === 'ArrowUp' && !player.isJumping) { 
                 player.isJumping = true;
                 const originalTop = player.top;
-                player.top -= 300;
+                player.top -= 300; // Higher jump to clear fire
                 setTimeout(() => {
                     player.top = originalTop;
                     player.isJumping = false;
