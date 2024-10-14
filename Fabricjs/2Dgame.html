@@ -23,6 +23,8 @@
         canvas.setWidth(window.innerWidth);
         canvas.setHeight(window.innerHeight);
 
+        let gameOver = false; // Flag to indicate game over
+
         // Load the background image
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
         fabric.Image.fromURL(backgroundImageUrl, function(img) {
@@ -73,9 +75,9 @@
 
         // Function to create fire barrier
         function createBarrier() {
-            const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png"; // Fire image URL
+            const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/fire.png"; // Fire image URL
             fabric.Image.fromURL(fireImageUrl, function(img) {
-                img.scale(0.15); // Scale the fire image as needed
+                img.scale(0.05); // Scale the fire image to make it smaller
                 img.set({
                     left: canvas.width,
                     top: canvas.height - img.getScaledHeight() - 20, // Positioned at the bottom of the screen
@@ -139,18 +141,38 @@
             }, 30);
         }
 
+        // Check if obstacle hits the player
+        function checkCollisionWithPlayer(obstacle) {
+            return (
+                player.left < obstacle.left + obstacle.getScaledWidth() &&
+                player.left + player.getScaledWidth() > obstacle.left &&
+                player.top < obstacle.top + obstacle.getScaledHeight() &&
+                player.top + player.getScaledHeight() > obstacle.top
+            );
+        }
+
+        // End the game and display game over
+        function endGame() {
+            gameOver = true;
+            alert("Game Over!"); // Display a simple game over alert
+            canvas.clear(); // Clear the canvas
+        }
+
         // Game loop
         function gameLoop() {
-            obstacles.forEach((obstacle, index) => {
-                obstacle.left -= obstacleSpeed; // Move obstacle left, with increasing speed over time
-                if (obstacle.left < 0) {
-                    canvas.remove(obstacle);
-                    obstacles.splice(index, 1);
-                    score++;
-                }
-            });
-            canvas.renderAll();
-            requestAnimationFrame(gameLoop);
+            if (!gameOver) {
+                obstacles.forEach((obstacle, index) => {
+                    obstacle.left -= obstacleSpeed; // Move obstacle left
+                    if (obstacle.left < 0) {
+                        canvas.remove(obstacle);
+                        obstacles.splice(index, 1);
+                    } else if (checkCollisionWithPlayer(obstacle)) {
+                        endGame(); // End game if obstacle hits player
+                    }
+                });
+                canvas.renderAll();
+                requestAnimationFrame(gameLoop);
+            }
         }
 
         // Start creating obstacles at intervals, decreasing over time
