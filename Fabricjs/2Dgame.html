@@ -107,6 +107,7 @@
                 selectable: false
             });
             player = img;
+            canvas.add(player); // Add player after it is loaded
         });
 
         // Initialize the game elements
@@ -242,6 +243,8 @@
             gameOver = true;
             alert("Game Over!");
             canvas.clear();
+            startScreen.style.display = 'flex';  // Show the start screen again
+            gameUI.style.display = 'none';        // Hide the game UI
         }
 
         // Game loop
