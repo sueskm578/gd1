@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zombie Shooting Game</title>
+    <title>2D Game with Fabric.js</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
     <style>
         body {
@@ -14,121 +14,95 @@
             display: block;
             border: 1px solid black;
         }
-        #startScreen, #gameUI {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1;
-        }
-        #startScreen {
-            flex-direction: column;
-        }
-        #gameUI {
-            display: none;
-            justify-content: space-between;
-            padding: 20px;
-            z-index: 2;
-        }
-        #score {
-            color: white;
-            font-size: 24px;
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 3;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 20px;
-        }
     </style>
 </head>
 <body>
-    <div id="startScreen">
-        <h1 style="color: white;">Welcome to the Zombie Game</h1>
-        <button id="startGameButton">Start Game</button>
-    </div>
-    
-    <div id="gameUI">
-        <div id="score">Score: 0</div>
-    </div>
-
     <canvas id="gameCanvas"></canvas>
-
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
         canvas.setWidth(window.innerWidth);
         canvas.setHeight(window.innerHeight);
 
         let gameOver = false;
-        let score = 0;
-        let scoreElement = document.getElementById('score');
 
-        const startScreen = document.getElementById('startScreen');
-        const gameUI = document.getElementById('gameUI');
-        const startGameButton = document.getElementById('startGameButton');
+        // Load the background image
+        const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
+        fabric.Image.fromURL(backgroundImageUrl, function(img) {
+            img.set({
+                left: 0,
+                top: 0,
+                selectable: false,
+                evented: false
+            });
+            img.scaleToWidth(canvas.width);
+            canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+        });
+
+        // Load the player image
+        const playerImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/gun guy.png";
+        let player;
+        fabric.Image.fromURL(playerImageUrl, function(img) {
+            img.scale(0.1);
+            img.set({
+                left: 50,
+                top: canvas.height - img.getScaledHeight() - 20,
+                selectable: false
+            });
+            player = img;
+            player.isJumping = false;
+            canvas.add(img);
+        });
 
         let obstacles = [];
         let projectiles = [];
-        let player;
+        let score = 0;
+        let spawnInterval = 3000;
+        let obstacleSpeed = 5;
 
-        async function loadImages() {
-            player = await loadImage("https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/gun%20guy.png", 0.1);
-            player.set({
-                left: 50,
-                top: canvas.height - player.getScaledHeight() - 20,
-                selectable: false
-            });
-            canvas.add(player);
-
-            const backgroundImage = await loadImage("https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/background%20apocalypse.avif", 1);
-            canvas.setBackgroundImage(backgroundImage, canvas.renderAll.bind(canvas));
-        }
-
-        function loadImage(url, scale) {
-            return new Promise((resolve) => {
-                fabric.Image.fromURL(url, function(img) {
-                    img.scale(scale);
-                    resolve(img);
-                });
-            });
-        }
-
-        async function initGame() {
-            await loadImages();
-            obstacles = [];
-            projectiles = [];
-            score = 0;
-            scoreElement.textContent = `Score: ${score}`;
-            gameOver = false;
-            startCreatingObstacles();
-            gameLoop();
-            gameUI.style.display = 'flex'; 
-            startScreen.style.display = 'none'; 
-        }
-
-        startGameButton.addEventListener('click', initGame);
-
+        // Create zombies
         function createZombie() {
-            loadImage("https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/zombie.png", 0.2).then(img => {
+            const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png";
+            fabric.Image.fromURL(zombieImageUrl, function(img) {
+                img.scale(0.2);
                 img.set({
                     left: canvas.width,
                     top: canvas.height - img.getScaledHeight() - 20,
                     selectable: false
                 });
-                obstacles.push(img);
+                obstacles.push({ type: 'zombie', img });
                 canvas.add(img);
             });
         }
 
+        // Create fire barrier
+        function createBarrier() {
+            const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png";
+            fabric.Image.fromURL(fireImageUrl, function(img) {
+                img.scale(0.03); 
+                img.set({
+                    left: canvas.width,
+                    top: canvas.height - img.getScaledHeight() - 20,
+                    selectable: false
+                });
+                obstacles.push({ type: 'fire', img });
+                canvas.add(img);
+            });
+        }
+
+        // Randomly choose between zombie and fire barrier
+        function createObstacle() {
+            if (Math.random() < 0.5) {
+                createZombie();
+            } else {
+                createBarrier();
+            }
+        }
+
+        // Create a projectile (bullet)
         function createProjectile() {
-            loadImage("https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/bullet.png", 0.1).then(img => {
+            const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png";
+            fabric.Image.fromURL(bulletImageUrl, function(img) {
+                img.scale(0.1);
                 img.set({
                     left: player.left + player.getScaledWidth(),
                     top: player.top + player.getScaledHeight() / 2 - img.getScaledHeight() / 2,
@@ -140,25 +114,26 @@
             });
         }
 
+        // Move the projectile
         function moveProjectile(projectile) {
             const interval = setInterval(() => {
-                projectile.left += 10; 
+                projectile.left += 10;
                 if (projectile.left > canvas.width) {
                     canvas.remove(projectile);
                     projectiles.splice(projectiles.indexOf(projectile), 1);
                     clearInterval(interval);
                 } else {
                     obstacles.forEach((obstacle, index) => {
-                        if (projectile.left < obstacle.left + obstacle.getScaledWidth() &&
-                            projectile.left + projectile.getScaledWidth() > obstacle.left &&
-                            projectile.top < obstacle.top + obstacle.getScaledHeight() &&
-                            projectile.top + projectile.getScaledHeight() > obstacle.top) {
-                            canvas.remove(obstacle);
+                        if (obstacle.type === 'zombie' && 
+                            projectile.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
+                            projectile.left + projectile.getScaledWidth() > obstacle.img.left &&
+                            projectile.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
+                            projectile.top + projectile.getScaledHeight() > obstacle.img.top) {
+                            canvas.remove(obstacle.img);
                             canvas.remove(projectile);
                             obstacles.splice(index, 1);
                             projectiles.splice(projectiles.indexOf(projectile), 1);
-                            score += 1; 
-                            scoreElement.textContent = `Score: ${score}`;
+                            score += 10;
                             clearInterval(interval);
                         }
                     });
@@ -167,21 +142,36 @@
             }, 30);
         }
 
+        // Check if obstacle hits the player
+        function checkCollisionWithPlayer(obstacle) {
+            return (
+                player.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
+                player.left + player.getScaledWidth() > obstacle.img.left &&
+                player.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
+                player.top + player.getScaledHeight() > obstacle.img.top
+            );
+        }
+
+        // End the game
         function endGame() {
             gameOver = true;
             alert("Game Over!");
             canvas.clear();
-            gameUI.style.display = 'none'; 
-            startScreen.style.display = 'flex'; 
         }
 
+        // Game loop
         function gameLoop() {
             if (!gameOver) {
                 obstacles.forEach((obstacle, index) => {
-                    obstacle.left -= 5; 
-                    if (obstacle.left < 0) {
-                        canvas.remove(obstacle);
+                    obstacle.img.left -= obstacleSpeed;
+                    if (obstacle.img.left < 0) {
+                        canvas.remove(obstacle.img);
                         obstacles.splice(index, 1);
+                    } else if (checkCollisionWithPlayer(obstacle)) {
+                        if (obstacle.type === 'fire' && player.isJumping) {
+                            return;
+                        }
+                        endGame();
                     }
                 });
                 canvas.renderAll();
@@ -189,22 +179,56 @@
             }
         }
 
+        // Start creating obstacles
         function startCreatingObstacles() {
             setInterval(() => {
-                if (!gameOver) {
-                    createZombie();
-                }
-            }, 2000); 
+                createObstacle();
+                spawnInterval = Math.max(1000, spawnInterval * 0.98);
+                obstacleSpeed += 0.1;
+            }, spawnInterval);
         }
 
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                createProjectile(); 
+        // Start the game
+        startCreatingObstacles();
+        gameLoop();
+
+        // Keyboard controls for jumping
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'ArrowUp' && !player.isJumping) { 
+                player.isJumping = true;
+                const originalTop = player.top;
+                const jumpHeight = 400;  // Higher jump to clear fire
+                const hangTime = 500;    // Time spent at peak of jump
+
+                // Jump up
+                player.animate('top', originalTop - jumpHeight, {
+                    duration: 600, // Longer jump up time
+                    onChange: canvas.renderAll.bind(canvas),
+                    onComplete: () => {
+                        // Stay in the air for longer
+                        setTimeout(() => {
+                            // Descend back down
+                            player.animate('top', originalTop, {
+                                duration: 800,  // Slower descent
+                                onChange: canvas.renderAll.bind(canvas),
+                                onComplete: () => {
+                                    player.isJumping = false;
+                                }
+                            });
+                        }, hangTime); // Delay at the peak of the jump
+                    }
+                });
+            } else if (event.code === 'Space') { 
+                createProjectile();
             }
         });
 
-        // Initialize game canvas
-        canvas.renderAll();
+        // Resize canvas on window resize
+        window.addEventListener('resize', () => {
+            canvas.setWidth(window.innerWidth);
+            canvas.setHeight(window.innerHeight);
+            canvas.renderAll();
+        });
     </script>
 </body>
 </html>
