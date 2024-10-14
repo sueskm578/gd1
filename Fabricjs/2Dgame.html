@@ -7,12 +7,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
     <style>
         body {
-            margin: 0; /* Remove default margin */
-            overflow: hidden; /* Prevent scrollbars */
+            margin: 0;
+            overflow: hidden;
         }
         canvas {
-            display: block; /* Remove inline-block spacing */
-            border: 1px solid black; /* Optional border */
+            display: block;
+            border: 1px solid black;
         }
     </style>
 </head>
@@ -62,28 +62,28 @@
         function createZombie() {
             const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png";
             fabric.Image.fromURL(zombieImageUrl, function(img) {
-                img.scale(0.2); // Scale zombie
+                img.scale(0.2);
                 img.set({
                     left: canvas.width,
                     top: canvas.height - img.getScaledHeight() - 20,
                     selectable: false
                 });
-                obstacles.push(img);
+                obstacles.push({ type: 'zombie', img });
                 canvas.add(img);
             });
         }
 
         // Function to create fire barrier
         function createBarrier() {
-            const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png"; // Fire image URL
+            const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png";
             fabric.Image.fromURL(fireImageUrl, function(img) {
-                img.scale(0.05); // Scale the fire image to make it smaller
+                img.scale(0.05); // Make fire barrier smaller
                 img.set({
                     left: canvas.width,
-                    top: canvas.height - img.getScaledHeight() - 20, // Positioned at the bottom of the screen
+                    top: canvas.height - img.getScaledHeight() - 20,
                     selectable: false
                 });
-                obstacles.push(img);
+                obstacles.push({ type: 'fire', img });
                 canvas.add(img);
             });
         }
@@ -122,17 +122,18 @@
                     projectiles.splice(projectiles.indexOf(projectile), 1);
                     clearInterval(interval);
                 } else {
-                    // Check for collision with obstacles
+                    // Check for collision with zombies only (ignore fire barriers)
                     obstacles.forEach((obstacle, index) => {
-                        if (projectile.left < obstacle.left + obstacle.getScaledWidth() &&
-                            projectile.left + projectile.getScaledWidth() > obstacle.left &&
-                            projectile.top < obstacle.top + obstacle.getScaledHeight() &&
-                            projectile.top + projectile.getScaledHeight() > obstacle.top) {
-                            canvas.remove(obstacle);
+                        if (obstacle.type === 'zombie' && 
+                            projectile.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
+                            projectile.left + projectile.getScaledWidth() > obstacle.img.left &&
+                            projectile.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
+                            projectile.top + projectile.getScaledHeight() > obstacle.img.top) {
+                            canvas.remove(obstacle.img);
                             canvas.remove(projectile);
                             obstacles.splice(index, 1);
                             projectiles.splice(projectiles.indexOf(projectile), 1);
-                            score += 10; // Increase score for shooting
+                            score += 10; // Increase score for shooting zombies
                             clearInterval(interval);
                         }
                     });
@@ -144,10 +145,10 @@
         // Check if obstacle hits the player
         function checkCollisionWithPlayer(obstacle) {
             return (
-                player.left < obstacle.left + obstacle.getScaledWidth() &&
-                player.left + player.getScaledWidth() > obstacle.left &&
-                player.top < obstacle.top + obstacle.getScaledHeight() &&
-                player.top + player.getScaledHeight() > obstacle.top
+                player.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
+                player.left + player.getScaledWidth() > obstacle.img.left &&
+                player.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
+                player.top + player.getScaledHeight() > obstacle.img.top
             );
         }
 
@@ -162,12 +163,12 @@
         function gameLoop() {
             if (!gameOver) {
                 obstacles.forEach((obstacle, index) => {
-                    obstacle.left -= obstacleSpeed; // Move obstacle left
-                    if (obstacle.left < 0) {
-                        canvas.remove(obstacle);
+                    obstacle.img.left -= obstacleSpeed; // Move obstacle left
+                    if (obstacle.img.left < 0) {
+                        canvas.remove(obstacle.img);
                         obstacles.splice(index, 1);
-                    } else if (checkCollisionWithPlayer(obstacle)) {
-                        endGame(); // End game if obstacle hits player
+                    } else if (checkCollisionWithPlayer(obstacle) && !(obstacle.type === 'fire' && player.isJumping)) {
+                        endGame(); // End game if obstacle hits player, unless jumping over fire
                     }
                 });
                 canvas.renderAll();
@@ -188,12 +189,15 @@
         startCreatingObstacles();
         gameLoop();
 
-        // Keyboard controls
+        // Keyboard controls for jumping over fire
         document.addEventListener('keydown', (event) => {
-            if (event.code === 'ArrowUp') { // Jump
-                player.top -= 50; // Jump height
+            if (event.code === 'ArrowUp' && !player.isJumping) { // Jump
+                player.isJumping = true; // Set jumping flag
+                const originalTop = player.top;
+                player.top -= 100; // Jump height
                 setTimeout(() => {
-                    player.top += 50; // Return to ground
+                    player.top = originalTop; // Return to ground
+                    player.isJumping = false; // Reset jumping flag
                 }, 500);
             } else if (event.code === 'Space') { // Shoot
                 createProjectile(); // Create a projectile
