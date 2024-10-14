@@ -49,14 +49,14 @@
                 selectable: false
             });
             player = img;
-            player.isJumping = false;  // Add isJumping flag
+            player.isJumping = false;
             canvas.add(img);
         });
 
         let obstacles = [];
         let projectiles = [];
         let score = 0;
-        let spawnInterval = 3000; 
+        let spawnInterval = 3000;
         let obstacleSpeed = 5;
 
         // Create zombies
@@ -102,7 +102,7 @@
         function createProjectile() {
             const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png";
             fabric.Image.fromURL(bulletImageUrl, function(img) {
-                img.scale(0.1); // Increased bullet size
+                img.scale(0.1);
                 img.set({
                     left: player.left + player.getScaledWidth(),
                     top: player.top + player.getScaledHeight() / 2 - img.getScaledHeight() / 2,
@@ -169,10 +169,9 @@
                         obstacles.splice(index, 1);
                     } else if (checkCollisionWithPlayer(obstacle)) {
                         if (obstacle.type === 'fire' && player.isJumping) {
-                            // Allow player to jump over fire
                             return;
                         }
-                        endGame(); // End game for collisions with zombies or non-jumping fire collisions
+                        endGame();
                     }
                 });
                 canvas.renderAll();
@@ -198,11 +197,20 @@
             if (event.code === 'ArrowUp' && !player.isJumping) { 
                 player.isJumping = true;
                 const originalTop = player.top;
-                player.top -= 300; // Higher jump to clear fire
-                setTimeout(() => {
-                    player.top = originalTop;
-                    player.isJumping = false;
-                }, 800);
+                const jumpHeight = 400;  // Higher jump to clear fire
+                player.animate('top', originalTop - jumpHeight, {
+                    duration: 500,
+                    onChange: canvas.renderAll.bind(canvas),
+                    onComplete: () => {
+                        player.animate('top', originalTop, {
+                            duration: 500,
+                            onChange: canvas.renderAll.bind(canvas),
+                            onComplete: () => {
+                                player.isJumping = false;
+                            }
+                        });
+                    }
+                });
             } else if (event.code === 'Space') { 
                 createProjectile();
             }
