@@ -198,17 +198,24 @@
                 player.isJumping = true;
                 const originalTop = player.top;
                 const jumpHeight = 400;  // Higher jump to clear fire
+                const hangTime = 500;    // Time spent at peak of jump
+
+                // Jump up
                 player.animate('top', originalTop - jumpHeight, {
-                    duration: 500,
+                    duration: 600, // Longer jump up time
                     onChange: canvas.renderAll.bind(canvas),
                     onComplete: () => {
-                        player.animate('top', originalTop, {
-                            duration: 500,
-                            onChange: canvas.renderAll.bind(canvas),
-                            onComplete: () => {
-                                player.isJumping = false;
-                            }
-                        });
+                        // Stay in the air for longer
+                        setTimeout(() => {
+                            // Descend back down
+                            player.animate('top', originalTop, {
+                                duration: 800,  // Slower descent
+                                onChange: canvas.renderAll.bind(canvas),
+                                onComplete: () => {
+                                    player.isJumping = false;
+                                }
+                            });
+                        }, hangTime); // Delay at the peak of the jump
                     }
                 });
             } else if (event.code === 'Space') { 
