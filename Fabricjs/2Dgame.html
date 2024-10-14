@@ -40,6 +40,14 @@
             left: 10px;
             z-index: 2;
         }
+        #scoreDisplay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 20px;
+            z-index: 2;
+        }
     </style>
 </head>
 <body>
@@ -53,6 +61,8 @@
         <button id="pauseButton">Pause</button>
     </div>
 
+    <div id="scoreDisplay" style="display: none;">Score: <span id="scoreValue">0</span></div>
+
     <canvas id="gameCanvas"></canvas>
 
     <script>
@@ -63,7 +73,7 @@
         let gameOver = false;
         let isPaused = false;
         let gameLoopId;
-        let obstacleIntervalId; // Store the interval ID for obstacle creation
+        let obstacleIntervalId;
 
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background%20apocalypse.avif";
         fabric.Image.fromURL(backgroundImageUrl, function(img) {
@@ -168,6 +178,7 @@
                             obstacles.splice(index, 1);
                             projectiles.splice(projectiles.indexOf(projectile), 1);
                             score += 10;
+                            document.getElementById('scoreValue').textContent = score; // Update score display
                             clearInterval(interval);
                         }
                     });
@@ -187,12 +198,13 @@
 
         function endGame() {
             gameOver = true;
-            alert("Game Over!");
+            alert("Game Over! Your score: " + score);
             canvas.clear();
             document.getElementById('startScreen').style.display = 'flex';
             document.getElementById('controls').style.display = 'none';
+            document.getElementById('scoreDisplay').style.display = 'none'; // Hide score display
             cancelAnimationFrame(gameLoopId);
-            clearInterval(obstacleIntervalId); // Clear the obstacle creation interval
+            clearInterval(obstacleIntervalId);
         }
 
         function gameLoop() {
@@ -224,6 +236,9 @@
         document.getElementById('startGameButton').addEventListener('click', () => {
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('controls').style.display = 'block';
+            document.getElementById('scoreDisplay').style.display = 'block'; // Show score display
+            score = 0; // Reset score
+            document.getElementById('scoreValue').textContent = score; // Update score display
             startCreatingObstacles();
             gameLoop();
         });
@@ -240,8 +255,8 @@
                 document.getElementById('pauseButton').textContent = 'Resume';
             } else {
                 isPaused = false;
-                startCreatingObstacles(); // Restart obstacle creation
-                gameLoop(); // Restart the game loop
+                startCreatingObstacles();
+                gameLoop();
                 document.getElementById('pauseButton').textContent = 'Pause';
             }
         });
