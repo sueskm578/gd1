@@ -94,9 +94,9 @@
         let player;
 
         // Load the background image
-        const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
+        const backgroundImageUrl = "https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/background%20apocalypse.avif";
         
-        function loadBackground() {
+        async function loadBackground() {
             return new Promise((resolve) => {
                 fabric.Image.fromURL(backgroundImageUrl, function(img) {
                     img.set({
@@ -113,7 +113,7 @@
         }
 
         // Load the player image
-        const playerImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/gun guy.png";
+        const playerImageUrl = "https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/gun%20guy.png";
         fabric.Image.fromURL(playerImageUrl, function(img) {
             img.scale(0.1);
             img.set({
@@ -159,7 +159,7 @@
 
         // Create zombies
         function createZombie() {
-            const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png";
+            const zombieImageUrl = "https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/zombie.png";
             fabric.Image.fromURL(zombieImageUrl, function(img) {
                 img.scale(0.2);
                 img.set({
@@ -174,7 +174,7 @@
 
         // Create fire barrier
         function createBarrier() {
-            const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png";
+            const fireImageUrl = "https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/vecteezy_bonfire-with_26772683.png";
             fabric.Image.fromURL(fireImageUrl, function(img) {
                 img.scale(0.03); 
                 img.set({
@@ -198,7 +198,7 @@
 
         // Create a projectile (bullet)
         function createProjectile() {
-            const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png";
+            const bulletImageUrl = "https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/bullet.png";
             fabric.Image.fromURL(bulletImageUrl, function(img) {
                 img.scale(0.1);
                 img.set({
@@ -281,15 +281,21 @@
 
         // Start creating obstacles
         function startCreatingObstacles() {
-            const intervalId = setInterval(() => {
+            return setInterval(() => {
                 if (!gamePaused) {
                     createObstacle();
                     spawnInterval = Math.max(1000, spawnInterval * 0.98);
                     obstacleSpeed += 0.1;
                 }
             }, spawnInterval);
-            return intervalId; // Return the interval ID
         }
+
+        // Keyboard controls
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !gamePaused) {
+                createProjectile(); // Shoot bullet when space is pressed
+            }
+        });
     </script>
 </body>
 </html>
