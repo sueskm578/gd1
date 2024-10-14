@@ -43,12 +43,6 @@
             right: 20px;
             z-index: 3;
         }
-        #controls {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 3;
-        }
         button {
             padding: 10px 20px;
             font-size: 20px;
@@ -62,10 +56,6 @@
     </div>
     
     <div id="gameUI">
-        <div id="controls">
-            <button id="restartButton">Restart</button>
-            <button id="pauseButton">Pause</button>
-        </div>
         <div id="score">Score: 0</div>
     </div>
 
@@ -77,24 +67,17 @@
         canvas.setHeight(window.innerHeight);
 
         let gameOver = false;
-        let gamePaused = false;
         let score = 0;
         let scoreElement = document.getElementById('score');
 
         const startScreen = document.getElementById('startScreen');
         const gameUI = document.getElementById('gameUI');
         const startGameButton = document.getElementById('startGameButton');
-        const restartButton = document.getElementById('restartButton');
-        const pauseButton = document.getElementById('pauseButton');
 
         let obstacles = [];
         let projectiles = [];
         let player;
-        const playerJumpHeight = 150; 
-        let jumpCount = 0; 
-        const maxJumps = 1; 
 
-        // Load images
         async function loadImages() {
             player = await loadImage("https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/gun%20guy.png", 0.1);
             player.set({
@@ -124,8 +107,6 @@
             score = 0;
             scoreElement.textContent = `Score: ${score}`;
             gameOver = false;
-            gamePaused = false;
-            jumpCount = 0;
             startCreatingObstacles();
             gameLoop();
             gameUI.style.display = 'flex'; 
@@ -133,12 +114,6 @@
         }
 
         startGameButton.addEventListener('click', initGame);
-        restartButton.addEventListener('click', initGame);
-
-        pauseButton.addEventListener('click', () => {
-            gamePaused = !gamePaused;
-            pauseButton.textContent = gamePaused ? 'Resume' : 'Pause';
-        });
 
         function createZombie() {
             loadImage("https://raw.githubusercontent.com/sueskm578/sueskm578.github.io/main/Fabricjs/zombie.png", 0.2).then(img => {
@@ -147,7 +122,7 @@
                     top: canvas.height - img.getScaledHeight() - 20,
                     selectable: false
                 });
-                obstacles.push({ type: 'zombie', img });
+                obstacles.push(img);
                 canvas.add(img);
             });
         }
@@ -167,41 +142,29 @@
 
         function moveProjectile(projectile) {
             const interval = setInterval(() => {
-                if (!gamePaused) {
-                    projectile.left += 10; 
-                    if (projectile.left > canvas.width) {
-                        canvas.remove(projectile);
-                        projectiles.splice(projectiles.indexOf(projectile), 1);
-                        clearInterval(interval);
-                    } else {
-                        obstacles.forEach((obstacle, index) => {
-                            if (obstacle.type === 'zombie' && 
-                                projectile.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
-                                projectile.left + projectile.getScaledWidth() > obstacle.img.left &&
-                                projectile.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
-                                projectile.top + projectile.getScaledHeight() > obstacle.img.top) {
-                                canvas.remove(obstacle.img);
-                                canvas.remove(projectile);
-                                obstacles.splice(index, 1);
-                                projectiles.splice(projectiles.indexOf(projectile), 1);
-                                score += 1; 
-                                scoreElement.textContent = `Score: ${score}`;
-                                clearInterval(interval);
-                            }
-                        });
-                    }
-                    canvas.renderAll();
+                projectile.left += 10; 
+                if (projectile.left > canvas.width) {
+                    canvas.remove(projectile);
+                    projectiles.splice(projectiles.indexOf(projectile), 1);
+                    clearInterval(interval);
+                } else {
+                    obstacles.forEach((obstacle, index) => {
+                        if (projectile.left < obstacle.left + obstacle.getScaledWidth() &&
+                            projectile.left + projectile.getScaledWidth() > obstacle.left &&
+                            projectile.top < obstacle.top + obstacle.getScaledHeight() &&
+                            projectile.top + projectile.getScaledHeight() > obstacle.top) {
+                            canvas.remove(obstacle);
+                            canvas.remove(projectile);
+                            obstacles.splice(index, 1);
+                            projectiles.splice(projectiles.indexOf(projectile), 1);
+                            score += 1; 
+                            scoreElement.textContent = `Score: ${score}`;
+                            clearInterval(interval);
+                        }
+                    });
                 }
+                canvas.renderAll();
             }, 30);
-        }
-
-        function checkCollisionWithPlayer(obstacle) {
-            return (
-                player.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
-                player.left + player.getScaledWidth() > obstacle.img.left &&
-                player.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
-                player.top + player.getScaledHeight() > obstacle.img.top
-            );
         }
 
         function endGame() {
@@ -213,14 +176,12 @@
         }
 
         function gameLoop() {
-            if (!gameOver && !gamePaused) {
+            if (!gameOver) {
                 obstacles.forEach((obstacle, index) => {
-                    obstacle.img.left -= 5; 
-                    if (obstacle.img.left < 0) {
-                        canvas.remove(obstacle.img);
+                    obstacle.left -= 5; 
+                    if (obstacle.left < 0) {
+                        canvas.remove(obstacle);
                         obstacles.splice(index, 1);
-                    } else if (checkCollisionWithPlayer(obstacle)) {
-                        endGame(); 
                     }
                 });
                 canvas.renderAll();
@@ -230,35 +191,15 @@
 
         function startCreatingObstacles() {
             setInterval(() => {
-                if (!gamePaused) {
+                if (!gameOver) {
                     createZombie();
                 }
             }, 2000); 
         }
 
         window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && !gamePaused) {
+            if (e.code === 'Space') {
                 createProjectile(); 
-            }
-            if (e.code === 'ArrowUp' && jumpCount < maxJumps) {
-                jumpCount++;
-                let jumpHeight = playerJumpHeight;
-                let originalTop = player.top;
-
-                const jumpInterval = setInterval(() => {
-                    if (jumpHeight > 0) {
-                        player.top -= 10; 
-                        jumpHeight -= 10;
-                    } else {
-                        if (player.top < originalTop) {
-                            player.top += 10; 
-                        } else {
-                            clearInterval(jumpInterval);
-                            jumpCount = 0; 
-                        }
-                    }
-                    canvas.renderAll();
-                }, 30);
             }
         });
 
