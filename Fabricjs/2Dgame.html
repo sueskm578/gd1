@@ -62,13 +62,14 @@
 
         let gameOver = false;
         let isPaused = false;
+        let gameLoopId; // Variable to hold the game loop ID
 
         // Load the background image
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background%20apocalypse.avif";
         fabric.Image.fromURL(backgroundImageUrl, function(img) {
             img.set({
                 left: 0,
-                top: 0,
+                top: -300,
                 selectable: false,
                 evented: false
             });
@@ -198,6 +199,7 @@
             canvas.clear();
             document.getElementById('startScreen').style.display = 'flex'; // Show start screen again
             document.getElementById('controls').style.display = 'none'; // Hide controls
+            cancelAnimationFrame(gameLoopId); // Stop the game loop
         }
 
         // Game loop
@@ -213,7 +215,7 @@
                     }
                 });
                 canvas.renderAll();
-                requestAnimationFrame(gameLoop);
+                gameLoopId = requestAnimationFrame(gameLoop); // Store the loop ID
             }
         }
 
@@ -286,4 +288,4 @@
         });
     </script>
 </body>
-</html>
+</html> 
