@@ -14,18 +14,20 @@
             display: block;
             border: 1px solid black;
         }
-        #startScreen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1;
-        }
+       #startScreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+    background-image: url('https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background%20apocalypse.avif');
+    background-size: cover;
+}
         #startScreen h1 {
             color: white;
         }
@@ -271,12 +273,17 @@
             gameLoop();
         });
 
-        document.getElementById('restartButton').addEventListener('click', () => {
-            setupGame();
-            document.getElementById('backgroundMusic').play();
-            startCreatingObstacles();
-            gameLoop();
-        });
+document.getElementById('restartButton').addEventListener('click', () => {
+    document.getElementById('backgroundMusic').play();
+    gameOver = false;
+    isPaused = false;
+    obstacles = [];
+    projectiles = [];
+    score = 0;
+    canvas.clear();
+    setupGame();
+    gameLoop();
+});
 
         document.getElementById('pauseButton').addEventListener('click', () => {
             if (!isPaused) {
