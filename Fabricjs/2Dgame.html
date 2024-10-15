@@ -86,7 +86,7 @@
         fabric.Image.fromURL(backgroundImageUrl, function(img) {
             img.set({
                 left: 0,
-                top: -300,
+                top: 0,
                 selectable: false,
                 evented: false
             });
@@ -206,29 +206,30 @@
             );
         }
 
-       function endGame() {
-    gameOver = true;
-    
-    // Stop background music
-    const backgroundMusic = document.getElementById('backgroundMusic');
-    backgroundMusic.pause();
-    backgroundMusic.currentTime = 0; // Reset background music to the start
-    
-    // Play game over sound
-    document.getElementById('gameOverSound').play();
-    
-    // Show Game Over alert after stopping music and playing sound
-    setTimeout(() => {
-        alert("Game Over! Your score: " + score);
-    }, 500); // Adding a small delay ensures that the game over sound isn't interrupted
-    
-    canvas.clear();
-    document.getElementById('startScreen').style.display = 'flex';
-    document.getElementById('controls').style.display = 'none';
-    document.getElementById('scoreDisplay').style.display = 'none'; // Hide score display
-    cancelAnimationFrame(gameLoopId);
-    clearInterval(obstacleIntervalId);
-}
+        function endGame() {
+            gameOver = true;
+            
+            // Stop background music
+            const backgroundMusic = document.getElementById('backgroundMusic');
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0; // Reset background music to the start
+            
+            // Play game over sound
+            document.getElementById('gameOverSound').play();
+            
+            // Show Game Over alert after stopping music and playing sound
+            setTimeout(() => {
+                alert("Game Over! Your score: " + score);
+                // Show the start screen and controls again
+                document.getElementById('startScreen').style.display = 'flex';
+                document.getElementById('controls').style.display = 'none';
+                document.getElementById('scoreDisplay').style.display = 'none'; // Hide score display
+                canvas.clear(); // Clear the canvas
+            }, 500); // Adding a small delay ensures that the game over sound isn't interrupted
+            
+            cancelAnimationFrame(gameLoopId);
+            clearInterval(obstacleIntervalId);
+        }
 
         function gameLoop() {
             if (!gameOver && !isPaused) {
