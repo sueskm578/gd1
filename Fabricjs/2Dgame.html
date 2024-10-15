@@ -45,7 +45,7 @@
             top: 10px;
             right: 10px;
             color: white;
-            font-size: 20px;
+            font-size: 30px; /* Increased font size */
             z-index: 2;
         }
     </style>
@@ -64,6 +64,13 @@
     <div id="scoreDisplay" style="display: none;">Score: <span id="scoreValue">0</span></div>
 
     <canvas id="gameCanvas"></canvas>
+
+    <!-- Sound Effects -->
+    <audio id="backgroundMusic" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie-background.mp3" loop></audio>
+    <audio id="shootSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Gun-shooting.mp3"></audio>
+    <audio id="zombieSpawnSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/undead-growl.wav"></audio>
+    <audio id="zombieDeathSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Zombie-death.mp3"></audio>
+    <audio id="gameOverSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Game-over.mp3"></audio>
 
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
@@ -118,6 +125,7 @@
                 });
                 obstacles.push({ type: 'zombie', img });
                 canvas.add(img);
+                document.getElementById('zombieSpawnSound').play(); // Play zombie spawn sound
             });
         }
 
@@ -155,6 +163,7 @@
                 projectiles.push(img);
                 canvas.add(img);
                 moveProjectile(img);
+                document.getElementById('shootSound').play(); // Play shoot sound
             });
         }
 
@@ -177,8 +186,9 @@
                             canvas.remove(projectile);
                             obstacles.splice(index, 1);
                             projectiles.splice(projectiles.indexOf(projectile), 1);
-                            score += 10;
+                            score += 1; // Increment score by 1
                             document.getElementById('scoreValue').textContent = score; // Update score display
+                            document.getElementById('zombieDeathSound').play(); // Play zombie death sound
                             clearInterval(interval);
                         }
                     });
@@ -198,8 +208,10 @@
 
         function endGame() {
             gameOver = true;
+            document.getElementById('gameOverSound').play(); // Play game over sound
             alert("Game Over! Your score: " + score);
             canvas.clear();
+            document.getElementById('backgroundMusic').pause(); // Stop background music
             document.getElementById('startScreen').style.display = 'flex';
             document.getElementById('controls').style.display = 'none';
             document.getElementById('scoreDisplay').style.display = 'none'; // Hide score display
@@ -239,6 +251,7 @@
             document.getElementById('scoreDisplay').style.display = 'block'; // Show score display
             score = 0; // Reset score
             document.getElementById('scoreValue').textContent = score; // Update score display
+            document.getElementById('backgroundMusic').play(); // Start background music
             startCreatingObstacles();
             gameLoop();
         });
