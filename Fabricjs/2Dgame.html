@@ -151,7 +151,23 @@
                 obstacles.push({ type: 'zombie', img });
                 canvas.add(img);
                 document.getElementById('zombieSpawnSound').play();
+                moveZombie(img); // Start moving the zombie
             });
+        }
+
+        function moveZombie(zombie) {
+            const interval = setInterval(() => {
+                if (isPaused || gameOver) return;
+                zombie.left -= obstacleSpeed; // Move zombie left
+                if (zombie.left < 0) {
+                    canvas.remove(zombie);
+                    obstacles.splice(obstacles.indexOf(zombie), 1);
+                    clearInterval(interval);
+                } else if (checkCollisionWithPlayer({ img: zombie })) {
+                    endGame();
+                }
+                canvas.renderAll();
+            }, 30);
         }
 
         function createBarrier() {
@@ -194,7 +210,7 @@
         function moveBulletCrate(crate) {
             const fallSpeed = 2; // Adjust this value for slower or faster falling speed
             const interval = setInterval(() => {
-                if (isPaused) return;
+                if (isPaused || gameOver) return;
                 crate.top += fallSpeed; // Move downwards at the specified speed
                 if (crate.top > canvas.height) {
                     canvas.remove(crate);
@@ -229,7 +245,7 @@
 
         function moveProjectile(projectile) {
             const interval = setInterval(() => {
-                if (isPaused) return;
+                if (isPaused || gameOver) return;
                 projectile.left += 10;
                 if (projectile.left > canvas.width) {
                     canvas.remove(projectile);
@@ -290,12 +306,14 @@
         function gameLoop() {
             if (!gameOver && !isPaused) {
                 obstacles.forEach((obstacle, index) => {
-                    obstacle.img.left -= obstacleSpeed;
-                    if (obstacle.img.left < 0) {
-                        canvas.remove(obstacle.img);
-                        obstacles.splice(index, 1);
-                    } else if (checkCollisionWithPlayer(obstacle)) {
-                        endGame();
+                    if (obstacle.type === 'zombie') {
+                        obstacle.img.left -= obstacleSpeed; // Move zombies left
+                        if (obstacle.img.left < 0) {
+                            canvas.remove(obstacle.img);
+                            obstacles.splice(index, 1);
+                        } else if (checkCollisionWithPlayer(obstacle)) {
+                            endGame();
+                        }
                     }
                 });
                 canvas.renderAll();
@@ -319,16 +337,13 @@
 
         function updateBulletCount() {
             document.getElementById('bulletCount').textContent = bulletsRemaining;
-            if (bulletsRemaining <= 5) {
-                document.getElementById('reloadButton').style.display = 'block';
-            } else {
-                document.getElementById('reloadButton').style.display = 'none';
-            }
+            document.getElementById('reloadButton').style.display = bulletsRemaining > 0 && bulletsRemaining < 10 ? 'block' : 'none';
         }
 
         document.getElementById('reloadButton').addEventListener('click', () => {
-            if (bulletsRemaining <= 5) {
-                bulletsRemaining += 5; // Reload 5 bullets
+            if (bulletsRemaining > 0) {
+                const bulletsToReload = Math.min(10 - bulletsRemaining, bulletsRemaining);
+                bulletsRemaining += bulletsToReload; // Reload remaining bullets
                 updateBulletCount();
                 document.getElementById('reloadSound').play(); // Play reload sound
             }
