@@ -137,8 +137,6 @@
             });
 
             updateBulletCount(); // Initialize bullet count display
-            document.getElementById('scoreDisplay').style.display = 'block'; // Show score display
-            document.getElementById('controls').style.display = 'block'; // Show controls
         }
 
         function createZombie() {
@@ -236,122 +234,59 @@
                     clearInterval(interval);
                 } else if (checkCollisionWithPlayer({ img: crate })) {
                     bulletsRemaining += 5; // Collect 5 bullets per crate
+                    updateBulletCount();
                     canvas.remove(crate);
                     obstacles = obstacles.filter(ob => ob.img !== crate);
-                    updateBulletCount();
+                    clearInterval(interval);
                 }
                 canvas.renderAll();
             }, 30);
         }
 
-        function checkCollisionWithPlayer(obstacle) {
-            const playerBounds = player.getBoundingRect();
-            const obstacleBounds = obstacle.img.getBoundingRect();
-            return (
-                playerBounds.left < obstacleBounds.left + obstacleBounds.width &&
-                playerBounds.left + playerBounds.width > obstacleBounds.left &&
-                playerBounds.top < obstacleBounds.top + obstacleBounds.height &&
-                playerBounds.top + playerBounds.height > obstacleBounds.top
-            );
-        }
-
-        function updateBulletCount() {
-            document.getElementById('bulletCount').innerText = bulletsRemaining;
-            if (bulletsRemaining <= 0) {
-                document.getElementById('reloadButton').style.display = 'block';
-            } else {
-                document.getElementById('reloadButton').style.display = 'none';
-            }
-        }
-
-        function endGame() {
-            gameOver = true;
-            document.getElementById('gameOverSound').play();
-            clearInterval(obstacleIntervalId);
-            clearInterval(gameLoopId);
-            alert('Game Over! Your score: ' + score);
-            setupGame();
-        }
-
-        function jump() {
-            if (player.isJumping) return;
-            player.isJumping = true;
-            let jumpHeight = 100; // Height of the jump
-            const jumpSpeed = 5;
-            const jumpInterval = setInterval(() => {
-                if (jumpHeight > 0) {
-                    player.top -= jumpSpeed; // Move up
-                    jumpHeight -= jumpSpeed;
-                } else {
-                    player.top += jumpSpeed; // Move down
-                    if (player.top >= canvas.height - player.getScaledHeight() - 20) {
-                        player.top = canvas.height - player.getScaledHeight() - 20; // Reset to ground level
-                        player.isJumping = false;
-                        clearInterval(jumpInterval);
-                    }
-                }
-                canvas.renderAll();
-            }, 20);
-        }
-
-        // Handle key events for player controls
-        window.addEventListener('keydown', (e) => {
-            if (isPaused || gameOver) return;
-            switch (e.key) {
-                case 'ArrowLeft':
-                    player.left -= 10; // Move left
-                    break;
-                case 'ArrowRight':
-                    player.left += 10; // Move right
-                    break;
-                case 'ArrowUp':
-                    jump(); // Jump
-                    break;
-                case ' ':
-                    shoot(); // Shoot
-                    break;
-            }
-            canvas.renderAll();
-        });
-
-        function shoot() {
+        function createProjectile() {
             if (bulletsRemaining <= 0) return;
+            const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png";
+            fabric.Image.fromURL(bulletImageUrl, function(img) {
+                img.scale(0.1);
+                img.set({
+                    left: player.left + player.getScaledWidth(),
+                    top: player.top + player.getScaledHeight() / 2 - img.getScaledHeight() / 2,
+                    selectable: false
+                });
+                projectiles.push(img);
+                canvas.add(img);
+                moveProjectile(img);
+                document.getElementById('shootSound').play();
+            });
             bulletsRemaining--;
             updateBulletCount();
+        }
 
-            // Create bullet
-            const bullet = new fabric.Rect({
-                left: player.left + player.getScaledWidth(),
-                top: player.top + player.getScaledHeight() / 2,
-                fill: 'yellow',
-                width: 5,
-                height: 2
-            });
-            projectiles.push(bullet);
-            canvas.add(bullet);
-            document.getElementById('shootSound').play();
-
-            // Move bullet
-            const bulletInterval = setInterval(() => {
-                if (gameOver) {
-                    clearInterval(bulletInterval);
-                    return;
-                }
-                bullet.left += 10; // Move bullet to the right
-                if (bullet.left > canvas.width) {
-                    canvas.remove(bullet);
-                    projectiles = projectiles.filter(p => p !== bullet);
-                    clearInterval(bulletInterval);
+        function moveProjectile(projectile) {
+            const interval = setInterval(() => {
+                if (isPaused || gameOver) return;
+                projectile.left += 10;
+                if (projectile.left > canvas.width) {
+                    canvas.remove(projectile);
+                    projectiles = projectiles.filter(proj => proj !== projectile);
+                    clearInterval(interval);
                 } else {
-                    obstacles.forEach(obstacle => {
-                        if (obstacle.type === 'zombie' && checkCollisionWithPlayer(obstacle)) {
-                            canvas.remove(bullet);
-                            projectiles = projectiles.filter(p => p !== bullet);
+                    obstacles.forEach((obstacle, index) => {
+                        if ((obstacle.type === 'zombie' || obstacle.type === 'fire') && 
+                            projectile.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
+                            projectile.left + projectile.getScaledWidth() > obstacle.img.left &&
+                            projectile.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
+                            projectile.top + projectile.getScaledHeight() > obstacle.img.top) {
                             canvas.remove(obstacle.img);
-                            obstacles = obstacles.filter(ob => ob.img !== obstacle.img);
-                            score += 10; // Increase score
-                            document.getElementById('scoreValue').innerText = score;
-                            document.getElementById('zombieDeathSound').play();
+                            canvas.remove(projectile);
+                            obstacles.splice(index, 1);
+                            projectiles = projectiles.filter(proj => proj !== projectile);
+                            score += 1;
+                            document.getElementById('scoreValue').textContent = score;
+                            if (obstacle.type === 'zombie') {
+                                document.getElementById('zombieDeathSound').play();
+                            }
+                            clearInterval(interval);
                         }
                     });
                 }
@@ -359,42 +294,144 @@
             }, 30);
         }
 
-        function startGame() {
-            setupGame();
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('backgroundMusic').play();
-            obstacleIntervalId = setInterval(createObstacle, spawnInterval);
-            gameLoopId = requestAnimationFrame(gameLoop);
+        function checkCollisionWithPlayer(obstacle) {
+            return (
+                player.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
+                player.left + player.getScaledWidth() > obstacle.img.left &&
+                player.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
+                player.top + player.getScaledHeight() > obstacle.img.top
+            );
+        }
+
+        function endGame() {
+            gameOver = true;
+            isPaused = true;
+
+            const backgroundMusic = document.getElementById('backgroundMusic');
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+
+            document.getElementById('gameOverSound').play();
+
+            setTimeout(() => {
+                alert("Game Over! Your score: " + score);
+                document.getElementById('startScreen').style.display = 'flex';
+                document.getElementById('controls').style.display = 'none';
+                document.getElementById('scoreDisplay').style.display = 'none';
+            }, 500);
+
+            cancelAnimationFrame(gameLoopId);
+            clearInterval(obstacleIntervalId);
         }
 
         function gameLoop() {
-            if (isPaused || gameOver) return;
-            obstacles.forEach(obstacle => {
-                if (obstacle.type === 'zombie') {
-                    moveZombie(obstacle.img);
-                } else if (obstacle.type === 'fire') {
-                    moveBarrier(obstacle.img);
-                }
-            });
-            projectiles.forEach(bullet => {
-                moveBulletCrate(bullet);
-            });
-            gameLoopId = requestAnimationFrame(gameLoop);
+            if (!gameOver && !isPaused) {
+                canvas.renderAll();
+                gameLoopId = requestAnimationFrame(gameLoop);
+            }
         }
 
-        document.getElementById('startGameButton').addEventListener('click', startGame);
-        document.getElementById('restartButton').addEventListener('click', setupGame);
-        document.getElementById('pauseButton').addEventListener('click', () => {
-            isPaused = !isPaused;
-            document.getElementById('pauseButton').innerText = isPaused ? 'Resume' : 'Pause';
-        });
-        document.getElementById('reloadButton').addEventListener('click', () => {
+        function startCreatingObstacles() {
+            obstacleIntervalId = setInterval(() => {
+                if (!isPaused) {
+                    const rand = Math.random();
+                    if (rand < 0.7) { // 70% chance of obstacle
+                        createObstacle();
+                    } else { // 30% chance of a bullet crate
+                        createBulletCrate();
+                    }
+                    obstacleSpeed += 0.05; // Slow increase of speed over time
+                    spawnInterval = Math.max(700, spawnInterval * 0.97); // Gradually decrease spawn interval but slower
+                }
+            }, spawnInterval);
+        }
+
+        function updateBulletCount() {
+            document.getElementById('bulletCount').textContent = bulletsRemaining;
             if (bulletsRemaining <= 0) {
-                bulletsRemaining = 10; // Reload bullets
-                updateBulletCount();
-                document.getElementById('reloadSound').play();
+                document.getElementById('reloadButton').style.display = 'block';
+            } else {
                 document.getElementById('reloadButton').style.display = 'none';
             }
+        }
+
+        document.getElementById('reloadButton').addEventListener('click', () => {
+            bulletsRemaining = 10; // Reload to full bullets
+            updateBulletCount();
+            document.getElementById('reloadSound').play(); // Play reload sound
+        });
+
+       document.getElementById('startGameButton').addEventListener('click', () => {
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('controls').style.display = 'block';
+    document.getElementById('scoreDisplay').style.display = 'block';
+    setupGame();
+    document.getElementById('backgroundMusic').play();
+    startCreatingObstacles();
+    gameLoop();
+});
+
+        document.getElementById('restartButton').addEventListener('click', () => {
+            initVariables();
+            setupGame();
+            document.getElementById('backgroundMusic').play();
+            startCreatingObstacles();
+            gameLoop();
+        });
+
+        document.getElementById('pauseButton').addEventListener('click', () => {
+            if (!isPaused) {
+                isPaused = true;
+                cancelAnimationFrame(gameLoopId);
+                clearInterval(obstacleIntervalId);
+                document.getElementById('pauseButton').textContent = 'Resume';
+            } else {
+                isPaused = false;
+                startCreatingObstacles();
+                gameLoop();
+                document.getElementById('pauseButton').textContent = 'Pause';
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'ArrowLeft') {
+                player.left -= 10; // Move left
+                if (player.left < 0) player.left = 0; // Prevent moving off-screen
+            } else if (event.code === 'ArrowRight') {
+                player.left += 10; // Move right
+                if (player.left + player.getScaledWidth() > canvas.width) {
+                    player.left = canvas.width - player.getScaledWidth(); // Prevent moving off-screen
+                }
+            } else if (event.code === 'ArrowUp' && !player.isJumping) { 
+                player.isJumping = true;
+                const originalTop = player.top;
+                const jumpHeight = 200;
+                const hangTime = 300;
+
+                player.animate('top', originalTop - jumpHeight, {
+                    duration: 600,
+                    onChange: canvas.renderAll.bind(canvas),
+                    onComplete: () => {
+                        setTimeout(() => {
+                            player.animate('top', originalTop, {
+                                duration: 800,
+                                onChange: canvas.renderAll.bind(canvas),
+                                onComplete: () => {
+                                    player.isJumping = false;
+                                }
+                            });
+                        }, hangTime);
+                    }
+                });
+            } else if (event.code === 'Space') { 
+                createProjectile();
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            canvas.setWidth(window.innerWidth);
+            canvas.setHeight(window.innerHeight);
+            canvas.renderAll();
         });
     </script>
 </body>
