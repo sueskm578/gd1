@@ -88,12 +88,12 @@
     <canvas id="gameCanvas"></canvas>
 
     <!-- Sound Effects -->
-    <audio id="backgroundMusic" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie-background.mp3" loop></audio>
-    <audio id="shootSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Gun-shooting.mp3"></audio>
-    <audio id="zombieSpawnSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/undead-growl.wav"></audio>
-    <audio id="zombieDeathSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Zombie-death.mp3"></audio>
-    <audio id="gameOverSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Game-over.mp3"></audio>
-    <audio id="reloadSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Gun-reload.mp3"></audio>
+    <audio id="backgroundMusic" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie-background.mp3" loop preload="auto"></audio>
+    <audio id="shootSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Gun-shooting.mp3" preload="auto"></audio>
+    <audio id="zombieSpawnSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/undead-growl.wav" preload="auto"></audio>
+    <audio id="zombieDeathSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Zombie-death.mp3" preload="auto"></audio>
+    <audio id="gameOverSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Game-over.mp3" preload="auto"></audio>
+    <audio id="reloadSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Gun-reload.mp3" preload="auto"></audio>
 
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
@@ -252,6 +252,7 @@
                 } else if (checkCollisionWithPlayer({ img: crate })) {
                     totalBulletsCollected += 5; // Update total bullets collected
                     updateBulletCount();
+                    document.getElementById('reloadSound').play(); // Play reload sound
                     canvas.remove(crate);
                     obstacles = obstacles.filter(ob => ob.img !== crate);
                     clearInterval(interval);
@@ -341,6 +342,8 @@
 
             if (isColliding) {
                 console.log("Collision detected!");
+            } else {
+                console.log("No collision detected.");
             }
 
             return isColliding;
