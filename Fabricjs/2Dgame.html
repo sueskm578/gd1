@@ -350,6 +350,9 @@
             obstacleIntervalId = setInterval(() => {
                 if (!isPaused) {
                     createObstacle();
+                    if (Math.random() < 0.5) { // 50% chance to create a bullet crate
+                        createBulletCrate();
+                    }
                 }
             }, spawnInterval);
         }
@@ -391,6 +394,7 @@
         });
 
         document.getElementById('restartButton').addEventListener('click', () => {
+            // Reset game state
             initVariables();
             setupGame();
             document.getElementById('backgroundMusic').play();
