@@ -361,15 +361,15 @@
             document.getElementById('reloadSound').play(); // Play reload sound
         });
 
-        document.getElementById('startGameButton').addEventId('click', () => {
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('controls').style.display = 'block';
-            document.getElementById('scoreDisplay').style.display = 'block';
-            setupGame();
-            document.getElementById('backgroundMusic').play();
-            startCreatingObstacles();
-            gameLoop();
-        });
+       document.getElementById('startGameButton').addEventListener('click', () => {
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('controls').style.display = 'block';
+    document.getElementById('scoreDisplay').style.display = 'block';
+    setupGame();
+    document.getElementById('backgroundMusic').play();
+    startCreatingObstacles();
+    gameLoop();
+});
 
         document.getElementById('restartButton').addEventListener('click', () => {
             initVariables();
