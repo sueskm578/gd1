@@ -211,7 +211,7 @@
         function createBulletCrate() {
             const crateImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/crate.png";
             fabric.Image.fromURL(crateImageUrl, function(img) {
-                img.scale(0.1);
+                img.scale(0.2); // Increased size of the crate
                 img.set({
                     left: Math.random() * (canvas.width - img.getScaledWidth()),
                     top: 0, // Start from the top
@@ -335,20 +335,20 @@
             obstacleIntervalId = setInterval(() => {
                 if (!isPaused) {
                     const rand = Math.random();
-                    if (rand < 0.7) { // 70% chance of obstacle
+                    if (rand < 0.5) { // 50% chance of obstacle
                         createObstacle();
-                    } else { // 30% chance of a bullet crate
+                    } else if (rand < 0.8) { // 30% chance of a bullet crate
                         createBulletCrate();
                     }
-                    obstacleSpeed += 0.05; // Slow increase of speed over time
-                    spawnInterval = Math.max(700, spawnInterval * 0.97); // Gradually decrease spawn interval but slower
+                    obstacleSpeed = Math.max(2, obstacleSpeed + 0.02); // Slow increase of speed over time
+                    spawnInterval = Math.max(2000, spawnInterval * 1.05); // Gradually increase spawn interval
                 }
             }, spawnInterval);
         }
 
         function updateBulletCount() {
             document.getElementById('bulletCount').textContent = bulletsRemaining;
-            if (bulletsRemaining <= 0) {
+            if (bulletsRemaining <= 5) {
                 document.getElementById('reloadButton').style.display = 'block';
             } else {
                 document.getElementById('reloadButton').style.display = 'none';
@@ -356,20 +356,20 @@
         }
 
         document.getElementById('reloadButton').addEventListener('click', () => {
-            bulletsRemaining = 10; // Reload to full bullets
+            bulletsRemaining = Math.min(10, bulletsRemaining + (10 - bulletsRemaining)); // Reload to fill remaining spots
             updateBulletCount();
             document.getElementById('reloadSound').play(); // Play reload sound
         });
 
-       document.getElementById('startGameButton').addEventListener('click', () => {
-    document.getElementById('startScreen').style.display = 'none';
-    document.getElementById('controls').style.display = 'block';
-    document.getElementById('scoreDisplay').style.display = 'block';
-    setupGame();
-    document.getElementById('backgroundMusic').play();
-    startCreatingObstacles();
-    gameLoop();
-});
+        document.getElementById('startGameButton').addEventListener('click', () => {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('controls').style.display = 'block';
+            document.getElementById('scoreDisplay').style.display = 'block';
+            setupGame();
+            document.getElementById('backgroundMusic').play();
+            startCreatingObstacles();
+            gameLoop();
+        });
 
         document.getElementById('restartButton').addEventListener('click', () => {
             initVariables();
