@@ -59,6 +59,14 @@
             font-size: 30px; 
             z-index: 2;
         }
+        #clipCount {
+            position: absolute; 
+            top: 10px; 
+            left: 10px; 
+            color: white; 
+            font-size: 30px; 
+            z-index: 2;
+        }
     </style>
 </head>
 <body>
@@ -74,7 +82,8 @@
     </div>
 
     <div id="scoreDisplay" style="display: none;">Score: <span id="scoreValue">0</span></div>
-    <div id="bulletDisplay">Bullets: <span id="bulletCount">10</span></div>
+    <div id="bulletDisplay">Total Bullets: <span id="bulletCount">10</span></div>
+    <div id="clipCount">Clip: <span id="clipCountValue">10</span></div>
 
     <canvas id="gameCanvas"></canvas>
 
@@ -92,7 +101,8 @@
         canvas.setHeight(window.innerHeight);
 
         let gameOver, isPaused, gameLoopId, obstacleIntervalId, player, obstacles, projectiles, score, spawnInterval, obstacleSpeed;
-        let bulletsRemaining = 10;
+        let totalBulletsCollected = 10; // Total bullets collected
+        let bulletsRemaining = 10; // Current clip bullets
 
         function initVariables() {
             gameOver = false;
@@ -102,6 +112,10 @@
             score = 0;
             spawnInterval = 1500; // Increased initial spawn interval to 1.5 seconds
             obstacleSpeed = 3; // Decreased initial obstacle speed
+            bulletsRemaining = 10; // Reset bullets for new game
+            totalBulletsCollected = 0; // Reset total bullets collected
+            updateBulletCount();
+            updateClipCount();
         }
 
         function setupGame() {
@@ -137,6 +151,7 @@
             });
 
             updateBulletCount(); // Initialize bullet count display
+            updateClipCount(); // Initialize clip count display
         }
 
         function createZombie() {
@@ -234,7 +249,9 @@
                     clearInterval(interval);
                 } else if (checkCollisionWithPlayer({ img: crate })) {
                     bulletsRemaining += 5; // Collect 5 bullets per crate
+                    totalBulletsCollected += 5; // Update total bullets collected
                     updateBulletCount();
+                    updateClipCount();
                     canvas.remove(crate);
                     obstacles = obstacles.filter(ob => ob.img !== crate);
                     clearInterval(interval);
@@ -259,7 +276,7 @@
                 document.getElementById('shootSound').play();
             });
             bulletsRemaining--;
-            updateBulletCount();
+            updateClipCount();
         }
 
         function moveProjectile(projectile) {
@@ -337,7 +354,7 @@
                     const rand = Math.random();
                     if (rand < 0.5) { // 50% chance of obstacle
                         createObstacle();
-                    } else if (rand < 0.8) { // 30% chance of a bullet crate
+                    } else {
                         createBulletCrate();
                     }
                     obstacleSpeed = Math.max(2, obstacleSpeed + 0.02); // Slow increase of speed over time
@@ -347,7 +364,11 @@
         }
 
         function updateBulletCount() {
-            document.getElementById('bulletCount').textContent = bulletsRemaining;
+            document.getElementById('bulletCount').textContent = totalBulletsCollected; // Total bullets collected
+        }
+
+        function updateClipCount() {
+            document.getElementById('clipCountValue').textContent = bulletsRemaining; // Current clip bullets
             if (bulletsRemaining <= 5) {
                 document.getElementById('reloadButton').style.display = 'block';
             } else {
@@ -357,7 +378,7 @@
 
         document.getElementById('reloadButton').addEventListener('click', () => {
             bulletsRemaining = Math.min(10, bulletsRemaining + (10 - bulletsRemaining)); // Reload to fill remaining spots
-            updateBulletCount();
+            updateClipCount();
             document.getElementById('reloadSound').play(); // Play reload sound
         });
 
@@ -405,7 +426,7 @@
             } else if (event.code === 'ArrowUp' && !player.isJumping) { 
                 player.isJumping = true;
                 const originalTop = player.top;
-                const jumpHeight = 200;
+                const jumpHeight = 300; // Increased jump height
                 const hangTime = 300;
 
                 player.animate('top', originalTop - jumpHeight, {
