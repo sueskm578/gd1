@@ -111,7 +111,7 @@
             projectiles = [];
             score = 0;
             spawnInterval = 3000; // Increased initial spawn interval to 3 seconds
-            obstacleSpeed = 2; // Decreased speed of barriers for more spacing
+            obstacleSpeed = 4; // Increased speed of obstacles
             bulletsRemaining = 10; // Reset bullets for new game
             totalBulletsCollected = 0; // Reset total bullets collected
             updateBulletCount();
@@ -312,6 +312,7 @@
         }
 
         function checkCollisionWithPlayer(obstacle) {
+            const buffer = 20; // Buffer zone to allow closer proximity
             const playerBounds = {
                 left: player.left,
                 right: player.left + player.getScaledWidth(),
@@ -330,12 +331,12 @@
             console.log("Player Bounds:", playerBounds);
             console.log("Obstacle Bounds:", obstacleBounds);
 
-            // Check for collision
+            // Check for collision with buffer
             const isColliding = (
-                playerBounds.right > obstacleBounds.left &&
-                playerBounds.left < obstacleBounds.right &&
-                playerBounds.bottom > obstacleBounds.top &&
-                playerBounds.top < obstacleBounds.bottom
+                playerBounds.right > obstacleBounds.left + buffer &&
+                playerBounds.left < obstacleBounds.right - buffer &&
+                playerBounds.bottom > obstacleBounds.top + buffer &&
+                playerBounds.top < obstacleBounds.bottom - buffer
             );
 
             if (isColliding) {
