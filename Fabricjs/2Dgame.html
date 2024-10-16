@@ -100,7 +100,7 @@
             obstacles = [];
             projectiles = [];
             score = 0;
-            spawnInterval = 1500; // Increased initial spawn interval to 1.5 seconds
+            spawnInterval = 2000; // Increased initial spawn interval to 2 seconds
             obstacleSpeed = 3; // Decreased initial obstacle speed
         }
 
@@ -201,10 +201,13 @@
         }
 
         function createObstacle() {
-            if (Math.random() < 0.5) {
-                createZombie();
-            } else {
-                createBarrier();
+            // Ensure obstacles are not spawned too close together
+            if (obstacles.length === 0 || obstacles.every(ob => ob.img.left < canvas.width - 200)) {
+                if (Math.random() < 0.5) {
+                    createZombie();
+                } else {
+                    createBarrier();
+                }
             }
         }
 
@@ -243,50 +246,60 @@
             }, 30);
         }
 
-        function createProjectile() {
-            if (bulletsRemaining <= 0) return;
-            const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png";
-            fabric.Image.fromURL(bulletImageUrl, function(img) {
-                img.scale(0.1);
-                img.set({
+        function checkCollisionWithPlayer(obstacle) {
+            return player.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
+                   player.left + player.getScaledWidth() > obstacle.img.left &&
+                   player.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
+                   player.top + player.getScaledHeight() > obstacle.img.top;
+        }
+
+        function checkCollisionWithProjectile(obstacle) {
+            return projectiles.some(projectile => 
+                projectile.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
+                projectile.left + projectile.width > obstacle.img.left &&
+                projectile.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
+                projectile.top + projectile.height > obstacle.img.top
+            );
+        }
+
+        function shootProjectile() {
+            if (bulletsRemaining > 0) {
+                const projectile = new fabric.Rect({
                     left: player.left + player.getScaledWidth(),
-                    top: player.top + player.getScaledHeight() / 2 - img.getScaledHeight() / 2,
+                    top: player.top + (player.getScaledHeight() / 2) - 5,
+                    fill: 'red',
+                    width: 10,
+                    height: 5,
                     selectable: false
                 });
-                projectiles.push(img);
-                canvas.add(img);
-                moveProjectile(img);
+                projectiles.push(projectile);
+                canvas.add(projectile);
                 document.getElementById('shootSound').play();
-            });
-            bulletsRemaining--;
-            updateBulletCount();
+                moveProjectile(projectile);
+                bulletsRemaining--;
+                updateBulletCount();
+            }
         }
 
         function moveProjectile(projectile) {
             const interval = setInterval(() => {
                 if (isPaused || gameOver) return;
-                projectile.left += 10;
+                projectile.left += 10; // Move projectile to the right
                 if (projectile.left > canvas.width) {
                     canvas.remove(projectile);
-                    projectiles = projectiles.filter(proj => proj !== projectile);
+                    projectiles = projectiles.filter(p => p !== projectile);
                     clearInterval(interval);
                 } else {
-                    obstacles.forEach((obstacle, index) => {
-                        if ((obstacle.type === 'zombie' || obstacle.type === 'fire') && 
-                            projectile.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
-                            projectile.left + projectile.getScaledWidth() > obstacle.img.left &&
-                            projectile.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
-                            projectile.top + projectile.getScaledHeight() > obstacle.img.top) {
+                    obstacles.forEach(obstacle => {
+                        if (checkCollisionWithProjectile(obstacle)) {
                             canvas.remove(obstacle.img);
+                            obstacles = obstacles.filter(ob => ob.img !== obstacle.img);
                             canvas.remove(projectile);
-                            obstacles.splice(index, 1);
-                            projectiles = projectiles.filter(proj => proj !== projectile);
-                            score += 1;
-                            document.getElementById('scoreValue').textContent = score;
-                            if (obstacle.type === 'zombie') {
-                                document.getElementById('zombieDeathSound').play();
-                            }
+                            projectiles = projectiles.filter(p => p !== projectile);
                             clearInterval(interval);
+                            score += 10; // Increase score when hitting an obstacle
+                            updateScore();
+                            document.getElementById('zombieDeathSound').play();
                         }
                     });
                 }
@@ -294,137 +307,85 @@
             }, 30);
         }
 
-        function checkCollisionWithPlayer(obstacle) {
-            return (
-                player.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
-                player.left + player.getScaledWidth() > obstacle.img.left &&
-                player.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
-                player.top + player.getScaledHeight() > obstacle.img.top
-            );
-        }
-
-        function endGame() {
-            gameOver = true;
-            isPaused = true;
-
-            const backgroundMusic = document.getElementById('backgroundMusic');
-            backgroundMusic.pause();
-            backgroundMusic.currentTime = 0;
-
-            document.getElementById('gameOverSound').play();
-
-            setTimeout(() => {
-                alert("Game Over! Your score: " + score);
-                document.getElementById('startScreen').style.display = 'flex';
-                document.getElementById('controls').style.display = 'none';
-                document.getElementById('scoreDisplay').style.display = 'none';
-            }, 500);
-
-            cancelAnimationFrame(gameLoopId);
-            clearInterval(obstacleIntervalId);
-        }
-
-        function gameLoop() {
-            if (!gameOver && !isPaused) {
-                canvas.renderAll();
-                gameLoopId = requestAnimationFrame(gameLoop);
-            }
-        }
-
-        function startCreatingObstacles() {
-            obstacleIntervalId = setInterval(() => {
-                if (!isPaused) {
-                    const rand = Math.random();
-                    if (rand < 0.7) { // 70% chance of obstacle
-                        createObstacle();
-                    } else { // 30% chance of a bullet crate
-                        createBulletCrate();
-                    }
-                    obstacleSpeed += 0.05; // Slow increase of speed over time
-                    spawnInterval = Math.max(700, spawnInterval * 0.97); // Gradually decrease spawn interval but slower
-                }
-            }, spawnInterval);
+        function updateScore() {
+            document.getElementById('scoreValue').innerText = score;
         }
 
         function updateBulletCount() {
-            document.getElementById('bulletCount').textContent = bulletsRemaining;
+            document.getElementById('bulletCount').innerText = bulletsRemaining;
             if (bulletsRemaining <= 0) {
-                document.getElementById('reloadButton').style.display = 'block';
+                document.getElementById('reloadButton').style.display = 'inline';
             } else {
                 document.getElementById('reloadButton').style.display = 'none';
             }
         }
 
-        document.getElementById('reloadButton').addEventListener('click', () => {
-            bulletsRemaining = 10; // Reload to full bullets
-            updateBulletCount();
-            document.getElementById('reloadSound').play(); // Play reload sound
-        });
+        function endGame() {
+            gameOver = true;
+            document.getElementById('gameOverSound').play();
+            clearInterval(obstacleIntervalId);
+            canvas.clear();
+            canvas.add(new fabric.Text('Game Over', { fontSize: 60, left: canvas.width / 2 - 150, top: canvas.height / 2 - 30, fill: 'red' }));
+            canvas.renderAll();
+        }
 
-       document.getElementById('startGameButton').addEventListener('click', () => {
-    document.getElementById('startScreen').style.display = 'none';
-    document.getElementById('controls').style.display = 'block';
-    document.getElementById('scoreDisplay').style.display = 'block';
-    setupGame();
-    document.getElementById('backgroundMusic').play();
-    startCreatingObstacles();
-    gameLoop();
-});
+        function startCreatingObstacles() {
+            const maxCrates = 3; // Maximum number of crates allowed at once
+            let crateCount = 0; // Current number of crates
 
-        document.getElementById('restartButton').addEventListener('click', () => {
-            initVariables();
+            obstacleIntervalId = setInterval(() => {
+                if (!isPaused) {
+                    const rand = Math.random();
+                    // Check if it's time to spawn an obstacle or a crate
+                    if (rand < 0.7) { 
+                        createObstacle();
+                    } else if (crateCount < maxCrates) { // Only create a crate if below the max limit
+                        createBulletCrate();
+                        crateCount++;
+                    }
+
+                    // Increase obstacle speed and gradually reduce spawn interval
+                    obstacleSpeed += 0.05; // Slow increase of speed over time
+                    spawnInterval = Math.max(1000, spawnInterval * 0.98); // Slowly decrease the spawn rate (min of 1 second between spawns)
+                }
+            }, spawnInterval);
+        }
+
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('controls').style.display = 'block';
+            document.getElementById('scoreDisplay').style.display = 'block';
             setupGame();
-            document.getElementById('backgroundMusic').play();
             startCreatingObstacles();
             gameLoop();
+        }
+
+        function gameLoop() {
+            if (!gameOver) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        document.getElementById('startGameButton').addEventListener('click', startGame);
+        document.getElementById('reloadButton').addEventListener('click', () => {
+            bulletsRemaining += 5; // Reload 5 bullets
+            updateBulletCount();
+            document.getElementById('reloadSound').play();
         });
 
         document.getElementById('pauseButton').addEventListener('click', () => {
-            if (!isPaused) {
-                isPaused = true;
-                cancelAnimationFrame(gameLoopId);
-                clearInterval(obstacleIntervalId);
-                document.getElementById('pauseButton').textContent = 'Resume';
+            isPaused = !isPaused;
+            if (isPaused) {
+                document.getElementById('pauseButton').innerText = 'Resume';
             } else {
-                isPaused = false;
-                startCreatingObstacles();
-                gameLoop();
-                document.getElementById('pauseButton').textContent = 'Pause';
+                document.getElementById('pauseButton').innerText = 'Pause';
+                gameLoop(); // Resume game loop
             }
         });
 
-        document.addEventListener('keydown', (event) => {
-            if (event.code === 'ArrowLeft') {
-                player.left -= 10; // Move left
-                if (player.left < 0) player.left = 0; // Prevent moving off-screen
-            } else if (event.code === 'ArrowRight') {
-                player.left += 10; // Move right
-                if (player.left + player.getScaledWidth() > canvas.width) {
-                    player.left = canvas.width - player.getScaledWidth(); // Prevent moving off-screen
-                }
-            } else if (event.code === 'ArrowUp' && !player.isJumping) { 
-                player.isJumping = true;
-                const originalTop = player.top;
-                const jumpHeight = 200;
-                const hangTime = 300;
-
-                player.animate('top', originalTop - jumpHeight, {
-                    duration: 600,
-                    onChange: canvas.renderAll.bind(canvas),
-                    onComplete: () => {
-                        setTimeout(() => {
-                            player.animate('top', originalTop, {
-                                duration: 800,
-                                onChange: canvas.renderAll.bind(canvas),
-                                onComplete: () => {
-                                    player.isJumping = false;
-                                }
-                            });
-                        }, hangTime);
-                    }
-                });
-            } else if (event.code === 'Space') { 
-                createProjectile();
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                shootProjectile();
             }
         });
 
