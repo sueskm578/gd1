@@ -170,26 +170,10 @@
             });
         }
 
-        function moveZombie(zombie) {
-            const interval = setInterval(() => {
-                if (isPaused || gameOver) return;
-                zombie.left -= obstacleSpeed; // Move zombie left
-                if (zombie.left + zombie.getScaledWidth() < 0) {
-                    canvas.remove(zombie);
-                    obstacles = obstacles.filter(ob => ob.img !== zombie);
-                    clearInterval(interval);
-                } else if (checkCollisionWithPlayer({ img: zombie })) {
-                    console.log("Collision with Zombie detected!");
-                    endGame(); // Trigger end game on collision
-                }
-                canvas.renderAll();
-            }, 30);
-        }
-
         function createBarrier() {
             const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png";
             fabric.Image.fromURL(fireImageUrl, function(img) {
-                img.scale(0.03); 
+                img.scale(0.015); // Decreased size of the barrier
                 img.set({
                     left: canvas.width,
                     top: canvas.height - img.getScaledHeight() - 20,
@@ -462,16 +446,16 @@
             } else if (event.code === 'ArrowUp' && !player.isJumping) { 
                 player.isJumping = true;
                 const originalTop = player.top;
-                const jumpHeight = 200; // Decreased jump height for easier navigation
+                const jumpHeight = 250; // Increased jump height for easier navigation
                 const hangTime = 300;
 
                 player.animate('top', originalTop - jumpHeight, {
-                    duration: 400, // Decreased duration for quicker jump
+                    duration: 400, // Duration for quicker jump
                     onChange: canvas.renderAll.bind(canvas),
                     onComplete: () => {
                         setTimeout(() => {
                             player.animate('top', originalTop, {
-                                duration: 400, // Decreased duration for quicker landing
+                                duration: 400, // Duration for quicker landing
                                 onChange: canvas.renderAll.bind(canvas),
                                 onComplete: () => {
                                     player.isJumping = false;
