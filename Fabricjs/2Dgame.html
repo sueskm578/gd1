@@ -78,7 +78,7 @@
     <div id="controls" style="display: none;">
         <button id="restartButton">Restart</button>
         <button id="pauseButton">Pause</button>
-        <button id="reloadButton" style="display: none;">Reload</button>
+        <button id="reloadButton" style="display: block;">Reload</button>
         <div id="clipCount">Clip: <span id="clipCountValue">10</span></div>
     </div>
 
@@ -111,7 +111,7 @@
             projectiles = [];
             score = 0;
             spawnInterval = 3000; // Increased initial spawn interval to 3 seconds
-            obstacleSpeed = 3; // Decreased initial obstacle speed
+            obstacleSpeed = 4; // Increased speed of barriers
             bulletsRemaining = 10; // Reset bullets for new game
             totalBulletsCollected = 0; // Reset total bullets collected
             updateBulletCount();
@@ -349,16 +349,7 @@
         function startCreatingObstacles() {
             obstacleIntervalId = setInterval(() => {
                 if (!isPaused) {
-                    const rand = Math.random();
-                    if (rand < 0.3) { // 30% chance of zombie
-                        createZombie();
-                    } else if (rand < 0.5) { // 20% chance of a barrier
-                        createBarrier();
-                    } else { // 50% chance of a bullet crate
-                        createBulletCrate();
-                    }
-                    obstacleSpeed = Math.max(2, obstacleSpeed + 0.02); // Slow increase of speed over time
-                    spawnInterval = Math.max(3000, spawnInterval * 1.05); // Gradually increase spawn interval
+                    createObstacle();
                 }
             }, spawnInterval);
         }
