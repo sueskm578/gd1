@@ -110,8 +110,8 @@
             obstacles = [];
             projectiles = [];
             score = 0;
-            spawnInterval = 3000; // Increased initial spawn interval to 3 seconds
-            obstacleSpeed = 4; // Increased speed of obstacles
+            spawnInterval = 3000; // Initial spawn interval
+            obstacleSpeed = 8; // Increased speed of obstacles for easier jumping
             bulletsRemaining = 10; // Reset bullets for new game
             totalBulletsCollected = 0; // Reset total bullets collected
             updateBulletCount();
@@ -165,7 +165,7 @@
                 });
                 obstacles.push({ type: 'zombie', img });
                 canvas.add(img);
-                document.getElementById('zombieSpawnSound').play();
+                document.getElementById('zombieSpawnSound').play(); // Play spawn sound
                 moveZombie(img); // Start moving the zombie
             });
         }
@@ -180,7 +180,7 @@
                     clearInterval(interval);
                 } else if (checkCollisionWithPlayer({ img: zombie })) {
                     console.log("Collision with Zombie detected!");
-                    endGame();
+                    endGame(); // Trigger end game on collision
                 }
                 canvas.renderAll();
             }, 30);
@@ -211,7 +211,7 @@
                     clearInterval(interval);
                 } else if (checkCollisionWithPlayer({ img: barrier })) {
                     console.log("Collision with Barrier detected!");
-                    endGame();
+                    endGame(); // Trigger end game on collision
                 }
                 canvas.renderAll();
             }, 30);
@@ -274,7 +274,7 @@
                 projectiles.push(img);
                 canvas.add(img);
                 moveProjectile(img);
-                document.getElementById('shootSound').play();
+                document.getElementById('shootSound').play(); // Play shooting sound
             });
             bulletsRemaining--;
             updateClipCount();
@@ -328,10 +328,6 @@
                 bottom: obstacle.img.top + obstacle.img.getScaledHeight()
             };
 
-            // Debugging logs
-            console.log("Player Bounds:", playerBounds);
-            console.log("Obstacle Bounds:", obstacleBounds);
-
             // Check for collision with buffer
             const isColliding = (
                 playerBounds.right > obstacleBounds.left + buffer &&
@@ -340,16 +336,11 @@
                 playerBounds.top < obstacleBounds.bottom - buffer
             );
 
-            if (isColliding) {
-                console.log("Collision detected!");
-            } else {
-                console.log("No collision detected.");
-            }
-
             return isColliding;
         }
 
         function endGame() {
+            if (gameOver) return; // Prevent multiple triggers
             gameOver = true;
             isPaused = true;
 
@@ -357,7 +348,7 @@
             backgroundMusic.pause();
             backgroundMusic.currentTime = 0;
 
-            document.getElementById('gameOverSound').play();
+            document.getElementById('gameOverSound').play(); // Play game over sound
 
             setTimeout(() => {
                 alert("Game Over! Your score: " + score);
@@ -462,16 +453,16 @@
             } else if (event.code === 'ArrowUp' && !player.isJumping) { 
                 player.isJumping = true;
                 const originalTop = player.top;
-                const jumpHeight = 300; // Increased jump height
+                const jumpHeight = 200; // Decreased jump height for easier navigation
                 const hangTime = 300;
 
                 player.animate('top', originalTop - jumpHeight, {
-                    duration: 600,
+                    duration: 400, // Decreased duration for quicker jump
                     onChange: canvas.renderAll.bind(canvas),
                     onComplete: () => {
                         setTimeout(() => {
                             player.animate('top', originalTop, {
-                                duration: 800,
+                                duration: 400, // Decreased duration for quicker landing
                                 onChange: canvas.renderAll.bind(canvas),
                                 onComplete: () => {
                                     player.isJumping = false;
