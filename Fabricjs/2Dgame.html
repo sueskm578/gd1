@@ -61,7 +61,7 @@
         }
         #clipCount {
             position: absolute; 
-            top: 10px; 
+            top: 50px; 
             left: 10px; 
             color: white; 
             font-size: 30px; 
@@ -79,11 +79,11 @@
         <button id="restartButton">Restart</button>
         <button id="pauseButton">Pause</button>
         <button id="reloadButton" style="display: none;">Reload</button>
+        <div id="clipCount">Clip: <span id="clipCountValue">10</span></div>
     </div>
 
     <div id="scoreDisplay" style="display: none;">Score: <span id="scoreValue">0</span></div>
     <div id="bulletDisplay">Total Bullets: <span id="bulletCount">10</span></div>
-    <div id="clipCount">Clip: <span id="clipCountValue">10</span></div>
 
     <canvas id="gameCanvas"></canvas>
 
@@ -110,7 +110,7 @@
             obstacles = [];
             projectiles = [];
             score = 0;
-            spawnInterval = 1500; // Increased initial spawn interval to 1.5 seconds
+            spawnInterval = 3000; // Increased initial spawn interval to 3 seconds
             obstacleSpeed = 3; // Decreased initial obstacle speed
             bulletsRemaining = 10; // Reset bullets for new game
             totalBulletsCollected = 0; // Reset total bullets collected
@@ -216,9 +216,9 @@
         }
 
         function createObstacle() {
-            if (Math.random() < 0.5) {
+            if (Math.random() < 0.3) { // 30% chance of zombie
                 createZombie();
-            } else {
+            } else if (Math.random() < 0.5) { // 20% chance of a barrier
                 createBarrier();
             }
         }
@@ -248,10 +248,8 @@
                     obstacles = obstacles.filter(ob => ob.img !== crate);
                     clearInterval(interval);
                 } else if (checkCollisionWithPlayer({ img: crate })) {
-                    bulletsRemaining += 5; // Collect 5 bullets per crate
                     totalBulletsCollected += 5; // Update total bullets collected
                     updateBulletCount();
-                    updateClipCount();
                     canvas.remove(crate);
                     obstacles = obstacles.filter(ob => ob.img !== crate);
                     clearInterval(interval);
@@ -352,13 +350,15 @@
             obstacleIntervalId = setInterval(() => {
                 if (!isPaused) {
                     const rand = Math.random();
-                    if (rand < 0.5) { // 50% chance of obstacle
-                        createObstacle();
-                    } else {
+                    if (rand < 0.3) { // 30% chance of zombie
+                        createZombie();
+                    } else if (rand < 0.5) { // 20% chance of a barrier
+                        createBarrier();
+                    } else { // 50% chance of a bullet crate
                         createBulletCrate();
                     }
                     obstacleSpeed = Math.max(2, obstacleSpeed + 0.02); // Slow increase of speed over time
-                    spawnInterval = Math.max(2000, spawnInterval * 1.05); // Gradually increase spawn interval
+                    spawnInterval = Math.max(3000, spawnInterval * 1.05); // Gradually increase spawn interval
                 }
             }, spawnInterval);
         }
@@ -377,9 +377,16 @@
         }
 
         document.getElementById('reloadButton').addEventListener('click', () => {
-            bulletsRemaining = Math.min(10, bulletsRemaining + (10 - bulletsRemaining)); // Reload to fill remaining spots
-            updateClipCount();
-            document.getElementById('reloadSound').play(); // Play reload sound
+            if (bulletsRemaining <= 5) {
+                const bulletsNeeded = 10 - bulletsRemaining; // Calculate how many bullets are needed to fill the clip
+                if (totalBulletsCollected >= bulletsNeeded) {
+                    bulletsRemaining = 10; // Reload to full clip
+                    totalBulletsCollected -= bulletsNeeded; // Subtract used bullets from total
+                    updateClipCount();
+                    updateBulletCount();
+                    document.getElementById('reloadSound').play(); // Play reload sound
+                }
+            }
         });
 
         document.getElementById('startGameButton').addEventListener('click', () => {
