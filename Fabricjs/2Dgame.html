@@ -100,7 +100,7 @@
             obstacles = [];
             projectiles = [];
             score = 0;
-            spawnInterval = 2000; // Increased initial spawn interval to 2 seconds
+            spawnInterval = 1500; // Increased initial spawn interval to 1.5 seconds
             obstacleSpeed = 3; // Decreased initial obstacle speed
         }
 
@@ -137,6 +137,8 @@
             });
 
             updateBulletCount(); // Initialize bullet count display
+            document.getElementById('scoreDisplay').style.display = 'block'; // Show score display
+            document.getElementById('controls').style.display = 'block'; // Show controls
         }
 
         function createZombie() {
@@ -201,13 +203,10 @@
         }
 
         function createObstacle() {
-            // Ensure obstacles are not spawned too close together
-            if (obstacles.length === 0 || obstacles.every(ob => ob.img.left < canvas.width - 200)) {
-                if (Math.random() < 0.5) {
-                    createZombie();
-                } else {
-                    createBarrier();
-                }
+            if (Math.random() < 0.5) {
+                createZombie();
+            } else {
+                createBarrier();
             }
         }
 
@@ -237,84 +236,29 @@
                     clearInterval(interval);
                 } else if (checkCollisionWithPlayer({ img: crate })) {
                     bulletsRemaining += 5; // Collect 5 bullets per crate
-                    updateBulletCount();
                     canvas.remove(crate);
                     obstacles = obstacles.filter(ob => ob.img !== crate);
-                    clearInterval(interval);
+                    updateBulletCount();
                 }
                 canvas.renderAll();
             }, 30);
         }
 
         function checkCollisionWithPlayer(obstacle) {
-            return player.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
-                   player.left + player.getScaledWidth() > obstacle.img.left &&
-                   player.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
-                   player.top + player.getScaledHeight() > obstacle.img.top;
-        }
-
-        function checkCollisionWithProjectile(obstacle) {
-            return projectiles.some(projectile => 
-                projectile.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
-                projectile.left + projectile.width > obstacle.img.left &&
-                projectile.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
-                projectile.top + projectile.height > obstacle.img.top
+            const playerBounds = player.getBoundingRect();
+            const obstacleBounds = obstacle.img.getBoundingRect();
+            return (
+                playerBounds.left < obstacleBounds.left + obstacleBounds.width &&
+                playerBounds.left + playerBounds.width > obstacleBounds.left &&
+                playerBounds.top < obstacleBounds.top + obstacleBounds.height &&
+                playerBounds.top + playerBounds.height > obstacleBounds.top
             );
-        }
-
-        function shootProjectile() {
-            if (bulletsRemaining > 0) {
-                const projectile = new fabric.Rect({
-                    left: player.left + player.getScaledWidth(),
-                    top: player.top + (player.getScaledHeight() / 2) - 5,
-                    fill: 'red',
-                    width: 10,
-                    height: 5,
-                    selectable: false
-                });
-                projectiles.push(projectile);
-                canvas.add(projectile);
-                document.getElementById('shootSound').play();
-                moveProjectile(projectile);
-                bulletsRemaining--;
-                updateBulletCount();
-            }
-        }
-
-        function moveProjectile(projectile) {
-            const interval = setInterval(() => {
-                if (isPaused || gameOver) return;
-                projectile.left += 10; // Move projectile to the right
-                if (projectile.left > canvas.width) {
-                    canvas.remove(projectile);
-                    projectiles = projectiles.filter(p => p !== projectile);
-                    clearInterval(interval);
-                } else {
-                    obstacles.forEach(obstacle => {
-                        if (checkCollisionWithProjectile(obstacle)) {
-                            canvas.remove(obstacle.img);
-                            obstacles = obstacles.filter(ob => ob.img !== obstacle.img);
-                            canvas.remove(projectile);
-                            projectiles = projectiles.filter(p => p !== projectile);
-                            clearInterval(interval);
-                            score += 10; // Increase score when hitting an obstacle
-                            updateScore();
-                            document.getElementById('zombieDeathSound').play();
-                        }
-                    });
-                }
-                canvas.renderAll();
-            }, 30);
-        }
-
-        function updateScore() {
-            document.getElementById('scoreValue').innerText = score;
         }
 
         function updateBulletCount() {
             document.getElementById('bulletCount').innerText = bulletsRemaining;
             if (bulletsRemaining <= 0) {
-                document.getElementById('reloadButton').style.display = 'inline';
+                document.getElementById('reloadButton').style.display = 'block';
             } else {
                 document.getElementById('reloadButton').style.display = 'none';
             }
@@ -324,75 +268,133 @@
             gameOver = true;
             document.getElementById('gameOverSound').play();
             clearInterval(obstacleIntervalId);
-            canvas.clear();
-            canvas.add(new fabric.Text('Game Over', { fontSize: 60, left: canvas.width / 2 - 150, top: canvas.height / 2 - 30, fill: 'red' }));
-            canvas.renderAll();
+            clearInterval(gameLoopId);
+            alert('Game Over! Your score: ' + score);
+            setupGame();
         }
 
-        function startCreatingObstacles() {
-            const maxCrates = 3; // Maximum number of crates allowed at once
-            let crateCount = 0; // Current number of crates
-
-            obstacleIntervalId = setInterval(() => {
-                if (!isPaused) {
-                    const rand = Math.random();
-                    // Check if it's time to spawn an obstacle or a crate
-                    if (rand < 0.7) { 
-                        createObstacle();
-                    } else if (crateCount < maxCrates) { // Only create a crate if below the max limit
-                        createBulletCrate();
-                        crateCount++;
+        function jump() {
+            if (player.isJumping) return;
+            player.isJumping = true;
+            let jumpHeight = 100; // Height of the jump
+            const jumpSpeed = 5;
+            const jumpInterval = setInterval(() => {
+                if (jumpHeight > 0) {
+                    player.top -= jumpSpeed; // Move up
+                    jumpHeight -= jumpSpeed;
+                } else {
+                    player.top += jumpSpeed; // Move down
+                    if (player.top >= canvas.height - player.getScaledHeight() - 20) {
+                        player.top = canvas.height - player.getScaledHeight() - 20; // Reset to ground level
+                        player.isJumping = false;
+                        clearInterval(jumpInterval);
                     }
-
-                    // Increase obstacle speed and gradually reduce spawn interval
-                    obstacleSpeed += 0.05; // Slow increase of speed over time
-                    spawnInterval = Math.max(1000, spawnInterval * 0.98); // Slowly decrease the spawn rate (min of 1 second between spawns)
                 }
-            }, spawnInterval);
+                canvas.renderAll();
+            }, 20);
+        }
+
+        // Handle key events for player controls
+        window.addEventListener('keydown', (e) => {
+            if (isPaused || gameOver) return;
+            switch (e.key) {
+                case 'ArrowLeft':
+                    player.left -= 10; // Move left
+                    break;
+                case 'ArrowRight':
+                    player.left += 10; // Move right
+                    break;
+                case 'ArrowUp':
+                    jump(); // Jump
+                    break;
+                case ' ':
+                    shoot(); // Shoot
+                    break;
+            }
+            canvas.renderAll();
+        });
+
+        function shoot() {
+            if (bulletsRemaining <= 0) return;
+            bulletsRemaining--;
+            updateBulletCount();
+
+            // Create bullet
+            const bullet = new fabric.Rect({
+                left: player.left + player.getScaledWidth(),
+                top: player.top + player.getScaledHeight() / 2,
+                fill: 'yellow',
+                width: 5,
+                height: 2
+            });
+            projectiles.push(bullet);
+            canvas.add(bullet);
+            document.getElementById('shootSound').play();
+
+            // Move bullet
+            const bulletInterval = setInterval(() => {
+                if (gameOver) {
+                    clearInterval(bulletInterval);
+                    return;
+                }
+                bullet.left += 10; // Move bullet to the right
+                if (bullet.left > canvas.width) {
+                    canvas.remove(bullet);
+                    projectiles = projectiles.filter(p => p !== bullet);
+                    clearInterval(bulletInterval);
+                } else {
+                    obstacles.forEach(obstacle => {
+                        if (obstacle.type === 'zombie' && checkCollisionWithPlayer(obstacle)) {
+                            canvas.remove(bullet);
+                            projectiles = projectiles.filter(p => p !== bullet);
+                            canvas.remove(obstacle.img);
+                            obstacles = obstacles.filter(ob => ob.img !== obstacle.img);
+                            score += 10; // Increase score
+                            document.getElementById('scoreValue').innerText = score;
+                            document.getElementById('zombieDeathSound').play();
+                        }
+                    });
+                }
+                canvas.renderAll();
+            }, 30);
         }
 
         function startGame() {
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('controls').style.display = 'block';
-            document.getElementById('scoreDisplay').style.display = 'block';
             setupGame();
-            startCreatingObstacles();
-            gameLoop();
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('backgroundMusic').play();
+            obstacleIntervalId = setInterval(createObstacle, spawnInterval);
+            gameLoopId = requestAnimationFrame(gameLoop);
         }
 
         function gameLoop() {
-            if (!gameOver) {
-                requestAnimationFrame(gameLoop);
-            }
+            if (isPaused || gameOver) return;
+            obstacles.forEach(obstacle => {
+                if (obstacle.type === 'zombie') {
+                    moveZombie(obstacle.img);
+                } else if (obstacle.type === 'fire') {
+                    moveBarrier(obstacle.img);
+                }
+            });
+            projectiles.forEach(bullet => {
+                moveBulletCrate(bullet);
+            });
+            gameLoopId = requestAnimationFrame(gameLoop);
         }
 
         document.getElementById('startGameButton').addEventListener('click', startGame);
-        document.getElementById('reloadButton').addEventListener('click', () => {
-            bulletsRemaining += 5; // Reload 5 bullets
-            updateBulletCount();
-            document.getElementById('reloadSound').play();
-        });
-
+        document.getElementById('restartButton').addEventListener('click', setupGame);
         document.getElementById('pauseButton').addEventListener('click', () => {
             isPaused = !isPaused;
-            if (isPaused) {
-                document.getElementById('pauseButton').innerText = 'Resume';
-            } else {
-                document.getElementById('pauseButton').innerText = 'Pause';
-                gameLoop(); // Resume game loop
-            }
+            document.getElementById('pauseButton').innerText = isPaused ? 'Resume' : 'Pause';
         });
-
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                shootProjectile();
+        document.getElementById('reloadButton').addEventListener('click', () => {
+            if (bulletsRemaining <= 0) {
+                bulletsRemaining = 10; // Reload bullets
+                updateBulletCount();
+                document.getElementById('reloadSound').play();
+                document.getElementById('reloadButton').style.display = 'none';
             }
-        });
-
-        window.addEventListener('resize', () => {
-            canvas.setWidth(window.innerWidth);
-            canvas.setHeight(window.innerHeight);
-            canvas.renderAll();
         });
     </script>
 </body>
