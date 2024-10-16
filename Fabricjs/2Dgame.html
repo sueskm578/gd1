@@ -344,6 +344,8 @@
             gameOver = true;
             isPaused = true;
 
+            console.log("Game Over triggered!");
+
             const backgroundMusic = document.getElementById('backgroundMusic');
             backgroundMusic.pause();
             backgroundMusic.currentTime = 0;
