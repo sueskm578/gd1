@@ -413,6 +413,9 @@
         document.getElementById('restartButton').addEventListener('click', () => {
             // Reset game state
             initVariables();
+            canvas.clear(); // Clear the canvas
+            obstacles.forEach(obstacle => canvas.remove(obstacle.img)); // Remove all obstacles from the canvas
+            obstacles = []; // Clear the obstacles array
             setupGame();
             document.getElementById('backgroundMusic').play();
             startCreatingObstacles();
