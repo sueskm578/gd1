@@ -326,13 +326,23 @@
                 bottom: obstacle.img.top + obstacle.img.getScaledHeight()
             };
 
+            // Debugging logs
+            console.log("Player Bounds:", playerBounds);
+            console.log("Obstacle Bounds:", obstacleBounds);
+
             // Check for collision
-            return (
+            const isColliding = (
                 playerBounds.right > obstacleBounds.left &&
                 playerBounds.left < obstacleBounds.right &&
                 playerBounds.bottom > obstacleBounds.top &&
                 playerBounds.top < obstacleBounds.bottom
             );
+
+            if (isColliding) {
+                console.log("Collision detected!");
+            }
+
+            return isColliding;
         }
 
         function endGame() {
