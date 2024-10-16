@@ -336,6 +336,13 @@
                 playerBounds.top < obstacleBounds.bottom - buffer
             );
 
+            // Debugging logs
+            if (isColliding) {
+                console.log("Collision detected!");
+                console.log("Player Bounds:", playerBounds);
+                console.log("Obstacle Bounds:", obstacleBounds);
+            }
+
             return isColliding;
         }
 
