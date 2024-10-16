@@ -179,6 +179,7 @@
                     obstacles = obstacles.filter(ob => ob.img !== zombie);
                     clearInterval(interval);
                 } else if (checkCollisionWithPlayer({ img: zombie })) {
+                    console.log("Collision with Zombie detected!");
                     endGame();
                 }
                 canvas.renderAll();
@@ -209,6 +210,7 @@
                     obstacles = obstacles.filter(ob => ob.img !== barrier);
                     clearInterval(interval);
                 } else if (checkCollisionWithPlayer({ img: barrier })) {
+                    console.log("Collision with Barrier detected!");
                     endGame();
                 }
                 canvas.renderAll();
@@ -310,11 +312,26 @@
         }
 
         function checkCollisionWithPlayer(obstacle) {
+            const playerBounds = {
+                left: player.left,
+                right: player.left + player.getScaledWidth(),
+                top: player.top,
+                bottom: player.top + player.getScaledHeight()
+            };
+
+            const obstacleBounds = {
+                left: obstacle.img.left,
+                right: obstacle.img.left + obstacle.img.getScaledWidth(),
+                top: obstacle.img.top,
+                bottom: obstacle.img.top + obstacle.img.getScaledHeight()
+            };
+
+            // Check for collision
             return (
-                player.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
-                player.left + player.getScaledWidth() > obstacle.img.left &&
-                player.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
-                player.top + player.getScaledHeight() > obstacle.img.top
+                playerBounds.right > obstacleBounds.left &&
+                playerBounds.left < obstacleBounds.right &&
+                playerBounds.bottom > obstacleBounds.top &&
+                playerBounds.top < obstacleBounds.bottom
             );
         }
 
