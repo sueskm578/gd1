@@ -100,7 +100,7 @@
             obstacles = [];
             projectiles = [];
             score = 0;
-            spawnInterval = 3000; // Reset spawn interval
+            spawnInterval = 1000; // Set initial spawn interval to 1 second
             obstacleSpeed = 5; // Reset obstacle speed
         }
 
@@ -193,7 +193,7 @@
         }
 
         function createBulletCrate() {
-            const crateImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/crate.png.png"; // Replace with your crate image URL
+            const crateImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/crate.png"; // Replace with your crate image URL
             fabric.Image.fromURL(crateImageUrl, function(img) {
                 img.scale(0.1);
                 img.set({
@@ -329,8 +329,8 @@
                     } else {
                         createBulletCrate(); // Randomly create bullet crates
                     }
-                    spawnInterval = Math.max(1000, spawnInterval * 0.98);
-                    obstacleSpeed += 0.1;
+                    spawnInterval = Math.max(500, spawnInterval * 0.95); // Decrease spawn interval faster
+                    obstacleSpeed += 0.1; // Increase speed gradually
                 }
             }, spawnInterval);
         }
