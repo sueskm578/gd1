@@ -86,9 +86,7 @@
         function playSound(id) {
             const sound = document.getElementById(id);
             sound.currentTime = 0;
-            sound.addEventListener('canplaythrough', () => {
-                sound.play();
-            }, { once: true });
+            sound.play();
         }
 
         function stopSound(id) {
@@ -100,9 +98,7 @@
         document.getElementById('startGameButton').addEventListener('click', () => {
             document.getElementById('startScreen').style.display = 'none';
             const backgroundMusic = document.getElementById('backgroundMusic');
-            backgroundMusic.addEventListener('canplaythrough', () => {
-                backgroundMusic.play();
-            }, { once: true });
+            backgroundMusic.play();
             startCreatingObstacles();
             startCreatingAmmoCrates();
             gameLoop();
@@ -332,9 +328,7 @@
             document.getElementById('gameOverScreen').style.display = 'none';
             document.getElementById('restartGameButton').style.display = 'none';
             const backgroundMusic = document.getElementById('backgroundMusic');
-            backgroundMusic.addEventListener('canplaythrough', () => {
-                backgroundMusic.play();
-            }, { once: true });
+            backgroundMusic.play();
             startCreatingObstacles();
             startCreatingAmmoCrates();
             gameLoop();
@@ -354,9 +348,7 @@
                 clearInterval(ammoCrateIntervalId);
             } else {
                 const backgroundMusic = document.getElementById('backgroundMusic');
-                backgroundMusic.addEventListener('canplaythrough', () => {
-                    backgroundMusic.play();
-                }, { once: true });
+                backgroundMusic.play();
                 startCreatingObstacles();
                 startCreatingAmmoCrates();
                 gameLoop();
