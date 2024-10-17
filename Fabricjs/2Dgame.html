@@ -86,6 +86,11 @@
     <audio id="zombieKillSound">
         <source src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Zombie-death.mp3" type="audio/mpeg">
     </audio>
+    
+    <!-- Barrier Enter Sound -->
+    <audio id="barrierEnterSound">
+        <source src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/fire-sound.wav" type="audio/wav">
+    </audio>
 
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
@@ -110,6 +115,7 @@
         const gunReloadSound = document.getElementById('gunReloadSound');
         const zombieEnterSound = document.getElementById('zombieEnterSound');
         const zombieKillSound = document.getElementById('zombieKillSound');
+        const barrierEnterSound = document.getElementById('barrierEnterSound');
 
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
         fabric.Image.fromURL(backgroundImageUrl, function(img) {
@@ -153,6 +159,7 @@
                 img.set({ left: canvas.width, top: canvas.height - img.getScaledHeight() - 20, selectable: false });
                 obstacles.push({ type: 'fire', img });
                 canvas.add(img);
+                barrierEnterSound.play(); // Play barrier enter sound
             });
         }
 
