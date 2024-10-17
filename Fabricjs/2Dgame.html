@@ -256,19 +256,20 @@
 let firstAidCrates = [];
 
     function createFirstAidCrate() {
-        const firstAidCrateImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/firstaid.webp";
-        fabric.Image.fromURL(firstAidCrateImageUrl, function(img) {
-            img.scale(0.1);
-            img.set({ 
-                left: Math.random() * (canvas.width - img.getScaledWidth()), 
-                top: -img.getScaledHeight(), 
-                selectable: false 
-            });
-            firstAidCrates.push(img);
-            canvas.add(img);
-            moveFirstAidCrate(img);
+    console.log('Creating first aid crate...');
+    const firstAidCrateImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/firstaid.webp";
+    fabric.Image.fromURL(firstAidCrateImageUrl, function(img) {
+        img.scale(0.1);
+        img.set({ 
+            left: Math.random() * (canvas.width - img.getScaledWidth()), 
+            top: -img.getScaledHeight(), 
+            selectable: false 
         });
-    }
+        firstAidCrates.push(img);
+        canvas.add(img);
+        moveFirstAidCrate(img);
+    });
+}
 
     function moveFirstAidCrate(firstAidCrate) {
         const interval = setInterval(() => {
@@ -382,30 +383,43 @@ let firstAidCrates = [];
             canvas.renderAll();
         }
 
-        function gameLoop() {
-            if (!gameOver && !gamePaused) {
-                obstacles.forEach((obstacle, index) => {
-                    obstacle.img.left -= obstacleSpeed;
-                    if (obstacle.img.left < 0) {
-                        canvas.remove(obstacle.img);
-                        obstacles.splice(index, 1);
-                    } else if (checkCollisionWithPlayer(obstacle)) {
-                        if (obstacle.type === 'zombie') {
-                            endGame();
-                        } else if (obstacle.type === 'fire') {
-                            health--;
-                            updateHealthBar();
-                            if (health <= 0) {
-                                endGame();
-                            }
-                        }
-                    }
-                });
-                canvas.renderAll();
-                gameLoopId = requestAnimationFrame(gameLoop);
-            }
-        }
+        let canTakeDamage = true;
+function checkCollisionWithPlayer(obstacle) {
+    return (
+        player.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
+        player.left + player.getScaledWidth() > obstacle.img.left &&
+        player.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
+        player.top + player.getScaledHeight() > obstacle.img.top
+    );
+}
 
+function gameLoop() {
+    if (!gameOver && !gamePaused) {
+        obstacles.forEach((obstacle, index) => {
+            obstacle.img.left -= obstacleSpeed;
+            if (obstacle.img.left < 0) {
+                canvas.remove(obstacle.img);
+                obstacles.splice(index, 1);
+            } else if (checkCollisionWithPlayer(obstacle) && canTakeDamage) {
+                if (obstacle.type === 'zombie') {
+                    endGame();
+                } else if (obstacle.type === 'fire') {
+                    health--;
+                    updateHealthBar();
+                    if (health <= 0) {
+                        endGame();
+                    } else {
+                        // Prevent further damage for 1 second
+                        canTakeDamage = false;
+                        setTimeout(() => canTakeDamage = true, 1000);
+                    }
+                }
+            }
+        });
+        canvas.renderAll();
+        gameLoopId = requestAnimationFrame(gameLoop);
+    }
+}
         function startCreatingObstacles() {
             obstacleIntervalId = setInterval(() => {
                 createObstacle();
