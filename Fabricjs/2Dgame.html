@@ -30,7 +30,7 @@
         #startScreen h1, #gameOverScreen h1 {
             color: white;
         }
-        #startGameButton, #pauseButton, #restartGameButton {
+        #startGameButton, #pauseButton, #reloadButton, #restartGameButton {
             padding: 10px 20px;
             font-size: 20px;
             margin-top: 20px; /* Add margin to separate from heading */
@@ -39,6 +39,11 @@
             position: absolute;
             top: 20px;
             right: 20px; /* Move to the top right corner */
+        }
+        #reloadButton {
+            position: absolute;
+            top: 70px; /* Position below the pause button */
+            right: 20px; /* Align with pause button */
         }
         #restartGameButton {
             display: none; /* Initially hidden */
@@ -58,6 +63,7 @@
     <canvas id="gameCanvas"></canvas>
 
     <button id="pauseButton">Pause</button>
+    <button id="reloadButton">Reload</button>
 
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
@@ -261,7 +267,6 @@
             canvas.add(clipText);
             canvas.renderAll();
         }
-
         // Game loop
         function gameLoop() {
             if (!gameOver && !gamePaused) {
@@ -279,66 +284,21 @@
             }
         }
 
-        // Check if a new obstacle can be placed without overlapping existing ones
-        function canPlaceObstacle(newObstacle) {
-            for (let obstacle of obstacles) {
-                if (newObstacle.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
-                    newObstacle.left + newObstacle.getScaledWidth() > obstacle.img.left &&
-                    newObstacle.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
-                    newObstacle.top + newObstacle.getScaledHeight() > obstacle.img.top) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
         // Start creating zombies
         function startCreatingZombies() {
-            function createZombieWithRandomInterval() {
-                const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png";
-                fabric.Image.fromURL(zombieImageUrl, function(img) {
-                    img.scale(0.2);
-                    img.set({
-                        left: canvas.width,
-                        top: canvas.height - img.getScaledHeight() - 20,
-                        selectable: false
-                    });
-                    if (canPlaceObstacle(img)) {
-                        obstacles.push({ type: 'zombie', img });
-                        canvas.add(img);
-                    }
-                });
+            zombieIntervalId = setInterval(() => {
+                createZombie();
                 spawnInterval = Math.max(1000, spawnInterval * 0.98);
                 obstacleSpeed += 0.1;
-                if (!gameOver && !gamePaused) {
-                    setTimeout(createZombieWithRandomInterval, Math.random() * spawnInterval);
-                }
-            }
-            createZombieWithRandomInterval();
+            }, spawnInterval);
         }
 
         // Start creating barriers
         function startCreatingBarriers() {
-            function createBarrierWithRandomInterval() {
-                const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png";
-                fabric.Image.fromURL(fireImageUrl, function(img) {
-                    img.scale(0.03); 
-                    img.set({
-                        left: canvas.width,
-                        top: canvas.height - img.getScaledHeight() - 20,
-                        selectable: false
-                    });
-                    if (canPlaceObstacle(img)) {
-                        obstacles.push({ type: 'fire', img });
-                        canvas.add(img);
-                    }
-                });
+            barrierIntervalId = setInterval(() => {
+                createBarrier();
                 barrierSpawnInterval = Math.max(3000, barrierSpawnInterval * 0.98);
-                if (!gameOver && !gamePaused) {
-                    setTimeout(createBarrierWithRandomInterval, Math.random() * barrierSpawnInterval + 3000); // Ensure minimum spacing
-                }
-            }
-            createBarrierWithRandomInterval();
+            }, barrierSpawnInterval);
         }
 
         // Start the game when the button is clicked
@@ -393,20 +353,18 @@
             }
         });
 
-        // Reload the weapon when the down arrow key is pressed
-        document.addEventListener('keydown', (event) => {
-            if (event.code === 'ArrowDown') {
-                const bulletsNeeded = maxClip - clip;
-                if (ammo >= bulletsNeeded) {
-                    clip = maxClip;
-                    ammo -= bulletsNeeded;
-                } else {
-                    clip += ammo;
-                    ammo = 0;
-                }
-                updateAmmoDisplay(); // Update ammo display
-                updateClipDisplay(); // Update clip display
+        // Reload the weapon when the button is clicked
+        document.getElementById('reloadButton').addEventListener('click', () => {
+            const bulletsNeeded = maxClip - clip;
+            if (ammo >= bulletsNeeded) {
+                clip = maxClip;
+                ammo -= bulletsNeeded;
+            } else {
+                clip += ammo;
+                ammo = 0;
             }
+            updateAmmoDisplay(); // Update ammo display
+            updateClipDisplay(); // Update clip display
         });
 
         // Keyboard controls for jumping and moving
