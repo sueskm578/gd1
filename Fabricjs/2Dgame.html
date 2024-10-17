@@ -49,6 +49,7 @@
         canvas.setHeight(window.innerHeight);
 
         let gameOver = false;
+        let killCount = 0; // Initialize kill count
 
         // Load the background image
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
@@ -159,6 +160,8 @@
                             obstacles.splice(index, 1);
                             projectiles.splice(projectiles.indexOf(projectile), 1);
                             score += 10;
+                            killCount++; // Increment kill count
+                            updateKillCount(); // Update the displayed kill count
                             clearInterval(interval);
                         }
                     });
@@ -183,6 +186,19 @@
             alert("Game Over!");
             canvas.clear();
             document.getElementById('startScreen').style.display = 'flex'; // Show start screen again
+        }
+
+        // Update the kill count display
+        function updateKillCount() {
+            const killCountText = new fabric.Text(`Zombies Killed: ${killCount}`, {
+                left: canvas.width - 200,
+                top: 20,
+                fontSize: 20,
+                fill: 'white',
+                selectable: false
+            });
+            canvas.add(killCountText);
+            canvas.renderAll();
         }
 
         // Game loop
@@ -216,6 +232,7 @@
             document.getElementById('startScreen').style.display = 'none'; // Hide start screen
             startCreatingObstacles();
             gameLoop();
+            updateKillCount(); // Initialize kill count display
         });
 
         // Keyboard controls for jumping and moving
