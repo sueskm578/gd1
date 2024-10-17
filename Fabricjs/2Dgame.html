@@ -279,10 +279,35 @@
             }
         }
 
+        // Check if a new obstacle can be placed without overlapping existing ones
+        function canPlaceObstacle(newObstacle) {
+            for (let obstacle of obstacles) {
+                if (newObstacle.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
+                    newObstacle.left + newObstacle.getScaledWidth() > obstacle.img.left &&
+                    newObstacle.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
+                    newObstacle.top + newObstacle.getScaledHeight() > obstacle.img.top) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         // Start creating zombies
         function startCreatingZombies() {
             function createZombieWithRandomInterval() {
-                createZombie();
+                const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png";
+                fabric.Image.fromURL(zombieImageUrl, function(img) {
+                    img.scale(0.2);
+                    img.set({
+                        left: canvas.width,
+                        top: canvas.height - img.getScaledHeight() - 20,
+                        selectable: false
+                    });
+                    if (canPlaceObstacle(img)) {
+                        obstacles.push({ type: 'zombie', img });
+                        canvas.add(img);
+                    }
+                });
                 spawnInterval = Math.max(1000, spawnInterval * 0.98);
                 obstacleSpeed += 0.1;
                 if (!gameOver && !gamePaused) {
@@ -295,7 +320,19 @@
         // Start creating barriers
         function startCreatingBarriers() {
             function createBarrierWithRandomInterval() {
-                createBarrier();
+                const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png";
+                fabric.Image.fromURL(fireImageUrl, function(img) {
+                    img.scale(0.03); 
+                    img.set({
+                        left: canvas.width,
+                        top: canvas.height - img.getScaledHeight() - 20,
+                        selectable: false
+                    });
+                    if (canPlaceObstacle(img)) {
+                        obstacles.push({ type: 'fire', img });
+                        canvas.add(img);
+                    }
+                });
                 barrierSpawnInterval = Math.max(3000, barrierSpawnInterval * 0.98);
                 if (!gameOver && !gamePaused) {
                     setTimeout(createBarrierWithRandomInterval, Math.random() * barrierSpawnInterval + 3000); // Ensure minimum spacing
