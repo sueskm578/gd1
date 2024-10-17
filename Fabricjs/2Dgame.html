@@ -30,7 +30,7 @@
         #startScreen h1, #gameOverScreen h1 {
             color: white;
         }
-        #startGameButton, #pauseButton, #reloadButton, #restartGameButton {
+        #startGameButton, #pauseButton, #restartGameButton {
             padding: 10px 20px;
             font-size: 20px;
             margin-top: 20px; /* Add margin to separate from heading */
@@ -39,11 +39,6 @@
             position: absolute;
             top: 20px;
             right: 20px; /* Move to the top right corner */
-        }
-        #reloadButton {
-            position: absolute;
-            top: 70px; /* Position below the pause button */
-            right: 20px; /* Align with pause button */
         }
         #restartGameButton {
             display: none; /* Initially hidden */
@@ -63,7 +58,6 @@
     <canvas id="gameCanvas"></canvas>
 
     <button id="pauseButton">Pause</button>
-    <button id="reloadButton">Reload</button>
 
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
@@ -347,18 +341,7 @@
             }
         });
 
-        // Reload the weapon when the button is clicked
-        document.getElementById('reloadButton').addEventListener('click', () => {
-            if (ammo > 0) {
-                let bulletsToReload = Math.min(maxClip - clip, ammo);
-                clip += bulletsToReload;
-                ammo -= bulletsToReload;
-                updateAmmoDisplay(); // Update ammo display
-                updateClipDisplay(); // Update clip display
-            }
-        });
-
-        // Keyboard controls for jumping and moving
+        // Keyboard controls for jumping, moving, shooting, and reloading
         document.addEventListener('keydown', (event) => {
             const moveDistance = 10; // Distance to move the player
 
@@ -392,6 +375,15 @@
                         }, hangTime); // Delay at the peak of the jump
                     }
                 });
+            } else if (event.code === 'ArrowDown') {
+                // Reload
+                if (ammo > 0) {
+                    let bulletsToReload = Math.min(maxClip - clip, ammo);
+                    clip += bulletsToReload;
+                    ammo -= bulletsToReload;
+                    updateAmmoDisplay(); // Update ammo display
+                    updateClipDisplay(); // Update clip display
+                }
             } else if (event.code === 'Space') { 
                 event.preventDefault(); // Prevent default action of the space bar
                 createProjectile();
