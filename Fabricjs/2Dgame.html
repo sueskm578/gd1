@@ -67,6 +67,26 @@
         <source src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Game-over.mp3" type="audio/mpeg">
     </audio>
     
+    <!-- Gun Shoot Sound -->
+    <audio id="gunShootSound">
+        <source src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Gun-shooting.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- Gun Reload Sound -->
+    <audio id="gunReloadSound">
+        <source src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Gun-reload.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- Zombie Enter Sound -->
+    <audio id="zombieEnterSound">
+        <source src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/undead-growl.wav" type="audio/wav">
+    </audio>
+    
+    <!-- Zombie Kill Sound -->
+    <audio id="zombieKillSound">
+        <source src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Zombie-death.mp3" type="audio/mpeg">
+    </audio>
+
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
         canvas.setWidth(window.innerWidth);
@@ -86,6 +106,10 @@
 
         const backgroundMusic = document.getElementById('backgroundMusic');
         const gameOverMusic = document.getElementById('gameOverMusic');
+        const gunShootSound = document.getElementById('gunShootSound');
+        const gunReloadSound = document.getElementById('gunReloadSound');
+        const zombieEnterSound = document.getElementById('zombieEnterSound');
+        const zombieKillSound = document.getElementById('zombieKillSound');
 
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
         fabric.Image.fromURL(backgroundImageUrl, function(img) {
@@ -118,6 +142,7 @@
                 img.set({ left: canvas.width, top: canvas.height - img.getScaledHeight() - 20, selectable: false });
                 obstacles.push({ type: 'zombie', img });
                 canvas.add(img);
+                zombieEnterSound.play(); // Play zombie enter sound
             });
         }
 
@@ -151,6 +176,7 @@
                 });
                 clip--;
                 updateClipDisplay();
+                gunShootSound.play(); // Play gun shoot sound
             }
         }
 
@@ -172,6 +198,7 @@
                             killCount++;
                             updateKillCount();
                             clearInterval(interval);
+                            zombieKillSound.play(); // Play zombie kill sound
                         }
                     });
                 }
@@ -393,6 +420,7 @@
                     ammo -= bulletsToReload;
                     updateAmmoDisplay();
                     updateClipDisplay();
+                    gunReloadSound.play(); // Play gun reload sound
                 }
             } else if (event.code === 'Space') {
                 event.preventDefault();
