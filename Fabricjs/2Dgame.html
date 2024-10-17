@@ -281,7 +281,8 @@
         });
 
         // Pause the game when the button is clicked
-        document.getElementById('pauseButton').addEventListener('click', () => {
+        document.getElementById('pauseButton').addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent default action of the button
             gamePaused = !gamePaused; // Toggle pause state
             document.getElementById('pauseButton').innerText = gamePaused ? 'Resume' : 'Pause'; // Update button text
             if (gamePaused) {
@@ -328,6 +329,7 @@
                     }
                 });
             } else if (event.code === 'Space') { 
+                event.preventDefault(); // Prevent default action of the space bar
                 createProjectile();
             }
 
