@@ -253,7 +253,50 @@
                 canvas.renderAll();
             }, 30);
         }
+let firstAidCrates = [];
 
+    function createFirstAidCrate() {
+        const firstAidCrateImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/firstaid.webp";
+        fabric.Image.fromURL(firstAidCrateImageUrl, function(img) {
+            img.scale(0.1);
+            img.set({ 
+                left: Math.random() * (canvas.width - img.getScaledWidth()), 
+                top: -img.getScaledHeight(), 
+                selectable: false 
+            });
+            firstAidCrates.push(img);
+            canvas.add(img);
+            moveFirstAidCrate(img);
+        });
+    }
+
+    function moveFirstAidCrate(firstAidCrate) {
+        const interval = setInterval(() => {
+            firstAidCrate.top += 2;
+            if (firstAidCrate.top > canvas.height) {
+                canvas.remove(firstAidCrate);
+                firstAidCrates.splice(firstAidCrates.indexOf(firstAidCrate), 1);
+                clearInterval(interval);
+            } else if (checkCollisionWithPlayer({ img: firstAidCrate })) {
+                canvas.remove(firstAidCrate);
+                firstAidCrates.splice(firstAidCrates.indexOf(firstAidCrate), 1);
+                // Increase player health when first aid crate is collected
+                if (health < 5) {
+                    health++;
+                    updateHealthBar();
+                }
+                clearInterval(interval);
+            }
+            canvas.renderAll();
+        }, 30);
+    }
+
+    // Create first aid crates every 15 seconds
+    function startCreatingFirstAidCrates() {
+        setInterval(() => {
+            createFirstAidCrate();
+        }, 15000);
+    }
         function endGame() {
             gameOver = true;
             document.getElementById('gameOverMessage').innerText = `Game Over! Zombies Killed: ${killCount}`;
@@ -381,6 +424,7 @@
             document.getElementById('startScreen').style.display = 'none';
             startCreatingObstacles();
             startCreatingAmmoCrates();
+            startCreatingFirstAidCrates();
             gameLoop();
             updateKillCount();
             updateAmmoDisplay();
