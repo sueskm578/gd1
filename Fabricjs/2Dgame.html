@@ -30,7 +30,7 @@
         #startScreen h1, #gameOverScreen h1 {
             color: white;
         }
-        #startGameButton, #pauseButton, #reloadButton, #restartGameButton {
+        #startGameButton, #pauseButton, #restartGameButton {
             padding: 10px 20px;
             font-size: 20px;
             margin-top: 20px; /* Add margin to separate from heading */
@@ -39,11 +39,6 @@
             position: absolute;
             top: 20px;
             right: 20px; /* Move to the top right corner */
-        }
-        #reloadButton {
-            position: absolute;
-            top: 70px; /* Position below the pause button */
-            right: 20px; /* Align with pause button */
         }
         #restartGameButton {
             display: none; /* Initially hidden */
@@ -63,7 +58,6 @@
     <canvas id="gameCanvas"></canvas>
 
     <button id="pauseButton">Pause</button>
-    <button id="reloadButton">Reload</button>
 
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
@@ -77,8 +71,7 @@
         let ammoText; // Variable to hold the ammo count text
         let clipText; // Variable to hold the clip count text
         let gameLoopId; // Variable to hold the game loop ID
-        let zombieIntervalId; // Variable to hold the zombie creation interval ID
-        let barrierIntervalId; // Variable to hold the barrier creation interval ID
+        let obstacleIntervalId; // Variable to hold the obstacle creation interval ID
         let ammo = 30; // Initialize total ammo count
         let clip = 10; // Initialize clip count
         let maxClip = 10; // Maximum clip capacity
@@ -115,7 +108,6 @@
         let projectiles = [];
         let score = 0;
         let spawnInterval = 3000;
-        let barrierSpawnInterval = 6000; // Interval for spawning barriers
         let obstacleSpeed = 5;
 
         // Create zombies
@@ -216,8 +208,7 @@
             document.getElementById('restartGameButton').style.display = 'block'; // Show restart button
             // Do not clear the canvas to keep the background
             cancelAnimationFrame(gameLoopId); // Stop the game loop
-            clearInterval(zombieIntervalId); // Stop creating zombies
-            clearInterval(barrierIntervalId); // Stop creating barriers
+            clearInterval(obstacleIntervalId); // Stop creating obstacles
         }
 
         // Update the kill count display
@@ -285,28 +276,23 @@
             }
         }
 
-        // Start creating zombies
-        function startCreatingZombies() {
-            zombieIntervalId = setInterval(() => {
-                createZombie();
+        // Start creating obstacles
+        function startCreatingObstacles() {
+            obstacleIntervalId = setInterval(() => {
+                if (Math.random() < 0.5) {
+                    createZombie();
+                } else {
+                    createBarrier();
+                }
                 spawnInterval = Math.max(1000, spawnInterval * 0.98);
                 obstacleSpeed += 0.1;
             }, spawnInterval);
         }
 
-        // Start creating barriers
-        function startCreatingBarriers() {
-            barrierIntervalId = setInterval(() => {
-                createBarrier();
-                barrierSpawnInterval = Math.max(3000, barrierSpawnInterval * 0.98);
-            }, barrierSpawnInterval);
-        }
-
         // Start the game when the button is clicked
         document.getElementById('startGameButton').addEventListener('click', () => {
             document.getElementById('startScreen').style.display = 'none'; // Hide start screen
-            startCreatingZombies();
-            startCreatingBarriers();
+            startCreatingObstacles();
             gameLoop();
             updateKillCount(); // Initialize kill count display
             updateAmmoDisplay(); // Initialize ammo display
@@ -320,7 +306,6 @@
             killCount = 0; // Reset kill count
             score = 0;
             spawnInterval = 3000;
-            barrierSpawnInterval = 6000; // Reset barrier spawn interval
             obstacleSpeed = 5;
             ammo = 30; // Reset total ammo count
             clip = maxClip; // Reset clip count
@@ -330,8 +315,7 @@
             projectiles = [];
             document.getElementById('gameOverScreen').style.display = 'none'; // Hide game over screen
             document.getElementById('restartGameButton').style.display = 'none'; // Hide restart button
-            startCreatingZombies();
-            startCreatingBarriers();
+            startCreatingObstacles();
             gameLoop();
             updateKillCount(); // Initialize kill count display
             updateAmmoDisplay(); // Initialize ammo display
@@ -345,27 +329,27 @@
             document.getElementById('pauseButton').innerText = gamePaused ? 'Resume' : 'Pause'; // Update button text
             if (gamePaused) {
                 cancelAnimationFrame(gameLoopId); // Stop the game loop
-                clearInterval(zombieIntervalId); // Stop creating zombies
-                clearInterval(barrierIntervalId); // Stop creating barriers
+                clearInterval(obstacleIntervalId); // Stop creating obstacles
             } else {
-                startCreatingZombies(); // Resume creating zombies
-                startCreatingBarriers(); // Resume creating barriers
+                startCreatingObstacles(); // Resume creating obstacles
                 gameLoop(); // Resume the game loop
             }
         });
 
-        // Reload the weapon when the button is clicked
-        document.getElementById('reloadButton').addEventListener('click', () => {
-            const bulletsNeeded = maxClip - clip;
-            if (ammo >= bulletsNeeded) {
-                clip = maxClip;
-                ammo -= bulletsNeeded;
-            } else {
-                clip += ammo;
-                ammo = 0;
+        // Reload the weapon when the down arrow key is pressed
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'ArrowDown') {
+                const bulletsNeeded = maxClip - clip;
+                if (ammo >= bulletsNeeded) {
+                    clip = maxClip;
+                    ammo -= bulletsNeeded;
+                } else {
+                    clip += ammo;
+                    ammo = 0;
+                }
+                updateAmmoDisplay(); // Update ammo display
+                updateClipDisplay(); // Update clip display
             }
-            updateAmmoDisplay(); // Update ammo display
-            updateClipDisplay(); // Update clip display
         });
 
         // Keyboard controls for jumping and moving
