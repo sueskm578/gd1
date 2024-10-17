@@ -166,6 +166,7 @@
                 obstacles.push({ type: 'zombie', img });
                 canvas.add(img);
                 document.getElementById('zombieSpawnSound').play(); // Play spawn sound
+                console.log("Zombie created!"); // Debugging log
                 moveZombie(img); // Start moving the zombie
             });
         }
@@ -364,7 +365,7 @@
         function startCreatingObstacles() {
             obstacleIntervalId = setInterval(() => {
                 if (!isPaused) {
-                    createObstacle();
+                    createObstacle(); // Ensure this is being called
                     if (Math.random() < 0.5) { // 50% chance to create a bullet crate
                         createBulletCrate();
                     }
