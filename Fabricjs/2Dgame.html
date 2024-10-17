@@ -103,6 +103,7 @@
         let ammoText;
         let clipText;
         let healthBar;
+        let healthText;
         let health = 5;
         let gameLoopId;
         let obstacleIntervalId;
@@ -315,15 +316,26 @@
             if (healthBar) {
                 canvas.remove(healthBar);
             }
+            if (healthText) {
+                canvas.remove(healthText);
+            }
             healthBar = new fabric.Rect({
-                left: canvas.width / 2 - 50,
+                left: canvas.width / 2 - 100,
                 top: 20,
                 fill: 'green',
-                width: health * 20,
-                height: 20,
+                width: health * 40,
+                height: 40,
+                selectable: false
+            });
+            healthText = new fabric.Text(`Health: ${health}`, {
+                left: canvas.width / 2 - 100,
+                top: 70,
+                fontSize: 30,
+                fill: 'white',
                 selectable: false
             });
             canvas.add(healthBar);
+            canvas.add(healthText);
             canvas.renderAll();
         }
 
@@ -335,10 +347,14 @@
                         canvas.remove(obstacle.img);
                         obstacles.splice(index, 1);
                     } else if (checkCollisionWithPlayer(obstacle)) {
-                        health--;
-                        updateHealthBar();
-                        if (health <= 0) {
+                        if (obstacle.type === 'zombie') {
                             endGame();
+                        } else if (obstacle.type === 'fire') {
+                            health--;
+                            updateHealthBar();
+                            if (health <= 0) {
+                                endGame();
+                            }
                         }
                     }
                 });
