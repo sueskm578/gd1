@@ -6,43 +6,19 @@
     <title>Zombie Shooting Game</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-        }
-        canvas {
-            display: block;
-            border: 1px solid black;
-        }
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; border: 1px solid black; }
         #startScreen, #gameOverScreen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background-color: rgba(0, 0, 0, 0.7); z-index: 1;
         }
-        #startScreen h1, #gameOverScreen h1 {
-            color: white;
-        }
+        #startScreen h1, #gameOverScreen h1 { color: white; }
         #startGameButton, #pauseButton, #restartGameButton {
-            padding: 10px 20px;
-            font-size: 20px;
-            margin-top: 20px;
+            padding: 10px 20px; font-size: 20px; margin-top: 20px;
         }
-        #pauseButton {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-        #restartGameButton {
-            display: none;
-        }
+        #pauseButton { position: absolute; top: 20px; right: 20px; }
+        #restartGameButton { display: none; }
     </style>
 </head>
 <body>
@@ -54,9 +30,7 @@
         <h1 id="gameOverMessage"></h1>
         <button id="restartGameButton">Restart Game</button>
     </div>
-
     <canvas id="gameCanvas"></canvas>
-
     <button id="pauseButton">Pause</button>
 
     <!-- Audio elements -->
@@ -87,12 +61,7 @@
 
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
         fabric.Image.fromURL(backgroundImageUrl, function(img) {
-            img.set({
-                left: 0,
-                top: -300,
-                selectable: false,
-                evented: false
-            });
+            img.set({ left: 0, top: -300, selectable: false, evented: false });
             img.scaleToWidth(canvas.width);
             canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
         });
@@ -101,11 +70,7 @@
         let player;
         fabric.Image.fromURL(playerImageUrl, function(img) {
             img.scale(0.1);
-            img.set({
-                left: 50,
-                top: canvas.height - img.getScaledHeight() - 20,
-                selectable: false
-            });
+            img.set({ left: 50, top: canvas.height - img.getScaledHeight() - 20, selectable: false });
             player = img;
             player.isJumping = false;
             canvas.add(img);
@@ -121,7 +86,9 @@
         function playSound(id) {
             const sound = document.getElementById(id);
             sound.currentTime = 0;
-            sound.play();
+            sound.addEventListener('canplaythrough', () => {
+                sound.play();
+            }, { once: true });
         }
 
         function stopSound(id) {
@@ -130,18 +97,26 @@
             sound.currentTime = 0;
         }
 
-        document.getElementById('backgroundMusic').play();
+        document.getElementById('startGameButton').addEventListener('click', () => {
+            document.getElementById('startScreen').style.display = 'none';
+            const backgroundMusic = document.getElementById('backgroundMusic');
+            backgroundMusic.addEventListener('canplaythrough', () => {
+                backgroundMusic.play();
+            }, { once: true });
+            startCreatingObstacles();
+            startCreatingAmmoCrates();
+            gameLoop();
+            updateKillCount();
+            updateAmmoDisplay();
+            updateClipDisplay();
+        });
 
         function createZombie() {
             playSound('zombieEntranceSound');
             const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png";
             fabric.Image.fromURL(zombieImageUrl, function(img) {
                 img.scale(0.2);
-                img.set({
-                    left: canvas.width,
-                    top: canvas.height - img.getScaledHeight() - 20,
-                    selectable: false
-                });
+                img.set({ left: canvas.width, top: canvas.height - img.getScaledHeight() - 20, selectable: false });
                 obstacles.push({ type: 'zombie', img });
                 canvas.add(img);
             });
@@ -151,11 +126,7 @@
             const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png";
             fabric.Image.fromURL(fireImageUrl, function(img) {
                 img.scale(0.03); 
-                img.set({
-                    left: canvas.width,
-                    top: canvas.height - img.getScaledHeight() - 20,
-                    selectable: false
-                });
+                img.set({ left: canvas.width, top: canvas.height - img.getScaledHeight() - 20, selectable: false });
                 obstacles.push({ type: 'fire', img });
                 canvas.add(img);
             });
@@ -232,11 +203,7 @@
             const ammoCrateImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/crate.png";
             fabric.Image.fromURL(ammoCrateImageUrl, function(img) {
                 img.scale(0.2);
-                img.set({
-                    left: Math.random() * (canvas.width - img.getScaledWidth()),
-                    top: -img.getScaledHeight(),
-                    selectable: false
-                });
+                img.set({ left: Math.random() * (canvas.width - img.getScaledWidth()), top: -img.getScaledHeight(), selectable: false });
                 ammoCrates.push(img);
                 canvas.add(img);
                 moveAmmoCrate(img);
@@ -348,17 +315,6 @@
             }, 10000);
         }
 
-        document.getElementById('startGameButton').addEventListener('click', () => {
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('backgroundMusic').play();
-            startCreatingObstacles();
-            startCreatingAmmoCrates();
-            gameLoop();
-            updateKillCount();
-            updateAmmoDisplay();
-            updateClipDisplay();
-        });
-
         document.getElementById('restartGameButton').addEventListener('click', () => {
             gameOver = false;
             killCount = 0;
@@ -375,7 +331,10 @@
             ammoCrates = [];
             document.getElementById('gameOverScreen').style.display = 'none';
             document.getElementById('restartGameButton').style.display = 'none';
-            document.getElementById('backgroundMusic').play();
+            const backgroundMusic = document.getElementById('backgroundMusic');
+            backgroundMusic.addEventListener('canplaythrough', () => {
+                backgroundMusic.play();
+            }, { once: true });
             startCreatingObstacles();
             startCreatingAmmoCrates();
             gameLoop();
@@ -394,7 +353,10 @@
                 clearInterval(obstacleIntervalId);
                 clearInterval(ammoCrateIntervalId);
             } else {
-                document.getElementById('backgroundMusic').play();
+                const backgroundMusic = document.getElementById('backgroundMusic');
+                backgroundMusic.addEventListener('canplaythrough', () => {
+                    backgroundMusic.play();
+                }, { once: true });
                 startCreatingObstacles();
                 startCreatingAmmoCrates();
                 gameLoop();
