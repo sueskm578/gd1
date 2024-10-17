@@ -30,7 +30,7 @@
         #startScreen h1, #gameOverScreen h1 {
             color: white;
         }
-        #startGameButton, #pauseButton, #restartGameButton {
+        #startGameButton, #pauseButton, #reloadButton, #restartGameButton {
             padding: 10px 20px;
             font-size: 20px;
             margin-top: 20px; /* Add margin to separate from heading */
@@ -39,6 +39,11 @@
             position: absolute;
             top: 20px;
             right: 20px; /* Move to the top right corner */
+        }
+        #reloadButton {
+            position: absolute;
+            top: 70px; /* Position below the pause button */
+            right: 20px; /* Align with pause button */
         }
         #restartGameButton {
             display: none; /* Initially hidden */
@@ -58,6 +63,7 @@
     <canvas id="gameCanvas"></canvas>
 
     <button id="pauseButton">Pause</button>
+    <button id="reloadButton">Reload</button>
 
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
@@ -70,6 +76,8 @@
         let killCountText; // Variable to hold the kill count text
         let gameLoopId; // Variable to hold the game loop ID
         let obstacleIntervalId; // Variable to hold the obstacle creation interval ID
+        let ammo = 10; // Initialize ammo count
+        let maxAmmo = 10; // Maximum ammo capacity
 
         // Load the background image
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
@@ -146,18 +154,22 @@
 
         // Create a projectile (bullet)
         function createProjectile() {
-            const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png";
-            fabric.Image.fromURL(bulletImageUrl, function(img) {
-                img.scale(0.1);
-                img.set({
-                    left: player.left + player.getScaledWidth(),
-                    top: player.top + player.getScaledHeight() / 2 - img.getScaledHeight() / 2,
-                    selectable: false
+            if (ammo > 0) {
+                const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png";
+                fabric.Image.fromURL(bulletImageUrl, function(img) {
+                    img.scale(0.1);
+                    img.set({
+                        left: player.left + player.getScaledWidth(),
+                        top: player.top + player.getScaledHeight() / 2 - img.getScaledHeight() / 2,
+                        selectable: false
+                    });
+                    projectiles.push(img);
+                    canvas.add(img);
+                    moveProjectile(img);
                 });
-                projectiles.push(img);
-                canvas.add(img);
-                moveProjectile(img);
-            });
+                ammo--; // Decrease ammo count
+                updateAmmoDisplay(); // Update ammo display
+            }
         }
 
         // Move the projectile
@@ -227,6 +239,22 @@
             canvas.renderAll();
         }
 
+        // Update the ammo display
+        function updateAmmoDisplay() {
+            if (ammoText) {
+                canvas.remove(ammoText); // Remove previous text
+            }
+            ammoText = new fabric.Text(`Ammo: ${ammo}`, {
+                left: 20, // Adjusted position to fit on the screen
+                top: 60,
+                fontSize: 30, // Increased font size
+                fill: 'white',
+                selectable: false
+            });
+            canvas.add(ammoText);
+            canvas.renderAll();
+        }
+
         // Game loop
         function gameLoop() {
             if (!gameOver && !gamePaused) {
@@ -259,6 +287,7 @@
             startCreatingObstacles();
             gameLoop();
             updateKillCount(); // Initialize kill count display
+            updateAmmoDisplay(); // Initialize ammo display
         });
 
         // Restart the game when the button is clicked
@@ -269,6 +298,7 @@
             score = 0;
             spawnInterval = 3000;
             obstacleSpeed = 5;
+            ammo = maxAmmo; // Reset ammo count
             obstacles.forEach(obstacle => canvas.remove(obstacle.img)); // Remove all obstacles
             projectiles.forEach(projectile => canvas.remove(projectile)); // Remove all projectiles
             obstacles = [];
@@ -278,6 +308,7 @@
             startCreatingObstacles();
             gameLoop();
             updateKillCount(); // Initialize kill count display
+            updateAmmoDisplay(); // Initialize ammo display
         });
 
         // Pause the game when the button is clicked
@@ -292,6 +323,12 @@
                 startCreatingObstacles(); // Resume creating obstacles
                 gameLoop(); // Resume the game loop
             }
+        });
+
+        // Reload the weapon when the button is clicked
+        document.getElementById('reloadButton').addEventListener('click', () => {
+            ammo = maxAmmo; // Reset ammo count to maximum
+            updateAmmoDisplay(); // Update ammo display
         });
 
         // Keyboard controls for jumping and moving
