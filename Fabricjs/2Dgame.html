@@ -29,9 +29,15 @@
         #startScreen h1, #gameOverScreen h1 {
             color: white;
         }
-        #startGameButton {
+        #startGameButton, #pauseButton, #restartGameButton {
             padding: 10px 20px;
             font-size: 20px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        #pauseButton {
+            right: 120px; /* Adjust position for pause button */
         }
     </style>
 </head>
@@ -47,14 +53,18 @@
 
     <canvas id="gameCanvas"></canvas>
 
+    <button id="pauseButton">Pause</button>
+
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
         canvas.setWidth(window.innerWidth);
         canvas.setHeight(window.innerHeight);
 
         let gameOver = false;
+        let gamePaused = false;
         let killCount = 0; // Initialize kill count
         let killCountText; // Variable to hold the kill count text
+        let gameLoopId; // Variable to hold the game loop ID
 
         // Load the background image
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
@@ -191,6 +201,7 @@
             document.getElementById('gameOverMessage').innerText = `Game Over! Zombies Killed: ${killCount}`;
             document.getElementById('gameOverScreen').style.display = 'flex'; // Show game over screen
             canvas.clear();
+            cancelAnimationFrame(gameLoopId); // Stop the game loop
         }
 
         // Update the kill count display
@@ -211,7 +222,7 @@
 
         // Game loop
         function gameLoop() {
-            if (!gameOver) {
+            if (!gameOver && !gamePaused) {
                 obstacles.forEach((obstacle, index) => {
                     obstacle.img.left -= obstacleSpeed;
                     if (obstacle.img.left < 0) {
@@ -222,7 +233,7 @@
                     }
                 });
                 canvas.renderAll();
-                requestAnimationFrame(gameLoop);
+                gameLoopId = requestAnimationFrame(gameLoop); // Store the loop ID
             }
         }
 
@@ -254,6 +265,12 @@
             startCreatingObstacles();
             gameLoop();
             updateKillCount(); // Initialize kill count display
+        });
+
+        // Pause the game when the button is clicked
+        document.getElementById('pauseButton').addEventListener('click', () => {
+            gamePaused = !gamePaused; // Toggle pause state
+            document.getElementById('pauseButton').innerText = gamePaused ? 'Resume' : 'Pause'; // Update button text
         });
 
         // Keyboard controls for jumping and moving
