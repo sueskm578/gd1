@@ -72,6 +72,7 @@
         let clipText; // Variable to hold the clip count text
         let gameLoopId; // Variable to hold the game loop ID
         let obstacleIntervalId; // Variable to hold the obstacle creation interval ID
+        let ammoCrateIntervalId; // Variable to hold the ammo crate creation interval ID
         let ammo = 0; // Initialize ammo count
         let clip = 10; // Initialize clip count
         let maxClip = 10; // Maximum clip capacity
@@ -106,6 +107,7 @@
 
         let obstacles = [];
         let projectiles = [];
+        let ammoCrates = [];
         let score = 0;
         let spawnInterval = 3000;
         let obstacleSpeed = 5;
@@ -209,6 +211,41 @@
             );
         }
 
+        // Create an ammo crate
+        function createAmmoCrate() {
+            const ammoCrateImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/crate.png";
+            fabric.Image.fromURL(ammoCrateImageUrl, function(img) {
+                img.scale(0.1);
+                img.set({
+                    left: Math.random() * (canvas.width - img.getScaledWidth()),
+                    top: -img.getScaledHeight(),
+                    selectable: false
+                });
+                ammoCrates.push(img);
+                canvas.add(img);
+                moveAmmoCrate(img);
+            });
+        }
+
+        // Move the ammo crate
+        function moveAmmoCrate(ammoCrate) {
+            const interval = setInterval(() => {
+                ammoCrate.top += 2; // Slow falling speed
+                if (ammoCrate.top > canvas.height) {
+                    canvas.remove(ammoCrate);
+                    ammoCrates.splice(ammoCrates.indexOf(ammoCrate), 1);
+                    clearInterval(interval);
+                } else if (checkCollisionWithPlayer({ img: ammoCrate })) {
+                    canvas.remove(ammoCrate);
+                    ammoCrates.splice(ammoCrates.indexOf(ammoCrate), 1);
+                    ammo += 5; // Increase ammo count by 5
+                    updateAmmoDisplay(); // Update ammo display
+                    clearInterval(interval);
+                }
+                canvas.renderAll();
+            }, 30);
+        }
+
         // End the game
         function endGame() {
             gameOver = true;
@@ -218,6 +255,7 @@
             // Do not clear the canvas to keep the background
             cancelAnimationFrame(gameLoopId); // Stop the game loop
             clearInterval(obstacleIntervalId); // Stop creating obstacles
+            clearInterval(ammoCrateIntervalId); // Stop creating ammo crates
         }
 
         // Update the kill count display
@@ -294,10 +332,18 @@
             }, spawnInterval);
         }
 
+        // Start creating ammo crates
+        function startCreatingAmmoCrates() {
+            ammoCrateIntervalId = setInterval(() => {
+                createAmmoCrate();
+            }, 10000); // Spawn an ammo crate every 10 seconds
+        }
+
         // Start the game when the button is clicked
         document.getElementById('startGameButton').addEventListener('click', () => {
             document.getElementById('startScreen').style.display = 'none'; // Hide start screen
             startCreatingObstacles();
+            startCreatingAmmoCrates();
             gameLoop();
             updateKillCount(); // Initialize kill count display
             updateAmmoDisplay(); // Initialize ammo display
@@ -316,11 +362,14 @@
             clip = maxClip; // Reset clip count
             obstacles.forEach(obstacle => canvas.remove(obstacle.img)); // Remove all obstacles
             projectiles.forEach(projectile => canvas.remove(projectile)); // Remove all projectiles
+            ammoCrates.forEach(ammoCrate => canvas.remove(ammoCrate)); // Remove all ammo crates
             obstacles = [];
             projectiles = [];
+            ammoCrates = [];
             document.getElementById('gameOverScreen').style.display = 'none'; // Hide game over screen
             document.getElementById('restartGameButton').style.display = 'none'; // Hide restart button
             startCreatingObstacles();
+            startCreatingAmmoCrates();
             gameLoop();
             updateKillCount(); // Initialize kill count display
             updateAmmoDisplay(); // Initialize ammo display
@@ -335,8 +384,10 @@
             if (gamePaused) {
                 cancelAnimationFrame(gameLoopId); // Stop the game loop
                 clearInterval(obstacleIntervalId); // Stop creating obstacles
+                clearInterval(ammoCrateIntervalId); // Stop creating ammo crates
             } else {
                 startCreatingObstacles(); // Resume creating obstacles
+                startCreatingAmmoCrates(); // Resume creating ammo crates
                 gameLoop(); // Resume the game loop
             }
         });
