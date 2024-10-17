@@ -14,7 +14,7 @@
             display: block;
             border: 1px solid black;
         }
-        #startScreen {
+        #startScreen, #gameOverScreen {
             position: absolute;
             top: 0;
             left: 0;
@@ -26,7 +26,7 @@
             background-color: rgba(0, 0, 0, 0.7);
             z-index: 1;
         }
-        #startScreen h1 {
+        #startScreen h1, #gameOverScreen h1 {
             color: white;
         }
         #startGameButton {
@@ -39,6 +39,10 @@
     <div id="startScreen">
         <h1>Welcome to the Zombie Game</h1>
         <button id="startGameButton">Start Game</button>
+    </div>
+    <div id="gameOverScreen" style="display: none;">
+        <h1 id="gameOverMessage"></h1>
+        <button id="restartGameButton">Restart Game</button>
     </div>
 
     <canvas id="gameCanvas"></canvas>
@@ -184,9 +188,9 @@
         // End the game
         function endGame() {
             gameOver = true;
-            alert("Game Over!");
+            document.getElementById('gameOverMessage').innerText = `Game Over! Zombies Killed: ${killCount}`;
+            document.getElementById('gameOverScreen').style.display = 'flex'; // Show game over screen
             canvas.clear();
-            document.getElementById('startScreen').style.display = 'flex'; // Show start screen again
         }
 
         // Update the kill count display
@@ -234,6 +238,19 @@
         // Start the game when the button is clicked
         document.getElementById('startGameButton').addEventListener('click', () => {
             document.getElementById('startScreen').style.display = 'none'; // Hide start screen
+            startCreatingObstacles();
+            gameLoop();
+            updateKillCount(); // Initialize kill count display
+        });
+
+        // Restart the game when the button is clicked
+        document.getElementById('restartGameButton').addEventListener('click', () => {
+            gameOver = false;
+            killCount = 0; // Reset kill count
+            obstacles = [];
+            projectiles = [];
+            document.getElementById('gameOverScreen').style.display = 'none'; // Hide game over screen
+            canvas.clear(); // Clear the canvas
             startCreatingObstacles();
             gameLoop();
             updateKillCount(); // Initialize kill count display
