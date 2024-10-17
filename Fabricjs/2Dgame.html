@@ -218,9 +218,17 @@
             gameLoop();
         });
 
-        // Keyboard controls for jumping
+        // Keyboard controls for jumping and moving
         document.addEventListener('keydown', (event) => {
-            if (event.code === 'ArrowUp' && !player.isJumping) { 
+            const moveDistance = 10; // Distance to move the player
+
+            if (event.code === 'ArrowLeft') {
+                // Move left
+                player.left = Math.max(0, player.left - moveDistance); // Prevent moving out of bounds
+            } else if (event.code === 'ArrowRight') {
+                // Move right
+                player.left = Math.min(canvas.width - player.getScaledWidth(), player.left + moveDistance); // Prevent moving out of bounds
+            } else if (event.code === 'ArrowUp' && !player.isJumping) { 
                 player.isJumping = true;
                 const originalTop = player.top;
                 const jumpHeight = 400;  // Higher jump to clear fire
@@ -247,6 +255,8 @@
             } else if (event.code === 'Space') { 
                 createProjectile();
             }
+
+            canvas.renderAll(); // Re-render the canvas to reflect the player's new position
         });
 
         // Resize canvas on window resize
