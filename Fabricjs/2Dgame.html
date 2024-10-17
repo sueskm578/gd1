@@ -45,7 +45,7 @@
             top: 10px;
             right: 10px;
             color: white;
-            font-size: 30px; /* Increased font size */
+            font-size: 30px;
             z-index: 2;
         }
     </style>
@@ -71,47 +71,55 @@
     <audio id="zombieSpawnSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/undead-growl.wav"></audio>
     <audio id="zombieDeathSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Zombie-death.mp3"></audio>
     <audio id="gameOverSound" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Game-over.mp3"></audio>
+
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
         canvas.setWidth(window.innerWidth);
         canvas.setHeight(window.innerHeight);
 
-        let gameOver = false;
-        let isPaused = false;
-        let gameLoopId;
-        let obstacleIntervalId;
+        let gameOver, isPaused, gameLoopId, obstacleIntervalId, player, obstacles, projectiles, score, spawnInterval, obstacleSpeed;
 
-        const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background%20apocalypse.avif";
-        fabric.Image.fromURL(backgroundImageUrl, function(img) {
-            img.set({
-                left: 0,
-                top: -300,
-                selectable: false,
-                evented: false
+        function initVariables() {
+            gameOver = false;
+            isPaused = false;
+            obstacles = [];
+            projectiles = [];
+            score = 0;
+            spawnInterval = 3000;
+            obstacleSpeed = 5;
+        }
+
+        function setupGame() {
+            initVariables();
+            document.getElementById('backgroundMusic').currentTime = 0;
+            canvas.clear();
+            // Load background image
+            const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background%20apocalypse.avif";
+            fabric.Image.fromURL(backgroundImageUrl, function(img) {
+                img.set({
+                    left: 0,
+                    top: -300,
+                    selectable: false,
+                    evented: false
+                });
+                img.scaleToWidth(canvas.width);
+                canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
             });
-            img.scaleToWidth(canvas.width);
-            canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-        });
 
-        const playerImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/gun%20guy.png";
-        let player;
-        fabric.Image.fromURL(playerImageUrl, function(img) {
-            img.scale(0.1);
-            img.set({
-                left: 50,
-                top: canvas.height - img.getScaledHeight() - 20,
-                selectable: false
+            // Load player image
+            const playerImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/gun%20guy.png";
+            fabric.Image.fromURL(playerImageUrl, function(img) {
+                img.scale(0.1);
+                img.set({
+                    left: 50,
+                    top: canvas.height - img.getScaledHeight() - 20,
+                    selectable: false
+                });
+                player = img;
+                player.isJumping = false;
+                canvas.add(img);
             });
-            player = img;
-            player.isJumping = false;
-            canvas.add(img);
-        });
-
-        let obstacles = [];
-        let projectiles = [];
-        let score = 0;
-        let spawnInterval = 3000;
-        let obstacleSpeed = 5;
+        }
 
         function createZombie() {
             const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png";
@@ -124,7 +132,7 @@
                 });
                 obstacles.push({ type: 'zombie', img });
                 canvas.add(img);
-                document.getElementById('zombieSpawnSound').play(); // Play zombie spawn sound
+                document.getElementById('zombieSpawnSound').play();
             });
         }
 
@@ -162,7 +170,7 @@
                 projectiles.push(img);
                 canvas.add(img);
                 moveProjectile(img);
-                document.getElementById('shootSound').play(); // Play shoot sound
+                document.getElementById('shootSound').play();
             });
         }
 
@@ -185,9 +193,9 @@
                             canvas.remove(projectile);
                             obstacles.splice(index, 1);
                             projectiles.splice(projectiles.indexOf(projectile), 1);
-                            score += 1; // Increment score by 1
-                            document.getElementById('scoreValue').textContent = score; // Update score display
-                            document.getElementById('zombieDeathSound').play(); // Play zombie death sound
+                            score += 1;
+                            document.getElementById('scoreValue').textContent = score;
+                            document.getElementById('zombieDeathSound').play();
                             clearInterval(interval);
                         }
                     });
@@ -207,13 +215,17 @@
 
         function endGame() {
             gameOver = true;
-            document.getElementById('gameOverSound').play(); // Play game over sound
-            alert("Game Over! Your score: " + score);
-            canvas.clear();
-            document.getElementById('backgroundMusic').pause(); // Stop background music
-            document.getElementById('startScreen').style.display = 'flex';
-            document.getElementById('controls').style.display = 'none';
-            document.getElementById('scoreDisplay').style.display = 'none'; // Hide score display
+            isPaused = true;
+            const backgroundMusic = document.getElementById('backgroundMusic');
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+            document.getElementById('gameOverSound').play();
+            setTimeout(() => {
+                alert("Game Over! Your score: " + score);
+                document.getElementById('startScreen').style.display = 'flex';
+                document.getElementById('controls').style.display = 'none';
+                document.getElementById('scoreDisplay').style.display = 'none';
+            }, 500);
             cancelAnimationFrame(gameLoopId);
             clearInterval(obstacleIntervalId);
         }
@@ -247,16 +259,18 @@
         document.getElementById('startGameButton').addEventListener('click', () => {
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('controls').style.display = 'block';
-            document.getElementById('scoreDisplay').style.display = 'block'; // Show score display
-            score = 0; // Reset score
-            document.getElementById('scoreValue').textContent = score; // Update score display
-            document.getElementById('backgroundMusic').play(); // Start background music
+            document.getElementById('scoreDisplay').style.display = 'block';
+            setupGame();
+            document.getElementById('backgroundMusic').play();
             startCreatingObstacles();
             gameLoop();
         });
 
         document.getElementById('restartButton').addEventListener('click', () => {
-            location.reload();
+            setupGame();
+            document.getElementById('backgroundMusic').play();
+            startCreatingObstacles();
+            gameLoop();
         });
 
         document.getElementById('pauseButton').addEventListener('click', () => {
