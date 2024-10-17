@@ -281,19 +281,27 @@
 
         // Start creating zombies
         function startCreatingZombies() {
-            zombieIntervalId = setInterval(() => {
+            function createZombieWithRandomInterval() {
                 createZombie();
                 spawnInterval = Math.max(1000, spawnInterval * 0.98);
                 obstacleSpeed += 0.1;
-            }, spawnInterval);
+                if (!gameOver && !gamePaused) {
+                    setTimeout(createZombieWithRandomInterval, Math.random() * spawnInterval);
+                }
+            }
+            createZombieWithRandomInterval();
         }
 
         // Start creating barriers
         function startCreatingBarriers() {
-            barrierIntervalId = setInterval(() => {
+            function createBarrierWithRandomInterval() {
                 createBarrier();
                 barrierSpawnInterval = Math.max(3000, barrierSpawnInterval * 0.98);
-            }, barrierSpawnInterval);
+                if (!gameOver && !gamePaused) {
+                    setTimeout(createBarrierWithRandomInterval, Math.random() * barrierSpawnInterval);
+                }
+            }
+            createBarrierWithRandomInterval();
         }
 
         // Start the game when the button is clicked
