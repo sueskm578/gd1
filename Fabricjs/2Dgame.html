@@ -75,11 +75,13 @@
         let killCount = 0; // Initialize kill count
         let killCountText; // Variable to hold the kill count text
         let ammoText; // Variable to hold the ammo count text
+        let clipText; // Variable to hold the clip count text
         let gameLoopId; // Variable to hold the game loop ID
         let zombieIntervalId; // Variable to hold the zombie creation interval ID
         let barrierIntervalId; // Variable to hold the barrier creation interval ID
-        let ammo = 10; // Initialize ammo count
-        let maxAmmo = 10; // Maximum ammo capacity
+        let ammo = 30; // Initialize total ammo count
+        let clip = 10; // Initialize clip count
+        let maxClip = 10; // Maximum clip capacity
 
         // Load the background image
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
@@ -148,7 +150,7 @@
 
         // Create a projectile (bullet)
         function createProjectile() {
-            if (ammo > 0) {
+            if (clip > 0) {
                 const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png";
                 fabric.Image.fromURL(bulletImageUrl, function(img) {
                     img.scale(0.1);
@@ -161,8 +163,8 @@
                     canvas.add(img);
                     moveProjectile(img);
                 });
-                ammo--; // Decrease ammo count
-                updateAmmoDisplay(); // Update ammo display
+                clip--; // Decrease clip count
+                updateClipDisplay(); // Update clip display
             }
         }
 
@@ -250,6 +252,22 @@
             canvas.renderAll();
         }
 
+        // Update the clip display
+        function updateClipDisplay() {
+            if (clipText) {
+                canvas.remove(clipText); // Remove previous text
+            }
+            clipText = new fabric.Text(`Clip: ${clip}`, {
+                left: 20, // Adjusted position to fit on the screen
+                top: 100, // Position below the ammo count
+                fontSize: 30, // Increased font size
+                fill: 'white',
+                selectable: false
+            });
+            canvas.add(clipText);
+            canvas.renderAll();
+        }
+
         // Game loop
         function gameLoop() {
             if (!gameOver && !gamePaused) {
@@ -292,6 +310,7 @@
             gameLoop();
             updateKillCount(); // Initialize kill count display
             updateAmmoDisplay(); // Initialize ammo display
+            updateClipDisplay(); // Initialize clip display
         });
 
         // Restart the game when the button is clicked
@@ -303,7 +322,8 @@
             spawnInterval = 3000;
             barrierSpawnInterval = 6000; // Reset barrier spawn interval
             obstacleSpeed = 5;
-            ammo = maxAmmo; // Reset ammo count
+            ammo = 30; // Reset total ammo count
+            clip = maxClip; // Reset clip count
             obstacles.forEach(obstacle => canvas.remove(obstacle.img)); // Remove all obstacles
             projectiles.forEach(projectile => canvas.remove(projectile)); // Remove all projectiles
             obstacles = [];
@@ -315,6 +335,7 @@
             gameLoop();
             updateKillCount(); // Initialize kill count display
             updateAmmoDisplay(); // Initialize ammo display
+            updateClipDisplay(); // Initialize clip display
         });
 
         // Pause the game when the button is clicked
@@ -335,8 +356,16 @@
 
         // Reload the weapon when the button is clicked
         document.getElementById('reloadButton').addEventListener('click', () => {
-            ammo = maxAmmo; // Reset ammo count to maximum
+            const bulletsNeeded = maxClip - clip;
+            if (ammo >= bulletsNeeded) {
+                clip = maxClip;
+                ammo -= bulletsNeeded;
+            } else {
+                clip += ammo;
+                ammo = 0;
+            }
             updateAmmoDisplay(); // Update ammo display
+            updateClipDisplay(); // Update clip display
         });
 
         // Keyboard controls for jumping and moving
