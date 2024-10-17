@@ -276,6 +276,11 @@
         document.getElementById('pauseButton').addEventListener('click', () => {
             gamePaused = !gamePaused; // Toggle pause state
             document.getElementById('pauseButton').innerText = gamePaused ? 'Resume' : 'Pause'; // Update button text
+            if (gamePaused) {
+                cancelAnimationFrame(gameLoopId); // Stop the game loop
+            } else {
+                gameLoop(); // Resume the game loop
+            }
         });
 
         // Keyboard controls for jumping and moving
