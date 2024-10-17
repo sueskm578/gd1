@@ -142,9 +142,9 @@
             });
         }
 
-        // Randomly choose between zombie and fire barrier
+        // Randomly choose between zombie and fire barrier, with higher probability for zombies
         function createObstacle() {
-            if (Math.random() < 0.5) {
+            if (Math.random() < 0.7) { // 70% chance to create a zombie
                 createZombie();
             } else {
                 createBarrier();
@@ -215,7 +215,7 @@
         function createAmmoCrate() {
             const ammoCrateImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/crate.png";
             fabric.Image.fromURL(ammoCrateImageUrl, function(img) {
-                img.scale(0.1);
+                img.scale(0.2); // Increase the size of the falling crate
                 img.set({
                     left: Math.random() * (canvas.width - img.getScaledWidth()),
                     top: -img.getScaledHeight(),
