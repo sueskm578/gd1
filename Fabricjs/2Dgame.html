@@ -76,7 +76,8 @@
         let killCountText; // Variable to hold the kill count text
         let ammoText; // Variable to hold the ammo count text
         let gameLoopId; // Variable to hold the game loop ID
-        let obstacleIntervalId; // Variable to hold the obstacle creation interval ID
+        let zombieIntervalId; // Variable to hold the zombie creation interval ID
+        let barrierIntervalId; // Variable to hold the barrier creation interval ID
         let ammo = 10; // Initialize ammo count
         let maxAmmo = 10; // Maximum ammo capacity
 
@@ -112,6 +113,7 @@
         let projectiles = [];
         let score = 0;
         let spawnInterval = 3000;
+        let barrierSpawnInterval = 6000; // Interval for spawning barriers
         let obstacleSpeed = 5;
 
         // Create zombies
@@ -142,15 +144,6 @@
                 obstacles.push({ type: 'fire', img });
                 canvas.add(img);
             });
-        }
-
-        // Randomly choose between zombie and fire barrier
-        function createObstacle() {
-            if (Math.random() < 0.5) {
-                createZombie();
-            } else {
-                createBarrier();
-            }
         }
 
         // Create a projectile (bullet)
@@ -221,7 +214,8 @@
             document.getElementById('restartGameButton').style.display = 'block'; // Show restart button
             // Do not clear the canvas to keep the background
             cancelAnimationFrame(gameLoopId); // Stop the game loop
-            clearInterval(obstacleIntervalId); // Stop creating obstacles
+            clearInterval(zombieIntervalId); // Stop creating zombies
+            clearInterval(barrierIntervalId); // Stop creating barriers
         }
 
         // Update the kill count display
@@ -273,19 +267,28 @@
             }
         }
 
-        // Start creating obstacles
-        function startCreatingObstacles() {
-            obstacleIntervalId = setInterval(() => {
-                createObstacle();
+        // Start creating zombies
+        function startCreatingZombies() {
+            zombieIntervalId = setInterval(() => {
+                createZombie();
                 spawnInterval = Math.max(1000, spawnInterval * 0.98);
                 obstacleSpeed += 0.1;
             }, spawnInterval);
         }
 
+        // Start creating barriers
+        function startCreatingBarriers() {
+            barrierIntervalId = setInterval(() => {
+                createBarrier();
+                barrierSpawnInterval = Math.max(3000, barrierSpawnInterval * 0.98);
+            }, barrierSpawnInterval);
+        }
+
         // Start the game when the button is clicked
         document.getElementById('startGameButton').addEventListener('click', () => {
             document.getElementById('startScreen').style.display = 'none'; // Hide start screen
-            startCreatingObstacles();
+            startCreatingZombies();
+            startCreatingBarriers();
             gameLoop();
             updateKillCount(); // Initialize kill count display
             updateAmmoDisplay(); // Initialize ammo display
@@ -298,6 +301,7 @@
             killCount = 0; // Reset kill count
             score = 0;
             spawnInterval = 3000;
+            barrierSpawnInterval = 6000; // Reset barrier spawn interval
             obstacleSpeed = 5;
             ammo = maxAmmo; // Reset ammo count
             obstacles.forEach(obstacle => canvas.remove(obstacle.img)); // Remove all obstacles
@@ -306,7 +310,8 @@
             projectiles = [];
             document.getElementById('gameOverScreen').style.display = 'none'; // Hide game over screen
             document.getElementById('restartGameButton').style.display = 'none'; // Hide restart button
-            startCreatingObstacles();
+            startCreatingZombies();
+            startCreatingBarriers();
             gameLoop();
             updateKillCount(); // Initialize kill count display
             updateAmmoDisplay(); // Initialize ammo display
@@ -319,9 +324,11 @@
             document.getElementById('pauseButton').innerText = gamePaused ? 'Resume' : 'Pause'; // Update button text
             if (gamePaused) {
                 cancelAnimationFrame(gameLoopId); // Stop the game loop
-                clearInterval(obstacleIntervalId); // Stop creating obstacles
+                clearInterval(zombieIntervalId); // Stop creating zombies
+                clearInterval(barrierIntervalId); // Stop creating barriers
             } else {
-                startCreatingObstacles(); // Resume creating obstacles
+                startCreatingZombies(); // Resume creating zombies
+                startCreatingBarriers(); // Resume creating barriers
                 gameLoop(); // Resume the game loop
             }
         });
