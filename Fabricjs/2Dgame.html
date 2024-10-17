@@ -74,6 +74,7 @@
         let gamePaused = false;
         let killCount = 0; // Initialize kill count
         let killCountText; // Variable to hold the kill count text
+        let ammoText; // Variable to hold the ammo count text
         let gameLoopId; // Variable to hold the game loop ID
         let obstacleIntervalId; // Variable to hold the obstacle creation interval ID
         let ammo = 10; // Initialize ammo count
@@ -246,7 +247,7 @@
             }
             ammoText = new fabric.Text(`Ammo: ${ammo}`, {
                 left: 20, // Adjusted position to fit on the screen
-                top: 60,
+                top: 60, // Position below the kill count
                 fontSize: 30, // Increased font size
                 fill: 'white',
                 selectable: false
