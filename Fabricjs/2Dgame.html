@@ -21,7 +21,7 @@
             width: 100%;
             height: 100%;
             display: flex;
-            flex-direction: column; /* Change to column layout */
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             background-color: rgba(0, 0, 0, 0.7);
@@ -33,15 +33,15 @@
         #startGameButton, #pauseButton, #restartGameButton {
             padding: 10px 20px;
             font-size: 20px;
-            margin-top: 20px; /* Add margin to separate from heading */
+            margin-top: 20px;
         }
         #pauseButton {
             position: absolute;
             top: 20px;
-            right: 20px; /* Move to the top right corner */
+            right: 20px;
         }
         #restartGameButton {
-            display: none; /* Initially hidden */
+            display: none;
         }
     </style>
 </head>
@@ -54,52 +54,51 @@
         <h1 id="gameOverMessage"></h1>
         <button id="restartGameButton">Restart Game</button>
     </div>
-
     <canvas id="gameCanvas"></canvas>
-
     <button id="pauseButton">Pause</button>
-
+    
+    <!-- Background Music -->
+    <audio id="backgroundMusic" loop>
+        <source src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie-background.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- Game Over Music -->
+    <audio id="gameOverMusic">
+        <source src="https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/Game-over.mp3" type="audio/mpeg">
+    </audio>
+    
     <script>
         const canvas = new fabric.Canvas('gameCanvas');
         canvas.setWidth(window.innerWidth);
         canvas.setHeight(window.innerHeight);
-
         let gameOver = false;
         let gamePaused = false;
-        let killCount = 0; // Initialize kill count
-        let killCountText; // Variable to hold the kill count text
-        let ammoText; // Variable to hold the ammo count text
-        let clipText; // Variable to hold the clip count text
-        let gameLoopId; // Variable to hold the game loop ID
-        let obstacleIntervalId; // Variable to hold the obstacle creation interval ID
-        let ammoCrateIntervalId; // Variable to hold the ammo crate creation interval ID
-        let ammo = 0; // Initialize ammo count
-        let clip = 10; // Initialize clip count
-        let maxClip = 10; // Maximum clip capacity
+        let killCount = 0;
+        let killCountText;
+        let ammoText;
+        let clipText;
+        let gameLoopId;
+        let obstacleIntervalId;
+        let ammoCrateIntervalId;
+        let ammo = 0;
+        let clip = 10;
+        let maxClip = 10;
 
-        // Load the background image
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const gameOverMusic = document.getElementById('gameOverMusic');
+
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
         fabric.Image.fromURL(backgroundImageUrl, function(img) {
-            img.set({
-                left: 0,
-                top: -300,
-                selectable: false,
-                evented: false
-            });
+            img.set({ left: 0, top: -300, selectable: false, evented: false });
             img.scaleToWidth(canvas.width);
             canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
         });
 
-        // Load the player image
         const playerImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/gun guy.png";
         let player;
         fabric.Image.fromURL(playerImageUrl, function(img) {
             img.scale(0.1);
-            img.set({
-                left: 50,
-                top: canvas.height - img.getScaledHeight() - 20,
-                selectable: false
-            });
+            img.set({ left: 50, top: canvas.height - img.getScaledHeight() - 20, selectable: false });
             player = img;
             player.isJumping = false;
             canvas.add(img);
@@ -112,66 +111,49 @@
         let spawnInterval = 3000;
         let obstacleSpeed = 5;
 
-        // Create zombies
         function createZombie() {
             const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png";
             fabric.Image.fromURL(zombieImageUrl, function(img) {
                 img.scale(0.2);
-                img.set({
-                    left: canvas.width,
-                    top: canvas.height - img.getScaledHeight() - 20,
-                    selectable: false
-                });
+                img.set({ left: canvas.width, top: canvas.height - img.getScaledHeight() - 20, selectable: false });
                 obstacles.push({ type: 'zombie', img });
                 canvas.add(img);
             });
         }
 
-        // Create fire barrier
         function createBarrier() {
             const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png";
             fabric.Image.fromURL(fireImageUrl, function(img) {
-                img.scale(0.03); 
-                img.set({
-                    left: canvas.width,
-                    top: canvas.height - img.getScaledHeight() - 20,
-                    selectable: false
-                });
+                img.scale(0.03);
+                img.set({ left: canvas.width, top: canvas.height - img.getScaledHeight() - 20, selectable: false });
                 obstacles.push({ type: 'fire', img });
                 canvas.add(img);
             });
         }
 
-        // Randomly choose between zombie and fire barrier, with higher probability for zombies
         function createObstacle() {
-            if (Math.random() < 0.7) { // 70% chance to create a zombie
+            if (Math.random() < 0.7) {
                 createZombie();
             } else {
                 createBarrier();
             }
         }
 
-        // Create a projectile (bullet)
         function createProjectile() {
             if (clip > 0) {
                 const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png";
                 fabric.Image.fromURL(bulletImageUrl, function(img) {
                     img.scale(0.1);
-                    img.set({
-                        left: player.left + player.getScaledWidth(),
-                        top: player.top + player.getScaledHeight() / 2 - img.getScaledHeight() / 2,
-                        selectable: false
-                    });
+                    img.set({ left: player.left + player.getScaledWidth(), top: player.top + player.getScaledHeight() / 2 - img.getScaledHeight() / 2, selectable: false });
                     projectiles.push(img);
                     canvas.add(img);
                     moveProjectile(img);
                 });
-                clip--; // Decrease clip count
-                updateClipDisplay(); // Update clip display
+                clip--;
+                updateClipDisplay();
             }
         }
 
-        // Move the projectile
         function moveProjectile(projectile) {
             const interval = setInterval(() => {
                 projectile.left += 10;
@@ -181,18 +163,14 @@
                     clearInterval(interval);
                 } else {
                     obstacles.forEach((obstacle, index) => {
-                        if (obstacle.type === 'zombie' && 
-                            projectile.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
-                            projectile.left + projectile.getScaledWidth() > obstacle.img.left &&
-                            projectile.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
-                            projectile.top + projectile.getScaledHeight() > obstacle.img.top) {
+                        if (obstacle.type === 'zombie' && projectile.left < obstacle.img.left + obstacle.img.getScaledWidth() && projectile.left + projectile.getScaledWidth() > obstacle.img.left && projectile.top < obstacle.img.top + obstacle.img.getScaledHeight() && projectile.top + projectile.getScaledHeight() > obstacle.img.top) {
                             canvas.remove(obstacle.img);
                             canvas.remove(projectile);
                             obstacles.splice(index, 1);
                             projectiles.splice(projectiles.indexOf(projectile), 1);
                             score += 10;
-                            killCount++; // Increment kill count
-                            updateKillCount(); // Update the displayed kill count
+                            killCount++;
+                            updateKillCount();
                             clearInterval(interval);
                         }
                     });
@@ -201,7 +179,6 @@
             }, 30);
         }
 
-        // Check if obstacle hits the player
         function checkCollisionWithPlayer(obstacle) {
             return (
                 player.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
@@ -211,26 +188,20 @@
             );
         }
 
-        // Create an ammo crate
         function createAmmoCrate() {
             const ammoCrateImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/crate.png";
             fabric.Image.fromURL(ammoCrateImageUrl, function(img) {
-                img.scale(0.2); // Increase the size of the falling crate
-                img.set({
-                    left: Math.random() * (canvas.width - img.getScaledWidth()),
-                    top: -img.getScaledHeight(),
-                    selectable: false
-                });
+                img.scale(0.2);
+                img.set({ left: Math.random() * (canvas.width - img.getScaledWidth()), top: -img.getScaledHeight(), selectable: false });
                 ammoCrates.push(img);
                 canvas.add(img);
                 moveAmmoCrate(img);
             });
         }
 
-        // Move the ammo crate
         function moveAmmoCrate(ammoCrate) {
             const interval = setInterval(() => {
-                ammoCrate.top += 2; // Slow falling speed
+                ammoCrate.top += 2;
                 if (ammoCrate.top > canvas.height) {
                     canvas.remove(ammoCrate);
                     ammoCrates.splice(ammoCrates.indexOf(ammoCrate), 1);
@@ -238,35 +209,35 @@
                 } else if (checkCollisionWithPlayer({ img: ammoCrate })) {
                     canvas.remove(ammoCrate);
                     ammoCrates.splice(ammoCrates.indexOf(ammoCrate), 1);
-                    ammo += 5; // Increase ammo count by 5
-                    updateAmmoDisplay(); // Update ammo display
+                    ammo += 5;
+                    updateAmmoDisplay();
                     clearInterval(interval);
                 }
                 canvas.renderAll();
             }, 30);
         }
 
-        // End the game
         function endGame() {
             gameOver = true;
             document.getElementById('gameOverMessage').innerText = `Game Over! Zombies Killed: ${killCount}`;
-            document.getElementById('gameOverScreen').style.display = 'flex'; // Show game over screen
-            document.getElementById('restartGameButton').style.display = 'block'; // Show restart button
-            // Do not clear the canvas to keep the background
-            cancelAnimationFrame(gameLoopId); // Stop the game loop
-            clearInterval(obstacleIntervalId); // Stop creating obstacles
-            clearInterval(ammoCrateIntervalId); // Stop creating ammo crates
+            document.getElementById('gameOverScreen').style.display = 'flex';
+            document.getElementById('restartGameButton').style.display = 'block';
+            cancelAnimationFrame(gameLoopId);
+            clearInterval(obstacleIntervalId);
+            clearInterval(ammoCrateIntervalId);
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+            gameOverMusic.play();
         }
 
-        // Update the kill count display
         function updateKillCount() {
             if (killCountText) {
-                canvas.remove(killCountText); // Remove previous text
+                canvas.remove(killCountText);
             }
             killCountText = new fabric.Text(`Zombies Killed: ${killCount}`, {
-                left: 20, // Adjusted position to fit on the screen
+                left: 20,
                 top: 20,
-                fontSize: 30, // Increased font size
+                fontSize: 30,
                 fill: 'white',
                 selectable: false
             });
@@ -274,15 +245,14 @@
             canvas.renderAll();
         }
 
-        // Update the ammo display
         function updateAmmoDisplay() {
             if (ammoText) {
-                canvas.remove(ammoText); // Remove previous text
+                canvas.remove(ammoText);
             }
             ammoText = new fabric.Text(`Ammo: ${ammo}`, {
-                left: 20, // Adjusted position to fit on the screen
-                top: 60, // Position below the kill count
-                fontSize: 30, // Increased font size
+                left: 20,
+                top: 60,
+                fontSize: 30,
                 fill: 'white',
                 selectable: false
             });
@@ -290,15 +260,14 @@
             canvas.renderAll();
         }
 
-        // Update the clip display
         function updateClipDisplay() {
             if (clipText) {
-                canvas.remove(clipText); // Remove previous text
+                canvas.remove(clipText);
             }
             clipText = new fabric.Text(`Clip: ${clip}`, {
-                left: 20, // Adjusted position to fit on the screen
-                top: 100, // Position below the ammo count
-                fontSize: 30, // Increased font size
+                left: 20,
+                top: 100,
+                fontSize: 30,
                 fill: 'white',
                 selectable: false
             });
@@ -306,7 +275,6 @@
             canvas.renderAll();
         }
 
-        // Game loop
         function gameLoop() {
             if (!gameOver && !gamePaused) {
                 obstacles.forEach((obstacle, index) => {
@@ -319,11 +287,10 @@
                     }
                 });
                 canvas.renderAll();
-                gameLoopId = requestAnimationFrame(gameLoop); // Store the loop ID
+                gameLoopId = requestAnimationFrame(gameLoop);
             }
         }
 
-        // Start creating obstacles
         function startCreatingObstacles() {
             obstacleIntervalId = setInterval(() => {
                 createObstacle();
@@ -332,118 +299,108 @@
             }, spawnInterval);
         }
 
-        // Start creating ammo crates
         function startCreatingAmmoCrates() {
             ammoCrateIntervalId = setInterval(() => {
                 createAmmoCrate();
-            }, 10000); // Spawn an ammo crate every 10 seconds
+            }, 10000);
         }
 
-        // Start the game when the button is clicked
         document.getElementById('startGameButton').addEventListener('click', () => {
-            document.getElementById('startScreen').style.display = 'none'; // Hide start screen
+            document.getElementById('startScreen').style.display = 'none';
             startCreatingObstacles();
             startCreatingAmmoCrates();
             gameLoop();
-            updateKillCount(); // Initialize kill count display
-            updateAmmoDisplay(); // Initialize ammo display
-            updateClipDisplay(); // Initialize clip display
+            updateKillCount();
+            updateAmmoDisplay();
+            updateClipDisplay();
+            backgroundMusic.play();
         });
 
-        // Restart the game when the button is clicked
         document.getElementById('restartGameButton').addEventListener('click', () => {
-            // Reset game state
             gameOver = false;
-            killCount = 0; // Reset kill count
+            killCount = 0;
             score = 0;
             spawnInterval = 3000;
             obstacleSpeed = 5;
-            ammo = 0; // Reset ammo count
-            clip = maxClip; // Reset clip count
-            obstacles.forEach(obstacle => canvas.remove(obstacle.img)); // Remove all obstacles
-            projectiles.forEach(projectile => canvas.remove(projectile)); // Remove all projectiles
-            ammoCrates.forEach(ammoCrate => canvas.remove(ammoCrate)); // Remove all ammo crates
+            ammo = 0;
+            clip = maxClip;
+            obstacles.forEach(obstacle => canvas.remove(obstacle.img));
+            projectiles.forEach(projectile => canvas.remove(projectile));
+            ammoCrates.forEach(ammoCrate => canvas.remove(ammoCrate));
             obstacles = [];
             projectiles = [];
             ammoCrates = [];
-            document.getElementById('gameOverScreen').style.display = 'none'; // Hide game over screen
-            document.getElementById('restartGameButton').style.display = 'none'; // Hide restart button
+            document.getElementById('gameOverScreen').style.display = 'none';
+            document.getElementById('restartGameButton').style.display = 'none';
             startCreatingObstacles();
             startCreatingAmmoCrates();
             gameLoop();
-            updateKillCount(); // Initialize kill count display
-            updateAmmoDisplay(); // Initialize ammo display
-            updateClipDisplay(); // Initialize clip display
+            updateKillCount();
+            updateAmmoDisplay();
+            updateClipDisplay();
+            gameOverMusic.pause();
+            gameOverMusic.currentTime = 0;
+            backgroundMusic.play();
         });
 
-        // Pause the game when the button is clicked
         document.getElementById('pauseButton').addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent default action of the button
-            gamePaused = !gamePaused; // Toggle pause state
-            document.getElementById('pauseButton').innerText = gamePaused ? 'Resume' : 'Pause'; // Update button text
+            event.preventDefault();
+            gamePaused = !gamePaused;
+            document.getElementById('pauseButton').innerText = gamePaused ? 'Resume' : 'Pause';
             if (gamePaused) {
-                cancelAnimationFrame(gameLoopId); // Stop the game loop
-                clearInterval(obstacleIntervalId); // Stop creating obstacles
-                clearInterval(ammoCrateIntervalId); // Stop creating ammo crates
+                cancelAnimationFrame(gameLoopId);
+                clearInterval(obstacleIntervalId);
+                clearInterval(ammoCrateIntervalId);
+                backgroundMusic.pause();
             } else {
-                startCreatingObstacles(); // Resume creating obstacles
-                startCreatingAmmoCrates(); // Resume creating ammo crates
-                gameLoop(); // Resume the game loop
+                startCreatingObstacles();
+                startCreatingAmmoCrates();
+                gameLoop();
+                backgroundMusic.play();
             }
         });
 
-        // Keyboard controls for jumping, moving, shooting, and reloading
         document.addEventListener('keydown', (event) => {
-            const moveDistance = 10; // Distance to move the player
-
+            const moveDistance = 10;
             if (event.code === 'ArrowLeft') {
-                // Move left
-                player.left = Math.max(0, player.left - moveDistance); // Prevent moving out of bounds
+                player.left = Math.max(0, player.left - moveDistance);
             } else if (event.code === 'ArrowRight') {
-                // Move right
-                player.left = Math.min(canvas.width - player.getScaledWidth(), player.left + moveDistance); // Prevent moving out of bounds
-            } else if (event.code === 'ArrowUp' && !player.isJumping) { 
+                player.left = Math.min(canvas.width - player.getScaledWidth(), player.left + moveDistance);
+            } else if (event.code === 'ArrowUp' && !player.isJumping) {
                 player.isJumping = true;
                 const originalTop = player.top;
-                const jumpHeight = 400;  // Higher jump to clear fire
-                const hangTime = 500;    // Time spent at peak of jump
-
-                // Jump up
+                const jumpHeight = 400;
+                const hangTime = 500;
                 player.animate('top', originalTop - jumpHeight, {
-                    duration: 600, // Longer jump up time
+                    duration: 600,
                     onChange: canvas.renderAll.bind(canvas),
                     onComplete: () => {
-                        // Stay in the air for longer
                         setTimeout(() => {
-                            // Descend back down
                             player.animate('top', originalTop, {
-                                duration: 800,  // Slower descent
+                                duration: 800,
                                 onChange: canvas.renderAll.bind(canvas),
                                 onComplete: () => {
                                     player.isJumping = false;
                                 }
                             });
-                        }, hangTime); // Delay at the peak of the jump
+                        }, hangTime);
                     }
                 });
             } else if (event.code === 'ArrowDown') {
-                // Reload
                 if (ammo > 0) {
                     let bulletsToReload = Math.min(maxClip - clip, ammo);
                     clip += bulletsToReload;
                     ammo -= bulletsToReload;
-                    updateAmmoDisplay(); // Update ammo display
-                    updateClipDisplay(); // Update clip display
+                    updateAmmoDisplay();
+                    updateClipDisplay();
                 }
-            } else if (event.code === 'Space') { 
-                event.preventDefault(); // Prevent default action of the space bar
+            } else if (event.code === 'Space') {
+                event.preventDefault();
                 createProjectile();
             }
-
-            canvas.renderAll(); // Re-render the canvas to reflect the player's new position
+            canvas.renderAll();
         });
 
-        // Resize canvas on window resize
         window.addEventListener('resize', () => {
             canvas.setWidth(window.innerWidth);
             canvas.setHeight(window.innerHeight);
