@@ -86,7 +86,9 @@
         function playSound(id) {
             const sound = document.getElementById(id);
             sound.currentTime = 0;
-            sound.play();
+            sound.play().catch(error => {
+                console.log("Error playing sound:", error);
+            });
         }
 
         function stopSound(id) {
@@ -108,36 +110,32 @@
         });
 
         function createZombie() {
-            playSound('zombieEntranceSound');
-            const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png";
-            fabric.Image.fromURL(zombieImageUrl, function(img) {
-                img.scale(0.2);
-                img.set({ left: canvas.width, top: canvas.height - img.getScaledHeight() - 20, selectable: false });
-                obstacles.push({ type: 'zombie', img });
-                canvas.add(img);
-            });
+            if (!gamePaused && !gameOver) {
+                playSound('zombieEntranceSound');
+                const zombieImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/zombie.png";
+                fabric.Image.fromURL(zombieImageUrl, function(img) {
+                    img.scale(0.2);
+                    img.set({ left: canvas.width, top: canvas.height - img.getScaledHeight() - 20, selectable: false });
+                    obstacles.push({ type: 'zombie', img });
+                    canvas.add(img);
+                });
+            }
         }
 
         function createBarrier() {
-            const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png";
-            fabric.Image.fromURL(fireImageUrl, function(img) {
-                img.scale(0.03); 
-                img.set({ left: canvas.width, top: canvas.height - img.getScaledHeight() - 20, selectable: false });
-                obstacles.push({ type: 'fire', img });
-                canvas.add(img);
-            });
-        }
-
-        function createObstacle() {
-            if (Math.random() < 0.7) {
-                createZombie();
-            } else {
-                createBarrier();
+            if (!gamePaused && !gameOver) {
+                const fireImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/vecteezy_bonfire-with_26772683.png";
+                fabric.Image.fromURL(fireImageUrl, function(img) {
+                    img.scale(0.03); 
+                    img.set({ left: canvas.width, top: canvas.height - img.getScaledHeight() - 20, selectable: false });
+                    obstacles.push({ type: 'fire', img });
+                    canvas.add(img);
+                });
             }
         }
 
         function createProjectile() {
-            if (clip > 0) {
+            if (clip > 0 && !gamePaused && !gameOver) {
                 playSound('gunShotSound');
                 const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png";
                 fabric.Image.fromURL(bulletImageUrl, function(img) {
@@ -186,122 +184,14 @@
             }, 30);
         }
 
-        function checkCollisionWithPlayer(obstacle) {
-            return (
-                player.left < obstacle.img.left + obstacle.img.getScaledWidth() &&
-                player.left + player.getScaledWidth() > obstacle.img.left &&
-                player.top < obstacle.img.top + obstacle.img.getScaledHeight() &&
-                player.top + player.getScaledHeight() > obstacle.img.top
-            );
-        }
-
-        function createAmmoCrate() {
-            const ammoCrateImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/crate.png";
-            fabric.Image.fromURL(ammoCrateImageUrl, function(img) {
-                img.scale(0.2);
-                img.set({ left: Math.random() * (canvas.width - img.getScaledWidth()), top: -img.getScaledHeight(), selectable: false });
-                ammoCrates.push(img);
-                canvas.add(img);
-                moveAmmoCrate(img);
-            });
-        }
-
-        function moveAmmoCrate(ammoCrate) {
-            const interval = setInterval(() => {
-                ammoCrate.top += 2;
-                if (ammoCrate.top > canvas.height) {
-                    canvas.remove(ammoCrate);
-                    ammoCrates.splice(ammoCrates.indexOf(ammoCrate), 1);
-                    clearInterval(interval);
-                } else if (checkCollisionWithPlayer({ img: ammoCrate })) {
-                    canvas.remove(ammoCrate);
-                    ammoCrates.splice(ammoCrates.indexOf(ammoCrate), 1);
-                    ammo += 5;
-                    updateAmmoDisplay();
-                    clearInterval(interval);
-                }
-                canvas.renderAll();
-            }, 30);
-        }
-
-        function endGame() {
-            gameOver = true;
-            document.getElementById('gameOverMessage').innerText = `Game Over! Zombies Killed: ${killCount}`;
-            document.getElementById('gameOverScreen').style.display = 'flex';
-            document.getElementById('restartGameButton').style.display = 'block';
-            stopSound('backgroundMusic');
-            playSound('gameOverMusic');
-            cancelAnimationFrame(gameLoopId);
-            clearInterval(obstacleIntervalId);
-            clearInterval(ammoCrateIntervalId);
-        }
-
-        function updateKillCount() {
-            if (killCountText) {
-                canvas.remove(killCountText);
-            }
-            killCountText = new fabric.Text(`Zombies Killed: ${killCount}`, {
-                left: 20,
-                top: 20,
-                fontSize: 30,
-                fill: 'white',
-                selectable: false
-            });
-            canvas.add(killCountText);
-            canvas.renderAll();
-        }
-
-        function updateAmmoDisplay() {
-            if (ammoText) {
-                canvas.remove(ammoText);
-            }
-            ammoText = new fabric.Text(`Ammo: ${ammo}`, {
-                left: 20,
-                top: 60,
-                fontSize: 30,
-                fill: 'white',
-                selectable: false
-            });
-            canvas.add(ammoText);
-            canvas.renderAll();
-        }
-
-        function updateClipDisplay() {
-            if (clipText) {
-                canvas.remove(clipText);
-            }
-            clipText = new fabric.Text(`Clip: ${clip}`, {
-                left: 20,
-                top: 100,
-                fontSize: 30,
-                fill: 'white',
-                selectable: false
-            });
-            canvas.add(clipText);
-            canvas.renderAll();
-        }
-
-        function gameLoop() {
-            if (!gameOver && !gamePaused) {
-                obstacles.forEach((obstacle, index) => {
-                    obstacle.img.left -= obstacleSpeed;
-                    if (obstacle.img.left < 0) {
-                        canvas.remove(obstacle.img);
-                        obstacles.splice(index, 1);
-                    } else if (checkCollisionWithPlayer(obstacle)) {
-                        endGame();
-                    }
-                });
-                canvas.renderAll();
-                gameLoopId = requestAnimationFrame(gameLoop);
-            }
-        }
-
         function startCreatingObstacles() {
             obstacleIntervalId = setInterval(() => {
-                createObstacle();
-                spawnInterval = Math.max(1000, spawnInterval * 0.98);
-                obstacleSpeed += 0.1;
+                const randomNum = Math.random();
+                if (randomNum < 0.7) {
+                    createZombie();
+                } else {
+                    createBarrier();
+                }
             }, spawnInterval);
         }
 
@@ -311,22 +201,169 @@
             }, 10000);
         }
 
+        function createAmmoCrate() {
+            if (!gamePaused && !gameOver) {
+                const ammoCrateUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/ammo-box.png";
+                fabric.Image.fromURL(ammoCrateUrl, function(img) {
+                    img.scale(0.05);
+                    img.set({ left: canvas.width, top: canvas.height - img.getScaledHeight() - 20, selectable: false });
+                    ammoCrates.push(img);
+                    canvas.add(img);
+                });
+            }
+        }
+
+        function updateKillCount() {
+            if (!killCountText) {
+                killCountText = new fabric.Text(`Kills: ${killCount}`, { left: 10, top: 10, fontSize: 24, fill: 'white' });
+                canvas.add(killCountText);
+            } else {
+                killCountText.text = `Kills: ${killCount}`;
+            }
+            canvas.renderAll();
+        }
+
+        function updateAmmoDisplay() {
+            if (!ammoText) {
+                ammoText = new fabric.Text(`Ammo: ${ammo}`, { left: 10, top: 40, fontSize: 24, fill: 'white' });
+                canvas.add(ammoText);
+            } else {
+                ammoText.text = `Ammo: ${ammo}`;
+            }
+            canvas.renderAll();
+        }
+
+        function updateClipDisplay() {
+            if (!clipText) {
+                clipText = new fabric.Text(`Clip: ${clip}/${maxClip}`, { left: 10, top: 70, fontSize: 24, fill: 'white' });
+                canvas.add(clipText);
+            } else {
+                clipText.text = `Clip: ${clip}/${maxClip}`;
+            }
+            canvas.renderAll();
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === ' ') {
+                createProjectile();
+            } else if (event.key === 'ArrowUp' && !player.isJumping && !gamePaused && !gameOver) {
+                jumpPlayer();
+            } else if (event.key === 'r' || event.key === 'R') {
+                reload();
+            } else if (event.key === 'ArrowLeft') {
+                movePlayerLeft();
+            } else if (event.key === 'ArrowRight') {
+                movePlayerRight();
+            }
+        });
+
+        function jumpPlayer() {
+            player.isJumping = true;
+            let originalTop = player.top;
+            let jumpHeight = 100;
+            let jumpUp = setInterval(() => {
+                player.top -= 5;
+                if (player.top <= originalTop - jumpHeight) {
+                    clearInterval(jumpUp);
+                    let jumpDown = setInterval(() => {
+                        player.top += 5;
+                        if (player.top >= originalTop) {
+                            clearInterval(jumpDown);
+                            player.top = originalTop;
+                            player.isJumping = false;
+                        }
+                        canvas.renderAll();
+                    }, 30);
+                }
+                canvas.renderAll();
+            }, 30);
+        }
+
+        function movePlayerLeft() {
+            if (!gamePaused && !gameOver) {
+                player.left -= 10;
+                canvas.renderAll();
+            }
+        }
+
+        function movePlayerRight() {
+            if (!gamePaused && !gameOver) {
+                player.left += 10;
+                canvas.renderAll();
+            }
+        }
+
+        function reload() {
+            if (clip < maxClip && !gamePaused && !gameOver) {
+                playSound('gunReloadSound');
+                clip = maxClip;
+                updateClipDisplay();
+            }
+        }
+
+        function gameLoop() {
+            if (!gamePaused && !gameOver) {
+                obstacles.forEach(obstacle => {
+                    obstacle.img.left -= obstacleSpeed;
+                    if (obstacle.img.left + obstacle.img.getScaledWidth() < 0) {
+                        canvas.remove(obstacle.img);
+                        obstacles.splice(obstacles.indexOf(obstacle), 1);
+                    }
+                });
+
+                ammoCrates.forEach((crate, index) => {
+                    crate.left -= obstacleSpeed;
+                    if (crate.left + crate.getScaledWidth() < 0) {
+                        canvas.remove(crate);
+                        ammoCrates.splice(index, 1);
+                    } else if (crate.left < player.left + player.getScaledWidth() &&
+                               crate.left + crate.getScaledWidth() > player.left &&
+                               crate.top < player.top + player.getScaledHeight() &&
+                               crate.top + crate.getScaledHeight() > player.top) {
+                        ammo += 5;
+                        canvas.remove(crate);
+                        ammoCrates.splice(index, 1);
+                        updateAmmoDisplay();
+                    }
+                });
+
+                canvas.renderAll();
+                gameLoopId = requestAnimationFrame(gameLoop);
+            }
+        }
+
+        document.getElementById('pauseButton').addEventListener('click', () => {
+            gamePaused = !gamePaused;
+            if (gamePaused) {
+                cancelAnimationFrame(gameLoopId);
+                clearInterval(obstacleIntervalId);
+                clearInterval(ammoCrateIntervalId);
+            } else {
+                gameLoop();
+                startCreatingObstacles();
+                startCreatingAmmoCrates();
+            }
+        });
+
+        function endGame() {
+            cancelAnimationFrame(gameLoopId);
+            clearInterval(obstacleIntervalId);
+            clearInterval(ammoCrateIntervalId);
+            gameOver = true;
+            document.getElementById('gameOverMessage').textContent = `Game Over! Final Score: ${score}`;
+            document.getElementById('gameOverScreen').style.display = 'flex';
+            stopSound('backgroundMusic');
+            playSound('gameOverMusic');
+        }
+
         document.getElementById('restartGameButton').addEventListener('click', () => {
-            gameOver = false;
-            killCount = 0;
+            document.getElementById('gameOverScreen').style.display = 'none';
             score = 0;
-            spawnInterval = 3000;
-            obstacleSpeed = 5;
+            killCount = 0;
             ammo = 0;
             clip = maxClip;
-            obstacles.forEach(obstacle => canvas.remove(obstacle.img));
-            projectiles.forEach(projectile => canvas.remove(projectile));
-            ammoCrates.forEach(ammoCrate => canvas.remove(ammoCrate));
-            obstacles = [];
-            projectiles = [];
-            ammoCrates = [];
-            document.getElementById('gameOverScreen').style.display = 'none';
-            document.getElementById('restartGameButton').style.display = 'none';
+            gameOver = false;
+            document.getElementById('startScreen').style.display = 'none';
             const backgroundMusic = document.getElementById('backgroundMusic');
             backgroundMusic.play();
             startCreatingObstacles();
@@ -335,75 +372,6 @@
             updateKillCount();
             updateAmmoDisplay();
             updateClipDisplay();
-        });
-
-        document.getElementById('pauseButton').addEventListener('click', (event) => {
-            event.preventDefault();
-            gamePaused = !gamePaused;
-            document.getElementById('pauseButton').innerText = gamePaused ? 'Resume' : 'Pause';
-            if (gamePaused) {
-                stopSound('backgroundMusic');
-                cancelAnimationFrame(gameLoopId);
-                clearInterval(obstacleIntervalId);
-                clearInterval(ammoCrateIntervalId);
-            } else {
-                const backgroundMusic = document.getElementById('backgroundMusic');
-                backgroundMusic.play();
-                startCreatingObstacles();
-                startCreatingAmmoCrates();
-                gameLoop();
-            }
-        });
-
-        document.addEventListener('keydown', (event) => {
-            const moveDistance = 10;
-
-            if (event.code === 'ArrowLeft') {
-                player.left = Math.max(0, player.left - moveDistance);
-            } else if (event.code === 'ArrowRight') {
-                player.left = Math.min(canvas.width - player.getScaledWidth(), player.left + moveDistance);
-            } else if (event.code === 'ArrowUp' && !player.isJumping) { 
-                player.isJumping = true;
-                const originalTop = player.top;
-                const jumpHeight = 400;
-                const hangTime = 500;
-
-                player.animate('top', originalTop - jumpHeight, {
-                    duration: 600,
-                    onChange: canvas.renderAll.bind(canvas),
-                    onComplete: () => {
-                        setTimeout(() => {
-                            player.animate('top', originalTop, {
-                                duration: 800,
-                                onChange: canvas.renderAll.bind(canvas),
-                                onComplete: () => {
-                                    player.isJumping = false;
-                                }
-                            });
-                        }, hangTime);
-                    }
-                });
-            } else if (event.code === 'ArrowDown') {
-                playSound('gunReloadSound');
-                if (ammo > 0) {
-                    let bulletsToReload = Math.min(maxClip - clip, ammo);
-                    clip += bulletsToReload;
-                    ammo -= bulletsToReload;
-                    updateAmmoDisplay();
-                    updateClipDisplay();
-                }
-            } else if (event.code === 'Space') { 
-                event.preventDefault();
-                createProjectile();
-            }
-
-            canvas.renderAll();
-        });
-
-        window.addEventListener('resize', () => {
-            canvas.setWidth(window.innerWidth);
-            canvas.setHeight(window.innerHeight);
-            canvas.renderAll();
         });
     </script>
 </body>
