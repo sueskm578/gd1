@@ -44,6 +44,7 @@
             position: absolute;
             top: 70px; /* Position below the pause button */
             right: 120px; /* Align with pause button */
+            display: none; /* Initially hidden */
         }
     </style>
 </head>
@@ -206,6 +207,7 @@
             gameOver = true;
             document.getElementById('gameOverMessage').innerText = `Game Over! Zombies Killed: ${killCount}`;
             document.getElementById('gameOverScreen').style.display = 'flex'; // Show game over screen
+            document.getElementById('restartGameButton').style.display = 'block'; // Show restart button
             // Do not clear the canvas to keep the background
             cancelAnimationFrame(gameLoopId); // Stop the game loop
         }
@@ -267,6 +269,7 @@
             obstacles = [];
             projectiles = [];
             document.getElementById('gameOverScreen').style.display = 'none'; // Hide game over screen
+            document.getElementById('restartGameButton').style.display = 'none'; // Hide restart button
             startCreatingObstacles();
             gameLoop();
             updateKillCount(); // Initialize kill count display
