@@ -75,13 +75,10 @@
         let killCount = 0; // Initialize kill count
         let killCountText; // Variable to hold the kill count text
         let ammoText; // Variable to hold the ammo count text
-        let clipText; // Variable to hold the clip count text
         let gameLoopId; // Variable to hold the game loop ID
-        let zombieIntervalId; // Variable to hold the zombie creation interval ID
-        let barrierIntervalId; // Variable to hold the barrier creation interval ID
-        let ammo = 30; // Initialize total ammo count
-        let clip = 10; // Initialize clip count
-        let maxClip = 10; // Maximum clip capacity
+        let obstacleIntervalId; // Variable to hold the obstacle creation interval ID
+        let ammo = 10; // Initialize ammo count
+        let maxAmmo = 10; // Maximum ammo capacity
 
         // Load the background image
         const backgroundImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/background apocalypse.avif";
@@ -115,7 +112,6 @@
         let projectiles = [];
         let score = 0;
         let spawnInterval = 3000;
-        let barrierSpawnInterval = 6000; // Interval for spawning barriers
         let obstacleSpeed = 5;
 
         // Create zombies
@@ -148,9 +144,18 @@
             });
         }
 
+        // Randomly choose between zombie and fire barrier
+        function createObstacle() {
+            if (Math.random() < 0.5) {
+                createZombie();
+            } else {
+                createBarrier();
+            }
+        }
+
         // Create a projectile (bullet)
         function createProjectile() {
-            if (clip > 0) {
+            if (ammo > 0) {
                 const bulletImageUrl = "https://github.com/sueskm578/sueskm578.github.io/raw/main/Fabricjs/bullet.png";
                 fabric.Image.fromURL(bulletImageUrl, function(img) {
                     img.scale(0.1);
@@ -163,8 +168,8 @@
                     canvas.add(img);
                     moveProjectile(img);
                 });
-                clip--; // Decrease clip count
-                updateClipDisplay(); // Update clip display
+                ammo--; // Decrease ammo count
+                updateAmmoDisplay(); // Update ammo display
             }
         }
 
@@ -216,8 +221,7 @@
             document.getElementById('restartGameButton').style.display = 'block'; // Show restart button
             // Do not clear the canvas to keep the background
             cancelAnimationFrame(gameLoopId); // Stop the game loop
-            clearInterval(zombieIntervalId); // Stop creating zombies
-            clearInterval(barrierIntervalId); // Stop creating barriers
+            clearInterval(obstacleIntervalId); // Stop creating obstacles
         }
 
         // Update the kill count display
@@ -252,21 +256,6 @@
             canvas.renderAll();
         }
 
-        // Update the clip display
-        function updateClipDisplay() {
-            if (clipText) {
-                canvas.remove(clipText); // Remove previous text
-            }
-            clipText = new fabric.Text(`Clip: ${clip}`, {
-                left: 20, // Adjusted position to fit on the screen
-                top: 100, // Position below the ammo count
-                fontSize: 30, // Increased font size
-                fill: 'white',
-                selectable: false
-            });
-            canvas.add(clipText);
-            canvas.renderAll();
-        }
         // Game loop
         function gameLoop() {
             if (!gameOver && !gamePaused) {
@@ -284,32 +273,22 @@
             }
         }
 
-        // Start creating zombies
-        function startCreatingZombies() {
-            zombieIntervalId = setInterval(() => {
-                createZombie();
+        // Start creating obstacles
+        function startCreatingObstacles() {
+            obstacleIntervalId = setInterval(() => {
+                createObstacle();
                 spawnInterval = Math.max(1000, spawnInterval * 0.98);
                 obstacleSpeed += 0.1;
             }, spawnInterval);
         }
 
-        // Start creating barriers
-        function startCreatingBarriers() {
-            barrierIntervalId = setInterval(() => {
-                createBarrier();
-                barrierSpawnInterval = Math.max(3000, barrierSpawnInterval * 0.98);
-            }, barrierSpawnInterval);
-        }
-
         // Start the game when the button is clicked
         document.getElementById('startGameButton').addEventListener('click', () => {
             document.getElementById('startScreen').style.display = 'none'; // Hide start screen
-            startCreatingZombies();
-            startCreatingBarriers();
+            startCreatingObstacles();
             gameLoop();
             updateKillCount(); // Initialize kill count display
             updateAmmoDisplay(); // Initialize ammo display
-            updateClipDisplay(); // Initialize clip display
         });
 
         // Restart the game when the button is clicked
@@ -319,22 +298,18 @@
             killCount = 0; // Reset kill count
             score = 0;
             spawnInterval = 3000;
-            barrierSpawnInterval = 6000; // Reset barrier spawn interval
             obstacleSpeed = 5;
-            ammo = 30; // Reset total ammo count
-            clip = maxClip; // Reset clip count
+            ammo = maxAmmo; // Reset ammo count
             obstacles.forEach(obstacle => canvas.remove(obstacle.img)); // Remove all obstacles
             projectiles.forEach(projectile => canvas.remove(projectile)); // Remove all projectiles
             obstacles = [];
             projectiles = [];
             document.getElementById('gameOverScreen').style.display = 'none'; // Hide game over screen
             document.getElementById('restartGameButton').style.display = 'none'; // Hide restart button
-            startCreatingZombies();
-            startCreatingBarriers();
+            startCreatingObstacles();
             gameLoop();
             updateKillCount(); // Initialize kill count display
             updateAmmoDisplay(); // Initialize ammo display
-            updateClipDisplay(); // Initialize clip display
         });
 
         // Pause the game when the button is clicked
@@ -344,27 +319,17 @@
             document.getElementById('pauseButton').innerText = gamePaused ? 'Resume' : 'Pause'; // Update button text
             if (gamePaused) {
                 cancelAnimationFrame(gameLoopId); // Stop the game loop
-                clearInterval(zombieIntervalId); // Stop creating zombies
-                clearInterval(barrierIntervalId); // Stop creating barriers
+                clearInterval(obstacleIntervalId); // Stop creating obstacles
             } else {
-                startCreatingZombies(); // Resume creating zombies
-                startCreatingBarriers(); // Resume creating barriers
+                startCreatingObstacles(); // Resume creating obstacles
                 gameLoop(); // Resume the game loop
             }
         });
 
         // Reload the weapon when the button is clicked
         document.getElementById('reloadButton').addEventListener('click', () => {
-            const bulletsNeeded = maxClip - clip;
-            if (ammo >= bulletsNeeded) {
-                clip = maxClip;
-                ammo -= bulletsNeeded;
-            } else {
-                clip += ammo;
-                ammo = 0;
-            }
+            ammo = maxAmmo; // Reset ammo count to maximum
             updateAmmoDisplay(); // Update ammo display
-            updateClipDisplay(); // Update clip display
         });
 
         // Keyboard controls for jumping and moving
