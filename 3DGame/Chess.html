@@ -43,11 +43,15 @@
 
         const scene = createScene();
 
-        const createPiece = (name, position) => {
+        const createPiece = (name, position, color) => {
             BABYLON.SceneLoader.ImportMesh("", "./", `${name}.glb`, scene, (meshes) => {
                 const piece = meshes[0];
                 piece.position = position;
                 piece.scaling = new BABYLON.Vector3(0.5, 0.5, 0.5); // Adjust scaling if needed
+
+                const pieceMaterial = new BABYLON.StandardMaterial(`${name}Mat`, scene);
+                pieceMaterial.diffuseColor = color;
+                piece.material = pieceMaterial;
 
                 piece.actionManager = new BABYLON.ActionManager(scene);
                 piece.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
@@ -81,8 +85,8 @@
         // Load pieces
         for (const piece in positions) {
             positions[piece].forEach((pos, index) => {
-                const color = (piece === "pawn" && index < 8) ? lightColor : (index < 4 ? lightColor : darkColor); // Light pawns are first, dark pawns are second
-                createPiece(piece, pos);
+                const color = (index < 8) ? lightColor : darkColor; // Light pieces are first, dark pieces are second
+                createPiece(piece, pos, color);
             });
         }
 
@@ -94,7 +98,7 @@
                 selectedPiece.position.x = pickedMesh.position.x;
                 selectedPiece.position.z = pickedMesh.position.z;
                 selectedPiece = null;
-            } else if (!pickedMesh || !pickedMesh.name.startsWith("tile")) {
+            } else if (pickedMesh && pickedMesh.name.startsWith("tile")) {
                 selectedPiece = null; // Deselect if clicking on an empty space or non-tile
             }
         };
