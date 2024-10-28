@@ -51,7 +51,11 @@
 
                 piece.actionManager = new BABYLON.ActionManager(scene);
                 piece.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
-                    selectedPiece = piece;
+                    if (selectedPiece === piece) {
+                        selectedPiece = null; // Deselect if the same piece is clicked again
+                    } else {
+                        selectedPiece = piece;
+                    }
                 }));
             });
         };
@@ -85,13 +89,13 @@
         let selectedPiece = null;
 
         scene.onPointerDown = (evt, pickResult) => {
-            if (selectedPiece) {
-                const pickedTile = pickResult.pickedMesh;
-                if (pickedTile && pickedTile.name.startsWith("tile")) {
-                    selectedPiece.position.x = pickedTile.position.x;
-                    selectedPiece.position.z = pickedTile.position.z;
-                    selectedPiece = null;
-                }
+            const pickedMesh = pickResult.pickedMesh;
+            if (selectedPiece && pickedMesh && pickedMesh.name.startsWith("tile")) {
+                selectedPiece.position.x = pickedMesh.position.x;
+                selectedPiece.position.z = pickedMesh.position.z;
+                selectedPiece = null;
+            } else if (!pickedMesh || !pickedMesh.name.startsWith("tile")) {
+                selectedPiece = null; // Deselect if clicking on an empty space or non-tile
             }
         };
 
