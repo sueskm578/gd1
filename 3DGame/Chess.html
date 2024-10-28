@@ -49,18 +49,19 @@
                 piece.position = position;
                 piece.scaling = new BABYLON.Vector3(0.5, 0.5, 0.5); // Adjust scaling if needed
 
-                const pieceMaterial = new BABYLON.StandardMaterial(`${name}Mat`, scene);
-                pieceMaterial.diffuseColor = color;
-                piece.material = pieceMaterial;
-
                 piece.actionManager = new BABYLON.ActionManager(scene);
-                piece.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
+                piece.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (evt) => {
                     if (selectedPiece === piece) {
                         selectedPiece = null; // Deselect if the same piece is clicked again
                     } else {
                         selectedPiece = piece;
                     }
                 }));
+
+                piece.getChildMeshes().forEach((child) => {
+                    child.material = new BABYLON.StandardMaterial(`${name}Mat`, scene);
+                    child.material.diffuseColor = color;
+                });
             });
         };
 
