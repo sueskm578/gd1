@@ -61,7 +61,7 @@
 </div>
 <script>
 const backgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/SunMoon-Background.webp"; // Replace with your background image URL for the title screen
-const gameMapBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/NightSky-Background.jpg"; // Replace with your background image URL for the game map screen
+const gameMapBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/gameMap-Background.avif"; // Replace with your background image URL for the game map screen
 const gameBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/NightSky-Background.jpg"; // Replace with your background image URL for the game screen
 const cloudImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/cloud-png.webp"; // Replace with your cloud image URL
 const lunaImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/luna.png"; // Replace with your Luna image URL
@@ -98,7 +98,7 @@ function createCanvas(level) {
     };
 
     const redSquare = {
-        x: level === 1 ? canvas.width - 150 : 150, // Adjusted spawn point for Solara if level 1
+        x: level === 1 ? 0 : 150, // Adjusted spawn point for Solara if level 1
         y: canvas.height - 150, // Adjusted spawn point for Solara if level 1
         size: 150, // Increased size for Solara
         speedX: 0,
@@ -164,7 +164,7 @@ function createCanvas(level) {
             if (blueSquare.x < cloud.x + cloud.width &&
                 blueSquare.x + blueSquare.size > cloud.x &&
                 blueSquare.y + blueSquare.size > cloud.y &&
-                blueSquare.y + blueSquare.size < cloud.y + cloud.height / 2) { // Adjusted bounding box
+                blueSquare.y + blueSquare.size < cloud.y + cloud.height) { // Adjusted bounding box
                 blueSquare.y = cloud.y - blueSquare.size;
                 blueSquare.speedY = 0;
                 blueSquare.onGround = true;
@@ -187,7 +187,7 @@ function createCanvas(level) {
             if (redSquare.x < cloud.x + cloud.width &&
                 redSquare.x + redSquare.size > cloud.x &&
                 redSquare.y + redSquare.size > cloud.y &&
-                redSquare.y + redSquare.size < cloud.y + cloud.height / 2) { // Adjusted bounding box
+                redSquare.y + redSquare.size < cloud.y + cloud.height) { // Adjusted bounding box
                 redSquare.y = cloud.y - redSquare.size;
                 redSquare.speedY = 0;
                 redSquare.onGround = true;
