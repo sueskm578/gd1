@@ -11,6 +11,24 @@
         align-items: center;
         background-color: #f1f1f1;
     }
+    #titleScreen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        font-family: Arial, sans-serif;
+    }
+    #startButton {
+        padding: 10px 20px;
+        font-size: 20px;
+        margin-top: 20px;
+        cursor: pointer;
+    }
     canvas {
         border: 1px solid #d3d3d3;
         background-color: #f1f1f1;
@@ -18,6 +36,10 @@
 </style>
 </head>
 <body>
+<div id="titleScreen">
+    <h1>Eclipse Quest</h1>
+    <button id="startButton">Start Game</button>
+</div>
 <script>
 function createCanvas() {
     const canvas = document.createElement("canvas");
@@ -134,7 +156,10 @@ function createCanvas() {
     update();
 }
 
-window.onload = createCanvas;
+document.getElementById("startButton").addEventListener("click", () => {
+    document.getElementById("titleScreen").style.display = "none";
+    createCanvas();
+});
 </script>
 </body>
 </html>
