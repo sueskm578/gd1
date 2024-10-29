@@ -95,6 +95,7 @@
         let selectedPiece = null;
 
         scene.onPointerDown = (evt, pickResult) => {
+            const pickResult = scene.pick(scene.pointerX, scene.pointerY);
             const pickedMesh = pickResult.pickedMesh;
             console.log("Picked mesh:", pickedMesh);
             if (selectedPiece && pickedMesh && pickedMesh.name.startsWith("tile")) {
