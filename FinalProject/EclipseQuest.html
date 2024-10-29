@@ -63,8 +63,9 @@
 const backgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/SunMoon-Background.webp"; // Replace with your background image URL for the title screen
 const gameMapBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/gameMap-Background.avif"; // Replace with your background image URL for the game map screen
 const gameBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/NightSky-Background.jpg"; // Replace with your background image URL for the game screen
+const cloudImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/cloud-png.webp"; // Replace with your cloud image URL
 
-function createCanvas() {
+function createCanvas(level) {
     const canvas = document.createElement("canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -74,9 +75,12 @@ function createCanvas() {
     const gameBackgroundImage = new Image();
     gameBackgroundImage.src = gameBackgroundImageURL;
 
+    const cloudImage = new Image();
+    cloudImage.src = cloudImageURL;
+
     const blueSquare = {
-        x: 50,
-        y: canvas.height - 50,
+        x: level === 1 ? 100 : 50, // Adjusted spawn point for Luna if level 1
+        y: level === 1 ? canvas.height - 150 : canvas.height - 50, // Adjusted spawn point for Luna if level 1
         size: 30,
         color: "lightblue",
         speedX: 0,
@@ -86,11 +90,11 @@ function createCanvas() {
         onGround: true
     };
 
-    const yellowSquare = {
-        x: 150,
-        y: canvas.height - 50,
+    const redSquare = {
+        x: level === 1 ? 200 : 150, // Adjusted spawn point for Solara if level 1
+        y: canvas.height - 50, // Adjusted spawn point for Solara if level 1
         size: 30,
-        color: "yellow",
+        color: "red",
         speedX: 0,
         speedY: 0,
         gravity: 0.5,
@@ -104,6 +108,11 @@ function createCanvas() {
         // Draw game background image
         context.drawImage(gameBackgroundImage, 0, 0, canvas.width, canvas.height);
 
+        // Draw cloud image if level 1
+        if (level === 1) {
+            context.drawImage(cloudImage, 50, canvas.height - 200, 200, 50); // Adjusted position and size for the cloud
+        }
+
         // Update blue square
         blueSquare.speedY += blueSquare.gravity;
         blueSquare.x += blueSquare.speedX;
@@ -115,24 +124,24 @@ function createCanvas() {
             blueSquare.onGround = true;
         }
 
-        // Update yellow square
-        yellowSquare.speedY += yellowSquare.gravity;
-        yellowSquare.x += yellowSquare.speedX;
-        yellowSquare.y += yellowSquare.speedY;
+        // Update red square
+        redSquare.speedY += redSquare.gravity;
+        redSquare.x += redSquare.speedX;
+        redSquare.y += redSquare.speedY;
 
-        if (yellowSquare.y + yellowSquare.size > canvas.height) {
-            yellowSquare.y = canvas.height - yellowSquare.size;
-            yellowSquare.speedY = 0;
-            yellowSquare.onGround = true;
+        if (redSquare.y + redSquare.size > canvas.height) {
+            redSquare.y = canvas.height - redSquare.size;
+            redSquare.speedY = 0;
+            redSquare.onGround = true;
         }
 
         // Draw blue square
         context.fillStyle = blueSquare.color;
         context.fillRect(blueSquare.x, blueSquare.y, blueSquare.size, blueSquare.size);
 
-        // Draw yellow square
-        context.fillStyle = yellowSquare.color;
-        context.fillRect(yellowSquare.x, yellowSquare.y, yellowSquare.size, yellowSquare.size);
+        // Draw red square
+        context.fillStyle = redSquare.color;
+        context.fillRect(redSquare.x, redSquare.y, redSquare.size, redSquare.size);
 
         requestAnimationFrame(update);
     }
@@ -152,15 +161,15 @@ function createCanvas() {
                 }
                 break;
             case "ArrowLeft":
-                yellowSquare.speedX = -5;
+                redSquare.speedX = -5;
                 break;
             case "ArrowRight":
-                yellowSquare.speedX = 5;
+                redSquare.speedX = 5;
                 break;
             case "ArrowUp":
-                if (yellowSquare.onGround) {
-                    yellowSquare.speedY = yellowSquare.jumpPower;
-                    yellowSquare.onGround = false;
+                if (redSquare.onGround) {
+                    redSquare.speedY = redSquare.jumpPower;
+                    redSquare.onGround = false;
                 }
                 break;
         }
@@ -174,7 +183,7 @@ function createCanvas() {
                 break;
             case "ArrowLeft":
             case "ArrowRight":
-                yellowSquare.speedX = 0;
+                redSquare.speedX = 0;
                 break;
         }
     }
@@ -192,8 +201,9 @@ document.getElementById("startButton").addEventListener("click", () => {
 
 document.querySelectorAll(".levelButton").forEach(button => {
     button.addEventListener("click", () => {
+        const level = parseInt(button.getAttribute("data-level"));
         document.getElementById("gameMap").style.display = "none";
-        createCanvas();
+        createCanvas(level);
     });
 });
 
