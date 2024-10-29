@@ -105,8 +105,8 @@ function createCanvas(level) {
     const clouds = [];
 
     function createClouds() {
-        // Create a continuous line of clouds at the bottom
-        for (let i = 0; i < canvas.width; i += 200) {
+        // Create a continuous line of clouds at the bottom left
+        for (let i = 0; i < canvas.width / 2 - 100; i += 200) {
             clouds.push({
                 x: i,
                 y: canvas.height - 200,
@@ -117,7 +117,7 @@ function createCanvas(level) {
 
         // Create the obstacle on the bottom right
         const obstacleStartX = canvas.width - 600; // Adjust the starting position of the obstacle
-        const obstacleStartY = canvas.height - 200; // Same height as the continuous line of clouds
+        const obstacleStartY = canvas.height - 300; // Lower the obstacle
 
         for (let i = 0; i < 3; i++) {
             clouds.push({
