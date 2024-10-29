@@ -86,7 +86,7 @@ function createCanvas(level) {
         speedX: 0,
         speedY: 0,
         gravity: 0.5,
-        jumpPower: -10,
+        jumpPower: -15, // Increased jump power
         onGround: true
     };
 
@@ -98,9 +98,36 @@ function createCanvas(level) {
         speedX: 0,
         speedY: 0,
         gravity: 0.5,
-        jumpPower: -10,
+        jumpPower: -15, // Increased jump power
         onGround: true
     };
+
+    const clouds = [];
+
+    function createClouds() {
+        // Create a continuous line of clouds at the bottom
+        for (let i = 0; i < canvas.width; i += 200) {
+            clouds.push({
+                x: i,
+                y: canvas.height - 200,
+                width: 200,
+                height: 50
+            });
+        }
+
+        // Create the obstacle on the bottom right
+        const obstacleStartX = canvas.width - 600; // Adjust the starting position of the obstacle
+        const obstacleStartY = canvas.height - 200; // Same height as the continuous line of clouds
+
+        for (let i = 0; i < 3; i++) {
+            clouds.push({
+                x: obstacleStartX + i * 200,
+                y: obstacleStartY - i * 50,
+                width: 200,
+                height: 50
+            });
+        }
+    }
 
     function update() {
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -110,9 +137,9 @@ function createCanvas(level) {
 
         // Draw cloud image if level 1
         if (level === 1) {
-            for (let i = 0; i < canvas.width; i += 200) {
-                context.drawImage(cloudImage, i, canvas.height - 200, 200, 50); // Adjusted position and size for the cloud
-            }
+            clouds.forEach(cloud => {
+                context.drawImage(cloudImage, cloud.x, cloud.y, cloud.width, cloud.height);
+            });
         }
 
         // Update blue square
@@ -126,6 +153,18 @@ function createCanvas(level) {
             blueSquare.onGround = true;
         }
 
+        // Check collision with clouds for blue square
+        clouds.forEach(cloud => {
+            if (blueSquare.x < cloud.x + cloud.width &&
+                blueSquare.x + blueSquare.size > cloud.x &&
+                blueSquare.y + blueSquare.size > cloud.y &&
+                blueSquare.y + blueSquare.size < cloud.y + cloud.height) {
+                blueSquare.y = cloud.y - blueSquare.size;
+                blueSquare.speedY = 0;
+                blueSquare.onGround = true;
+            }
+        });
+
         // Update red square
         redSquare.speedY += redSquare.gravity;
         redSquare.x += redSquare.speedX;
@@ -136,6 +175,18 @@ function createCanvas(level) {
             redSquare.speedY = 0;
             redSquare.onGround = true;
         }
+
+        // Check collision with clouds for red square
+        clouds.forEach(cloud => {
+            if (redSquare.x < cloud.x + cloud.width &&
+                redSquare.x + redSquare.size > cloud.x &&
+                redSquare.y + redSquare.size > cloud.y &&
+                redSquare.y + redSquare.size < cloud.y + cloud.height) {
+                redSquare.y = cloud.y - redSquare.size;
+                redSquare.speedY = 0;
+                redSquare.onGround = true;
+            }
+        });
 
         // Draw blue square
         context.fillStyle = blueSquare.color;
@@ -192,6 +243,10 @@ function createCanvas(level) {
 
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
+
+    if (level === 1) {
+        createClouds();
+    }
 
     update();
 }
