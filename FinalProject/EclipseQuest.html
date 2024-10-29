@@ -11,7 +11,7 @@
         align-items: center;
         background-color: #f1f1f1;
     }
-    #titleScreen {
+    #titleScreen, #gameMap {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -24,11 +24,17 @@
         color: white;
         font-family: Arial, sans-serif;
     }
-    #startButton {
+    #startButton, .levelButton {
         padding: 10px 20px;
         font-size: 20px;
         margin-top: 20px;
         cursor: pointer;
+    }
+    .levelButton {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
     }
     canvas {
         border: 1px solid #d3d3d3;
@@ -40,6 +46,14 @@
 <div id="titleScreen">
     <h1>Eclipse Quest</h1>
     <button id="startButton">Start Game</button>
+</div>
+<div id="gameMap" style="display: none;">
+    <h1>Select a Level</h1>
+    <button class="levelButton" data-level="1">Level 1</button>
+    <button class="levelButton" data-level="2">Level 2</button>
+    <button class="levelButton" data-level="3">Level 3</button>
+    <button class="levelButton" data-level="4">Level 4</button>
+    <button class="levelButton" data-level="5">Level 5</button>
 </div>
 <script>
 const backgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/SunMoon-Background.webp"; // Replace with your background image URL for the title screen
@@ -168,7 +182,14 @@ function createCanvas() {
 
 document.getElementById("startButton").addEventListener("click", () => {
     document.getElementById("titleScreen").style.display = "none";
-    createCanvas();
+    document.getElementById("gameMap").style.display = "flex";
+});
+
+document.querySelectorAll(".levelButton").forEach(button => {
+    button.addEventListener("click", () => {
+        document.getElementById("gameMap").style.display = "none";
+        createCanvas();
+    });
 });
 
 document.getElementById("titleScreen").style.backgroundImage = `url(${backgroundImageURL})`;
