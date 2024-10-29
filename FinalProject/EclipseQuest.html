@@ -19,7 +19,8 @@
         position: absolute;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
+        background-size: cover;
+        background-position: center;
         color: white;
         font-family: Arial, sans-serif;
     }
@@ -41,6 +42,8 @@
     <button id="startButton">Start Game</button>
 </div>
 <script>
+const backgroundImageURL = "https://example.com/your-background-image.jpg"; // Replace with your background image URL
+
 function createCanvas() {
     const canvas = document.createElement("canvas");
     canvas.width = window.innerWidth * 0.9; // 90% of the window width
@@ -160,6 +163,8 @@ document.getElementById("startButton").addEventListener("click", () => {
     document.getElementById("titleScreen").style.display = "none";
     createCanvas();
 });
+
+document.getElementById("titleScreen").style.backgroundImage = `url(${backgroundImageURL})`;
 </script>
 </body>
 </html>
