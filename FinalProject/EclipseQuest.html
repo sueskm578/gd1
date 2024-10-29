@@ -79,8 +79,8 @@ function createCanvas(level) {
     cloudImage.src = cloudImageURL;
 
     const blueSquare = {
-        x: level === 1 ? 100 : 50, // Adjusted spawn point for Luna if level 1
-        y: level === 1 ? canvas.height - 150 : canvas.height - 50, // Adjusted spawn point for Luna if level 1
+        x: level === 1 ? 50 : 50, // Adjusted spawn point for Luna if level 1
+        y: level === 1 ? canvas.height - 250 : canvas.height - 50, // Adjusted spawn point for Luna if level 1
         size: 30,
         color: "lightblue",
         speedX: 0,
@@ -110,7 +110,9 @@ function createCanvas(level) {
 
         // Draw cloud image if level 1
         if (level === 1) {
-            context.drawImage(cloudImage, 50, canvas.height - 200, 200, 50); // Adjusted position and size for the cloud
+            for (let i = 0; i < canvas.width; i += 200) {
+                context.drawImage(cloudImage, i, canvas.height - 200, 200, 50); // Adjusted position and size for the cloud
+            }
         }
 
         // Update blue square
