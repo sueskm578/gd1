@@ -164,7 +164,7 @@ function createCanvas(level) {
             if (blueSquare.x < cloud.x + cloud.width &&
                 blueSquare.x + blueSquare.size > cloud.x &&
                 blueSquare.y + blueSquare.size > cloud.y &&
-                blueSquare.y + blueSquare.size < cloud.y + cloud.height / 2) { // Further adjusted bounding box
+                blueSquare.y + blueSquare.size < cloud.y + cloud.height) { // Adjusted bounding box
                 blueSquare.y = cloud.y - blueSquare.size;
                 blueSquare.speedY = 0;
                 blueSquare.onGround = true;
@@ -187,7 +187,7 @@ function createCanvas(level) {
             if (redSquare.x < cloud.x + cloud.width &&
                 redSquare.x + redSquare.size > cloud.x &&
                 redSquare.y + redSquare.size > cloud.y &&
-                redSquare.y + redSquare.size < cloud.y + cloud.height / 2) { // Further adjusted bounding box
+                redSquare.y + redSquare.size < cloud.y + cloud.height) { // Adjusted bounding box
                 redSquare.y = cloud.y - redSquare.size;
                 redSquare.speedY = 0;
                 redSquare.onGround = true;
