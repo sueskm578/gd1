@@ -42,7 +42,8 @@
     <button id="startButton">Start Game</button>
 </div>
 <script>
-const backgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/SunMoon-Background.webp"; // Replace with your background image URL
+const backgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/SunMoon-Background.webp"; // Replace with your background image URL for the title screen
+const gameBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/NightSky-Background.jpg"; // Replace with your background image URL for the game screen
 
 function createCanvas() {
     const canvas = document.createElement("canvas");
@@ -50,6 +51,9 @@ function createCanvas() {
     canvas.height = window.innerHeight * 0.8; // 80% of the window height
     document.body.appendChild(canvas);
     const context = canvas.getContext("2d");
+
+    const gameBackgroundImage = new Image();
+    gameBackgroundImage.src = gameBackgroundImageURL;
 
     const blueSquare = {
         x: 50,
@@ -77,6 +81,9 @@ function createCanvas() {
 
     function update() {
         context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw game background image
+        context.drawImage(gameBackgroundImage, 0, 0, canvas.width, canvas.height);
 
         // Update blue square
         blueSquare.speedY += blueSquare.gravity;
