@@ -85,7 +85,7 @@ const gameBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io
 const cloudImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/cloud-png.webp"; // Replace with your cloud image URL
 const lunaImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/luna.png"; // Replace with the actual URL for Luna's image
 const solaraImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/solara.png"; // Replace with the actual URL for Solara's image
-const yellowWaterImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/red water.jpg"; // Replace with the actual URL for yellow water image
+const redWaterImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/red water.jpg"; // Replace with the actual URL for red water image
 const blueWaterImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/water.jpg"; // Replace with the actual URL for blue water image
 
 function createCanvas(level) {
@@ -107,8 +107,8 @@ function createCanvas(level) {
     const solaraImage = new Image();
     solaraImage.src = solaraImageURL;
 
-    const yellowWaterImage = new Image();
-    yellowWaterImage.src = yellowWaterImageURL;
+    const redWaterImage = new Image();
+    redWaterImage.src = redWaterImageURL;
 
     const blueWaterImage = new Image();
     blueWaterImage.src = blueWaterImageURL;
@@ -136,7 +136,7 @@ function createCanvas(level) {
     };
 
     const clouds = [];
-    const yellowWaters = [];
+    const redWaters = [];
     const blueWaters = [];
 
     function createCloudsAndWaters() {
@@ -150,7 +150,7 @@ function createCanvas(level) {
             });
         }
 
-        // Create the obstacle on the bottom right with yellow and blue water in between clouds
+        // Create the obstacle on the bottom right
         const obstacleStartX = canvas.width - 600; // Adjust the starting position of the obstacle
         const obstacleStartY = canvas.height - 300; // Lower the obstacle
 
@@ -161,37 +161,36 @@ function createCanvas(level) {
                 width: 200,
                 height: 50
             });
-
-            if (i % 2 === 0) {
-                yellowWaters.push({
-                    x: obstacleStartX + i * 200 + 100,
-                    y: obstacleStartY - i * 50 + 25,
-                    width: 100,
-                    height: 25
-                });
-            } else {
-                blueWaters.push({
-                    x: obstacleStartX + i * 200 + 100,
-                    y: obstacleStartY - i * 50 + 25,
-                    width: 100,
-                    height: 25
-                });
-            }
         }
 
-        // Add yellow and blue water at the bottom of the screen
-        yellowWaters.push({
-            x: 0,
-            y: canvas.height - 50,
-            width: canvas.width / 2,
-            height: 50
+        // Add red and blue water obstacles on the left side cloud obstacles
+        redWaters.push({
+            x: 100,
+            y: canvas.height - 175,
+            width: 100,
+            height: 25
         });
 
         blueWaters.push({
-            x: canvas.width / 2,
+            x: 300,
+            y: canvas.height - 175,
+            width: 100,
+            height: 25
+        });
+
+        // Add red and blue water at the bottom of the screen
+        redWaters.push({
+            x: canvas.width / 4,
             y: canvas.height - 50,
-            width: canvas.width / 2,
-            height: 50
+            width: 100,
+            height: 25
+        });
+
+        blueWaters.push({
+            x: (canvas.width / 4) * 3,
+            y: canvas.height - 50,
+            width: 100,
+            height: 25
         });
     }
 
@@ -208,9 +207,9 @@ function createCanvas(level) {
             });
         }
 
-        // Draw yellow water
-        yellowWaters.forEach(water => {
-            context.drawImage(yellowWaterImage, water.x, water.y, water.width, water.height);
+        // Draw red water
+        redWaters.forEach(water => {
+            context.drawImage(redWaterImage, water.x, water.y, water.width, water.height);
         });
 
         // Draw blue water
@@ -241,8 +240,8 @@ function createCanvas(level) {
             }
         });
 
-        // Check collision with yellow water for blue square
-        yellowWaters.forEach(water => {
+        // Check collision with red water for blue square
+        redWaters.forEach(water => {
             if (blueSquare.x < water.x + water.width &&
                 blueSquare.x + blueSquare.size > water.x &&
                 blueSquare.y + blueSquare.size > water.y &&
@@ -288,8 +287,8 @@ function createCanvas(level) {
             }
         });
 
-        // Check collision with yellow water for red square
-        yellowWaters.forEach(water => {
+        // Check collision with red water for red square
+        redWaters.forEach(water => {
             if (redSquare.x < water.x + water.width &&
                 redSquare.x + redSquare.size > water.x &&
                 redSquare.y + redSquare.size > water.y &&
