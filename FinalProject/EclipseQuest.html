@@ -35,7 +35,22 @@
         color: white;
         border: none;
         border-radius: 5px;
+        position: absolute;
     }
+    #level1 { bottom: 20px; }
+    #level2 { bottom: 100px; }
+    #level3 { bottom: 180px; }
+    #level4 { bottom: 260px; }
+    #level5 { bottom: 340px; }
+    .arrow {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+    }
+    #arrow1 { bottom: 60px; }
+    #arrow2 { bottom: 140px; }
+    #arrow3 { bottom: 220px; }
+    #arrow4 { bottom: 300px; }
     canvas {
         position: absolute;
         top: 0;
@@ -53,11 +68,15 @@
 </div>
 <div id="gameMap" style="display: none;">
     <h1>Select a Level</h1>
-    <button class="levelButton" data-level="1">Level 1</button>
-    <button class="levelButton" data-level="2">Level 2</button>
-    <button class="levelButton" data-level="3">Level 3</button>
-    <button class="levelButton" data-level="4">Level 4</button>
-    <button class="levelButton" data-level="5">Level 5</button>
+    <button id="level1" class="levelButton" data-level="1">Level 1</button>
+    <img id="arrow1" class="arrow" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/arrow-up.png" alt="Arrow 1">
+    <button id="level2" class="levelButton" data-level="2">Level 2</button>
+    <img id="arrow2" class="arrow" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/arrow-up.png" alt="Arrow 2">
+    <button id="level3" class="levelButton" data-level="3">Level 3</button>
+    <img id="arrow3" class="arrow" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/arrow-up.png" alt="Arrow 3">
+    <button id="level4" class="levelButton" data-level="4">Level 4</button>
+    <img id="arrow4" class="arrow" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/arrow-up.png" alt="Arrow 4">
+    <button id="level5" class="levelButton" data-level="5">Level 5</button>
 </div>
 <script>
 const backgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/SunMoon-Background.webp"; // Replace with your background image URL for the title screen
