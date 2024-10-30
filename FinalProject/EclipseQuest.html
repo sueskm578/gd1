@@ -125,7 +125,7 @@ function createCanvas(level) {
         for (let i = 0; i < canvas.width / 2 - 100; i += 200) {
             clouds.push({
                 x: i,
-                y: canvas.height - 200,
+                y: canvas.height - 300, // Moved higher
                 width: 200,
                 height: 50
             });
@@ -133,7 +133,7 @@ function createCanvas(level) {
 
         // Create the obstacle on the bottom right
         const obstacleStartX = canvas.width - 600; // Adjust the starting position of the obstacle
-        const obstacleStartY = canvas.height - 300; // Lower the obstacle
+        const obstacleStartY = canvas.height - 400; // Moved higher
 
         for (let i = 0; i < 3; i++) {
             clouds.push({
@@ -147,14 +147,14 @@ function createCanvas(level) {
         // Add red and blue water obstacles on top of the left cloud obstacles
         redWaters.push({
             x: 100, // Position on top of the left cloud
-            y: canvas.height - 175, // Moved down to be on top of the cloud
+            y: canvas.height - 275, // Moved higher to be on top of the cloud
             width: 100,
             height: 25
         });
 
         blueWaters.push({
             x: 300, // Position on top of the left cloud
-            y: canvas.height - 175, // Moved down to be on top of the cloud
+            y: canvas.height - 275, // Moved higher to be on top of the cloud
             width: 100,
             height: 25
         });
