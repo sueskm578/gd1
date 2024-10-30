@@ -35,22 +35,7 @@
         color: white;
         border: none;
         border-radius: 5px;
-        position: absolute;
     }
-    #level1 { bottom: 20px; }
-    #level2 { bottom: 100px; }
-    #level3 { bottom: 180px; }
-    #level4 { bottom: 260px; }
-    #level5 { bottom: 340px; }
-    .arrow {
-        position: absolute;
-        width: 30px;
-        height: 30px;
-    }
-    #arrow1 { bottom: 60px; }
-    #arrow2 { bottom: 140px; }
-    #arrow3 { bottom: 220px; }
-    #arrow4 { bottom: 300px; }
     canvas {
         position: absolute;
         top: 0;
@@ -68,15 +53,11 @@
 </div>
 <div id="gameMap" style="display: none;">
     <h1>Select a Level</h1>
-    <button id="level1" class="levelButton" data-level="1">Level 1</button>
-    <img id="arrow1" class="arrow" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/arrow-up.png" alt="Arrow 1">
-    <button id="level2" class="levelButton" data-level="2">Level 2</button>
-    <img id="arrow2" class="arrow" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/arrow-up.png" alt="Arrow 2">
-    <button id="level3" class="levelButton" data-level="3">Level 3</button>
-    <img id="arrow3" class="arrow" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/arrow-up.png" alt="Arrow 3">
-    <button id="level4" class="levelButton" data-level="4">Level 4</button>
-    <img id="arrow4" class="arrow" src="https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/arrow-up.png" alt="Arrow 4">
-    <button id="level5" class="levelButton" data-level="5">Level 5</button>
+    <button class="levelButton" data-level="1">Level 1</button>
+    <button class="levelButton" data-level="2">Level 2</button>
+    <button class="levelButton" data-level="3">Level 3</button>
+    <button class="levelButton" data-level="4">Level 4</button>
+    <button class="levelButton" data-level="5">Level 5</button>
 </div>
 <script>
 const backgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/SunMoon-Background.webp"; // Replace with your background image URL for the title screen
@@ -85,8 +66,6 @@ const gameBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io
 const cloudImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/cloud-png.webp"; // Replace with your cloud image URL
 const lunaImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/luna.png"; // Replace with the actual URL for Luna's image
 const solaraImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/solara.png"; // Replace with the actual URL for Solara's image
-const redWaterImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/red water.jpg"; // Replace with the actual URL for red water image
-const blueWaterImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/water.jpg"; // Replace with the actual URL for blue water image
 
 function createCanvas(level) {
     const canvas = document.createElement("canvas");
@@ -106,12 +85,6 @@ function createCanvas(level) {
 
     const solaraImage = new Image();
     solaraImage.src = solaraImageURL;
-
-    const redWaterImage = new Image();
-    redWaterImage.src = redWaterImageURL;
-
-    const blueWaterImage = new Image();
-    blueWaterImage.src = blueWaterImageURL;
 
     const blueSquare = {
         x: level === 1 ? 50 : 50, // Adjusted spawn point for Luna if level 1
@@ -136,15 +109,13 @@ function createCanvas(level) {
     };
 
     const clouds = [];
-    const redWaters = [];
-    const blueWaters = [];
 
-    function createCloudsAndWaters() {
+    function createClouds() {
         // Create a continuous line of clouds at the bottom left
         for (let i = 0; i < canvas.width / 2 - 100; i += 200) {
             clouds.push({
                 x: i,
-                y: canvas.height - 250, // Moved higher
+                y: canvas.height - 200,
                 width: 200,
                 height: 50
             });
@@ -152,7 +123,7 @@ function createCanvas(level) {
 
         // Create the obstacle on the bottom right
         const obstacleStartX = canvas.width - 600; // Adjust the starting position of the obstacle
-        const obstacleStartY = canvas.height - 350; // Moved higher
+        const obstacleStartY = canvas.height - 300; // Lower the obstacle
 
         for (let i = 0; i < 3; i++) {
             clouds.push({
@@ -162,36 +133,6 @@ function createCanvas(level) {
                 height: 50
             });
         }
-
-        // Add red and blue water obstacles on the left side cloud obstacles
-        redWaters.push({
-            x: 150, // Moved to the right
-            y: canvas.height - 225, // Moved higher
-            width: 100,
-            height: 25
-        });
-
-        blueWaters.push({
-            x: 350, // Moved to the right
-            y: canvas.height - 225, // Moved higher
-            width: 100,
-            height: 25
-        });
-
-        // Add red and blue water at the bottom of the screen
-        redWaters.push({
-            x: canvas.width / 4 - 50, // Centered and made longer
-            y: canvas.height - 50,
-            width: 150,
-            height: 25
-        });
-
-        blueWaters.push({
-            x: (canvas.width / 4) * 3 - 50, // Centered and made longer
-            y: canvas.height - 50,
-            width: 150,
-            height: 25
-        });
     }
 
     function update() {
@@ -206,16 +147,6 @@ function createCanvas(level) {
                 context.drawImage(cloudImage, cloud.x, cloud.y, cloud.width, cloud.height);
             });
         }
-
-        // Draw red water
-        redWaters.forEach(water => {
-            context.drawImage(redWaterImage, water.x, water.y, water.width, water.height);
-        });
-
-        // Draw blue water
-        blueWaters.forEach(water => {
-            context.drawImage(blueWaterImage, water.x, water.y, water.width, water.height);
-        });
 
         // Update blue square
         blueSquare.speedY += blueSquare.gravity;
@@ -240,30 +171,6 @@ function createCanvas(level) {
             }
         });
 
-        // Check collision with red water for blue square
-        redWaters.forEach(water => {
-            if (blueSquare.x < water.x + water.width &&
-                blueSquare.x + blueSquare.size > water.x &&
-                blueSquare.y + blueSquare.size > water.y &&
-                blueSquare.y + blueSquare.size < water.y + water.height) {
-                blueSquare.y = water.y - blueSquare.size;
-                blueSquare.speedY = 0;
-                blueSquare.onGround = true;
-            }
-        });
-
-        // Check collision with blue water for blue square
-        blueWaters.forEach(water => {
-            if (blueSquare.x < water.x + water.width &&
-                blueSquare.x + blueSquare.size > water.x &&
-                blueSquare.y + blueSquare.size > water.y &&
-                blueSquare.y + blueSquare.size < water.y + water.height) {
-                blueSquare.y = water.y - blueSquare.size;
-                blueSquare.speedY = 0;
-                blueSquare.onGround = true;
-            }
-        });
-
         // Update red square
         redSquare.speedY += redSquare.gravity;
         redSquare.x += redSquare.speedX;
@@ -282,30 +189,6 @@ function createCanvas(level) {
                 redSquare.y + redSquare.size > cloud.y &&
                 redSquare.y + redSquare.size < cloud.y + cloud.height) {
                 redSquare.y = cloud.y - redSquare.size;
-                redSquare.speedY = 0;
-                redSquare.onGround = true;
-            }
-        });
-
-        // Check collision with red water for red square
-        redWaters.forEach(water => {
-            if (redSquare.x < water.x + water.width &&
-                redSquare.x + redSquare.size > water.x &&
-                redSquare.y + redSquare.size > water.y &&
-                redSquare.y + redSquare.size < water.y + water.height) {
-                redSquare.y = water.y - redSquare.size;
-                redSquare.speedY = 0;
-                redSquare.onGround = true;
-            }
-        });
-
-        // Check collision with blue water for red square
-        blueWaters.forEach(water => {
-            if (redSquare.x < water.x + water.width &&
-                redSquare.x + redSquare.size > water.x &&
-                redSquare.y + redSquare.size > water.y &&
-                redSquare.y + redSquare.size < water.y + water.height) {
-                redSquare.y = water.y - redSquare.size;
                 redSquare.speedY = 0;
                 redSquare.onGround = true;
             }
@@ -366,7 +249,7 @@ function createCanvas(level) {
     window.addEventListener("keyup", handleKeyUp);
 
     if (level === 1) {
-        createCloudsAndWaters();
+        createClouds();
     }
 
     update();
