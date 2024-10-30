@@ -66,6 +66,8 @@ const gameBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io
 const cloudImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/cloud-png.webp"; // Replace with your cloud image URL
 const lunaImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/luna.png"; // Replace with the actual URL for Luna's image
 const solaraImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/solara.png"; // Replace with the actual URL for Solara's image
+const redWaterImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/red water.jpg"; // Replace with the actual URL for red water image
+const blueWaterImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/water.jpg"; // Replace with the actual URL for blue water image
 
 function createCanvas(level) {
     const canvas = document.createElement("canvas");
@@ -85,6 +87,12 @@ function createCanvas(level) {
 
     const solaraImage = new Image();
     solaraImage.src = solaraImageURL;
+
+    const redWaterImage = new Image();
+    redWaterImage.src = redWaterImageURL;
+
+    const blueWaterImage = new Image();
+    blueWaterImage.src = blueWaterImageURL;
 
     const blueSquare = {
         x: level === 1 ? 50 : 50, // Adjusted spawn point for Luna if level 1
@@ -109,8 +117,10 @@ function createCanvas(level) {
     };
 
     const clouds = [];
+    const redWaters = [];
+    const blueWaters = [];
 
-    function createClouds() {
+    function createCloudsAndWaters() {
         // Create a continuous line of clouds at the bottom left
         for (let i = 0; i < canvas.width / 2 - 100; i += 200) {
             clouds.push({
@@ -133,6 +143,36 @@ function createCanvas(level) {
                 height: 50
             });
         }
+
+        // Add red and blue water obstacles on top of the left cloud obstacles
+        redWaters.push({
+            x: 100, // Position on top of the left cloud
+            y: canvas.height - 225,
+            width: 100,
+            height: 25
+        });
+
+        blueWaters.push({
+            x: 300, // Position on top of the left cloud
+            y: canvas.height - 225,
+            width: 100,
+            height: 25
+        });
+
+        // Add red and blue water at the bottom of the screen
+        redWaters.push({
+            x: canvas.width / 4 - 50, // Centered and made longer
+            y: canvas.height - 50,
+            width: 150,
+            height: 25
+        });
+
+        blueWaters.push({
+            x: (canvas.width / 4) * 3 - 50, // Centered and made longer
+            y: canvas.height - 50,
+            width: 150,
+            height: 25
+        });
     }
 
     function update() {
@@ -147,6 +187,16 @@ function createCanvas(level) {
                 context.drawImage(cloudImage, cloud.x, cloud.y, cloud.width, cloud.height);
             });
         }
+
+        // Draw red water
+        redWaters.forEach(water => {
+            context.drawImage(redWaterImage, water.x, water.y, water.width, water.height);
+        });
+
+        // Draw blue water
+        blueWaters.forEach(water => {
+            context.drawImage(blueWaterImage, water.x, water.y, water.width, water.height);
+        });
 
         // Update blue square
         blueSquare.speedY += blueSquare.gravity;
@@ -171,6 +221,30 @@ function createCanvas(level) {
             }
         });
 
+        // Check collision with red water for blue square
+        redWaters.forEach(water => {
+            if (blueSquare.x < water.x + water.width &&
+                blueSquare.x + blueSquare.size > water.x &&
+                blueSquare.y + blueSquare.size > water.y &&
+                blueSquare.y + blueSquare.size < water.y + water.height) {
+                blueSquare.y = water.y - blueSquare.size;
+                blueSquare.speedY = 0;
+                blueSquare.onGround = true;
+            }
+        });
+
+        // Check collision with blue water for blue square
+        blueWaters.forEach(water => {
+            if (blueSquare.x < water.x + water.width &&
+                blueSquare.x + blueSquare.size > water.x &&
+                blueSquare.y + blueSquare.size > water.y &&
+                blueSquare.y + blueSquare.size < water.y + water.height) {
+                blueSquare.y = water.y - blueSquare.size;
+                blueSquare.speedY = 0;
+                blueSquare.onGround = true;
+            }
+        });
+
         // Update red square
         redSquare.speedY += redSquare.gravity;
         redSquare.x += redSquare.speedX;
@@ -189,6 +263,30 @@ function createCanvas(level) {
                 redSquare.y + redSquare.size > cloud.y &&
                 redSquare.y + redSquare.size < cloud.y + cloud.height) {
                 redSquare.y = cloud.y - redSquare.size;
+                redSquare.speedY = 0;
+                redSquare.onGround = true;
+            }
+        });
+
+        // Check collision with red water for red square
+        redWaters.forEach(water => {
+            if (redSquare.x < water.x + water.width &&
+                redSquare.x + redSquare.size > water.x &&
+                redSquare.y + redSquare.size > water.y &&
+                redSquare.y + redSquare.size < water.y + water.height) {
+                redSquare.y = water.y - redSquare.size;
+                redSquare.speedY = 0;
+                redSquare.onGround = true;
+            }
+        });
+
+        // Check collision with blue water for red square
+        blueWaters.forEach(water => {
+            if (redSquare.x < water.x + water.width &&
+                redSquare.x + redSquare.size > water.x &&
+                redSquare.y + redSquare.size > water.y &&
+                redSquare.y + redSquare.size < water.y + water.height) {
+                redSquare.y = water.y - redSquare.size;
                 redSquare.speedY = 0;
                 redSquare.onGround = true;
             }
@@ -249,7 +347,7 @@ function createCanvas(level) {
     window.addEventListener("keyup", handleKeyUp);
 
     if (level === 1) {
-        createClouds();
+        createCloudsAndWaters();
     }
 
     update();
