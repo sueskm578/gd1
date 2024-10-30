@@ -90,12 +90,14 @@
 
         scene.onPointerDown = (evt, pickResult) => {
             const pickedMesh = pickResult.pickedMesh;
-            if (selectedPiece && pickedMesh && pickedMesh.name.startsWith("tile")) {
-                selectedPiece.position.x = pickedMesh.position.x;
-                selectedPiece.position.z = pickedMesh.position.z;
-                selectedPiece = null;
-            } else if (!pickedMesh || !pickedMesh.name.startsWith("tile")) {
-                selectedPiece = null; // Deselect if clicking on an empty space or non-tile
+            if (pickedMesh) {
+                if (pickedMesh.name.startsWith("tile") && selectedPiece) {
+                    selectedPiece.position.x = pickedMesh.position.x;
+                    selectedPiece.position.z = pickedMesh.position.z;
+                    selectedPiece = null;
+                } else if (pickedMesh.name.startsWith("piece")) {
+                    selectedPiece = pickedMesh;
+                }
             }
         };
 
