@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Babylon.js Chessboard with GLB Export</title>
+    <title>Babylon.js Interactive Chessboard</title>
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.min.js"></script>
-    <script src="https://cdn.babylonjs.com/serializers/babylon.glTF2Serializer.min.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
 </head>
 <body>
     <canvas id="renderCanvas" style="width: 100%; height: 100%;"></canvas>
-    <button id="exportButton" style="position: absolute; top: 10px; left: 10px;">Export GLB</button>
-
     <script>
         const canvas = document.getElementById("renderCanvas");
         const engine = new BABYLON.Engine(canvas, true);
+        let selectedPiece = null; // Variable to keep track of the selected piece
 
         const createScene = () => {
             const scene = new BABYLON.Scene(engine);
@@ -30,7 +28,7 @@
 
             for (let row = 0; row < boardSize; row++) {
                 for (let col = 0; col < boardSize; col++) {
-                    const tile = BABYLON.MeshBuilder.CreateBox(`tile${row}_${col}`, {size: tileSize}, scene);
+                    const tile = BABYLON.MeshBuilder.CreateBox(`tile${row}_${col}`, { size: tileSize }, scene);
                     tile.position = new BABYLON.Vector3(row - boardSize / 2 + 0.5, 0, col - boardSize / 2 + 0.5);
                     const tileMaterial = new BABYLON.StandardMaterial(`tileMat${row}_${col}`, scene);
                     tileMaterial.diffuseColor = (row + col) % 2 === 0 ? new BABYLON.Color3(1, 1, 1) : new BABYLON.Color3(0, 0, 0);
@@ -52,13 +50,13 @@
         const pieces = [];
 
         const createPiece = (name, position, colorMaterial) => {
-            const piece = BABYLON.MeshBuilder.CreateCylinder(name, {diameter: 0.5, height: 1}, scene);
+            const piece = BABYLON.MeshBuilder.CreateCylinder(name, { diameter: 0.5, height: 1 }, scene);
             piece.position = position;
             piece.material = colorMaterial;
             piece.actionManager = new BABYLON.ActionManager(scene);
 
             piece.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
-                selectedPiece = piece;
+                selectedPiece = piece; // Select the clicked piece
             }));
 
             pieces.push(piece);
@@ -70,7 +68,7 @@
             createPiece(`blackPawn${i}`, new BABYLON.Vector3(i - 3.5, 0.5, -1.5), pieceMaterialBlack);
         }
 
-        // Place other pieces (rooks, knights, bishops, queens, kings)
+        // Place rooks, knights, bishops, queens, kings
         createPiece("whiteRook1", new BABYLON.Vector3(-3.5, 0.5, 3.5), pieceMaterialWhite);
         createPiece("whiteRook2", new BABYLON.Vector3(3.5, 0.5, 3.5), pieceMaterialWhite);
         createPiece("blackRook1", new BABYLON.Vector3(-3.5, 0.5, -3.5), pieceMaterialBlack);
@@ -88,14 +86,12 @@
         createPiece("whiteKing", new BABYLON.Vector3(0.5, 0.5, 3.5), pieceMaterialWhite);
         createPiece("blackKing", new BABYLON.Vector3(0.5, 0.5, -3.5), pieceMaterialBlack);
 
-        let selectedPiece = null;
-
         scene.onPointerDown = (evt, pickResult) => {
             if (selectedPiece) {
                 const pickedTile = pickResult.pickedMesh;
                 if (pickedTile && pickedTile.name.startsWith("tile")) {
-                    selectedPiece.position.x = pickedTile.position.x;
-                    selectedPiece.position.z = pickedTile.position.z;
+                    selectedPiece.position.x = pickedTile.position.x; // Move piece to the selected tile's position
+                    selectedPiece.position.z = pickedTile.position.z; // Move piece to the selected tile's position
                     selectedPiece = null; // Deselect the piece after moving
                 }
             } else {
@@ -105,12 +101,6 @@
                 }
             }
         };
-
-        document.getElementById("exportButton").addEventListener("click", () => {
-            BABYLON.GLTF2Export.GLBAsync(scene, "chessboard").then((glb) => {
-                glb.downloadFiles();
-            });
-        });
 
         engine.runRenderLoop(() => {
             scene.render();
