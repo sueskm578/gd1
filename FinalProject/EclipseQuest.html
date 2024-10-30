@@ -64,8 +64,8 @@ const backgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw
 const gameMapBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/gameMap-Background.avif"; // Replace with your background image URL for the game map screen
 const gameBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/NightSky-Background.jpg"; // Replace with your background image URL for the game screen
 const cloudImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/cloud-png.webp"; // Replace with your cloud image URL
-const lunaImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/luna.png"; // Replace with the actual URL for Luna's image
-const solaraImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/solara.png"; // Replace with the actual URL for Solara's image
+const lunaImageURL = "URL_FOR_LUNA_IMAGE"; // Replace with the actual URL for Luna's image
+const solaraImageURL = "URL_FOR_SOLARA_IMAGE"; // Replace with the actual URL for Solara's image
 
 function createCanvas(level) {
     const canvas = document.createElement("canvas");
@@ -89,7 +89,7 @@ function createCanvas(level) {
     const blueSquare = {
         x: level === 1 ? 50 : 50, // Adjusted spawn point for Luna if level 1
         y: level === 1 ? canvas.height - 250 : canvas.height - 50, // Adjusted spawn point for Luna if level 1
-        size: 30,
+        size: 50, // Increased size for Luna
         speedX: 0,
         speedY: 0,
         gravity: 0.5,
@@ -100,7 +100,7 @@ function createCanvas(level) {
     const redSquare = {
         x: level === 1 ? 200 : 150, // Adjusted spawn point for Solara if level 1
         y: canvas.height - 50, // Adjusted spawn point for Solara if level 1
-        size: 30,
+        size: 50, // Increased size for Solara
         speedX: 0,
         speedY: 0,
         gravity: 0.5,
