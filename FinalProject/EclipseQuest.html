@@ -165,14 +165,14 @@ function createCanvas(level) {
         // Add red and blue water obstacles on top of the left cloud obstacles
         redWaters.push({
             x: 150, // Moved to the right
-            y: canvas.height - 175, // Lowered height to be on top of the cloud
+            y: canvas.height - 225, // Raised height to be on top of the cloud
             width: 100,
             height: 25
         });
 
         blueWaters.push({
             x: 350, // Moved to the right
-            y: canvas.height - 175, // Lowered height to be on top of the cloud
+            y: canvas.height - 225, // Raised height to be on top of the cloud
             width: 100,
             height: 25
         });
@@ -180,21 +180,20 @@ function createCanvas(level) {
         // Add red and blue water at the bottom of the screen
         redWaters.push({
             x: canvas.width / 4 - 50, // Centered and made longer
-            y: canvas.height - 25, // Moved down to the bottom
+            y: canvas.height - 75, // Raised height
             width: 150,
             height: 25
         });
 
         blueWaters.push({
             x: (canvas.width / 4) * 3 - 50, // Centered and made longer
-            y: canvas.height - 25, // Moved down to the bottom
+            y: canvas.height - 75, // Raised height
             width: 150,
             height: 25
         });
     }
 
     function endGame(message) {
-        alert(message);
         document.getElementById("endScreen").style.display = "flex";
         document.getElementById("topRightButtons").style.display = "none";
         document.body.removeChild(canvas);
