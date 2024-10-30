@@ -64,6 +64,8 @@ const backgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw
 const gameMapBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/gameMap-Background.avif"; // Replace with your background image URL for the game map screen
 const gameBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/NightSky-Background.jpg"; // Replace with your background image URL for the game screen
 const cloudImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/cloud-png.webp"; // Replace with your cloud image URL
+const lunaImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/luna.png"; // Replace with the actual URL for Luna's image
+const solaraImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/solara.png"; // Replace with the actual URL for Solara's image
 
 function createCanvas(level) {
     const canvas = document.createElement("canvas");
@@ -78,11 +80,16 @@ function createCanvas(level) {
     const cloudImage = new Image();
     cloudImage.src = cloudImageURL;
 
+    const lunaImage = new Image();
+    lunaImage.src = lunaImageURL;
+
+    const solaraImage = new Image();
+    solaraImage.src = solaraImageURL;
+
     const blueSquare = {
         x: level === 1 ? 50 : 50, // Adjusted spawn point for Luna if level 1
         y: level === 1 ? canvas.height - 250 : canvas.height - 50, // Adjusted spawn point for Luna if level 1
         size: 30,
-        color: "lightblue",
         speedX: 0,
         speedY: 0,
         gravity: 0.5,
@@ -94,7 +101,6 @@ function createCanvas(level) {
         x: level === 1 ? 200 : 150, // Adjusted spawn point for Solara if level 1
         y: canvas.height - 50, // Adjusted spawn point for Solara if level 1
         size: 30,
-        color: "red",
         speedX: 0,
         speedY: 0,
         gravity: 0.5,
@@ -188,13 +194,11 @@ function createCanvas(level) {
             }
         });
 
-        // Draw blue square
-        context.fillStyle = blueSquare.color;
-        context.fillRect(blueSquare.x, blueSquare.y, blueSquare.size, blueSquare.size);
+        // Draw Luna image
+        context.drawImage(lunaImage, blueSquare.x, blueSquare.y, blueSquare.size, blueSquare.size);
 
-        // Draw red square
-        context.fillStyle = redSquare.color;
-        context.fillRect(redSquare.x, redSquare.y, redSquare.size, redSquare.size);
+        // Draw Solara image
+        context.drawImage(solaraImage, redSquare.x, redSquare.y, redSquare.size, redSquare.size);
 
         requestAnimationFrame(update);
     }
