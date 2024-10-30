@@ -11,7 +11,7 @@
         align-items: center;
         background-color: #f1f1f1;
     }
-    #titleScreen, #gameMap {
+    #titleScreen, #gameMap, #endScreen {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -24,13 +24,13 @@
         color: white;
         font-family: Arial, sans-serif;
     }
-    #startButton, .levelButton {
+    #startButton, .levelButton, #retryButton, #menuButton {
         padding: 10px 20px;
         font-size: 20px;
         margin-top: 20px;
         cursor: pointer;
     }
-    .levelButton {
+    .levelButton, #retryButton, #menuButton {
         background-color: #4CAF50;
         color: white;
         border: none;
@@ -43,6 +43,13 @@
         width: 100%;
         height: 100%;
         border: none;
+    }
+    #topRightButtons {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        flex-direction: column;
     }
 </style>
 </head>
@@ -59,6 +66,15 @@
     <button class="levelButton" data-level="4">Level 4</button>
     <button class="levelButton" data-level="5">Level 5</button>
 </div>
+<div id="endScreen" style="display: none;">
+    <h1>Game Over</h1>
+    <button id="retryButton">Retry</button>
+    <button id="menuButton">Main Menu</button>
+</div>
+<div id="topRightButtons" style="display: none;">
+    <button id="retryButtonTop">Retry</button>
+    <button id="menuButtonTop">Main Menu</button>
+</div>
 <script>
 const backgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/SunMoon-Background.webp"; // Replace with your background image URL for the title screen
 const gameMapBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/NightSky-Background.jpg"; // Replace with your background image URL for the game map screen
@@ -68,6 +84,8 @@ const lunaImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/
 const solaraImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/solara.png"; // Replace with the actual URL for Solara's image
 const redWaterImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/red water.jpg"; // Replace with the actual URL for red water image
 const blueWaterImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/water.jpg"; // Replace with the actual URL for blue water image
+
+let currentLevel = 1;
 
 function createCanvas(level) {
     const canvas = document.createElement("canvas");
@@ -177,7 +195,9 @@ function createCanvas(level) {
 
     function endGame(message) {
         alert(message);
-        window.location.reload();
+        document.getElementById("endScreen").style.display = "flex";
+        document.getElementById("topRightButtons").style.display = "none";
+        document.body.removeChild(canvas);
     }
 
     function update() {
@@ -397,14 +417,37 @@ document.getElementById("startButton").addEventListener("click", () => {
 
 document.querySelectorAll(".levelButton").forEach(button => {
     button.addEventListener("click", () => {
-        const level = parseInt(button.getAttribute("data-level"));
+        currentLevel = parseInt(button.getAttribute("data-level"));
         document.getElementById("gameMap").style.display = "none";
-        createCanvas(level);
+        document.getElementById("topRightButtons").style.display = "flex";
+        createCanvas(currentLevel);
     });
+});
+
+document.getElementById("retryButton").addEventListener("click", () => {
+    document.getElementById("endScreen").style.display = "none";
+    document.getElementById("topRightButtons").style.display = "flex";
+    createCanvas(currentLevel);
+});
+
+document.getElementById("menuButton").addEventListener("click", () => {
+    document.getElementById("endScreen").style.display = "none";
+    document.getElementById("gameMap").style.display = "flex";
+});
+
+document.getElementById("retryButtonTop").addEventListener("click", () => {
+    document.getElementById("topRightButtons").style.display = "flex";
+    createCanvas(currentLevel);
+});
+
+document.getElementById("menuButtonTop").addEventListener("click", () => {
+    document.getElementById("topRightButtons").style.display = "none";
+    document.getElementById("gameMap").style.display = "flex";
 });
 
 document.getElementById("titleScreen").style.backgroundImage = `url(${backgroundImageURL})`;
 document.getElementById("gameMap").style.backgroundImage = `url(${gameMapBackgroundImageURL})`;
+document.getElementById("endScreen").style.backgroundImage = `url(${backgroundImageURL})`;
 </script>
 </body>
 </html>
