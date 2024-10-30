@@ -214,10 +214,15 @@ function createCanvas(level) {
             if (blueSquare.x < cloud.x + cloud.width &&
                 blueSquare.x + blueSquare.size > cloud.x &&
                 blueSquare.y + blueSquare.size > cloud.y &&
-                blueSquare.y + blueSquare.size < cloud.y + cloud.height) {
-                blueSquare.y = cloud.y - blueSquare.size;
-                blueSquare.speedY = 0;
-                blueSquare.onGround = true;
+                blueSquare.y < cloud.y + cloud.height) {
+                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the clouds
+                    blueSquare.y = cloud.y - blueSquare.size;
+                    blueSquare.speedY = 0;
+                    blueSquare.onGround = true;
+                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the cloud
+                    blueSquare.y = cloud.y + cloud.height;
+                    blueSquare.speedY = 0;
+                }
             }
         });
 
@@ -226,10 +231,15 @@ function createCanvas(level) {
             if (blueSquare.x < water.x + water.width &&
                 blueSquare.x + blueSquare.size > water.x &&
                 blueSquare.y + blueSquare.size > water.y &&
-                blueSquare.y + blueSquare.size < water.y + water.height) {
-                blueSquare.y = water.y - blueSquare.size;
-                blueSquare.speedY = 0;
-                blueSquare.onGround = true;
+                blueSquare.y < water.y + water.height) {
+                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the water
+                    blueSquare.y = water.y - blueSquare.size;
+                    blueSquare.speedY = 0;
+                    blueSquare.onGround = true;
+                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the water
+                    blueSquare.y = water.y + water.height;
+                    blueSquare.speedY = 0;
+                }
             }
         });
 
@@ -238,10 +248,15 @@ function createCanvas(level) {
             if (blueSquare.x < water.x + water.width &&
                 blueSquare.x + blueSquare.size > water.x &&
                 blueSquare.y + blueSquare.size > water.y &&
-                blueSquare.y + blueSquare.size < water.y + water.height) {
-                blueSquare.y = water.y - blueSquare.size;
-                blueSquare.speedY = 0;
-                blueSquare.onGround = true;
+                blueSquare.y < water.y + water.height) {
+                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the water
+                    blueSquare.y = water.y - blueSquare.size;
+                    blueSquare.speedY = 0;
+                    blueSquare.onGround = true;
+                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the water
+                    blueSquare.y = water.y + water.height;
+                    blueSquare.speedY = 0;
+                }
             }
         });
 
@@ -261,10 +276,15 @@ function createCanvas(level) {
             if (redSquare.x < cloud.x + cloud.width &&
                 redSquare.x + redSquare.size > cloud.x &&
                 redSquare.y + redSquare.size > cloud.y &&
-                redSquare.y + redSquare.size < cloud.y + cloud.height) {
-                redSquare.y = cloud.y - redSquare.size;
-                redSquare.speedY = 0;
-                redSquare.onGround = true;
+                redSquare.y < cloud.y + cloud.height) {
+                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the clouds
+                    redSquare.y = cloud.y - redSquare.size;
+                    redSquare.speedY = 0;
+                    redSquare.onGround = true;
+                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the cloud
+                    redSquare.y = cloud.y + cloud.height;
+                    redSquare.speedY = 0;
+                }
             }
         });
 
@@ -273,10 +293,15 @@ function createCanvas(level) {
             if (redSquare.x < water.x + water.width &&
                 redSquare.x + redSquare.size > water.x &&
                 redSquare.y + redSquare.size > water.y &&
-                redSquare.y + redSquare.size < water.y + water.height) {
-                redSquare.y = water.y - redSquare.size;
-                redSquare.speedY = 0;
-                redSquare.onGround = true;
+                redSquare.y < water.y + water.height) {
+                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the water
+                    redSquare.y = water.y - redSquare.size;
+                    redSquare.speedY = 0;
+                    redSquare.onGround = true;
+                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the water
+                    redSquare.y = water.y + water.height;
+                    redSquare.speedY = 0;
+                }
             }
         });
 
@@ -285,10 +310,15 @@ function createCanvas(level) {
             if (redSquare.x < water.x + water.width &&
                 redSquare.x + redSquare.size > water.x &&
                 redSquare.y + redSquare.size > water.y &&
-                redSquare.y + redSquare.size < water.y + water.height) {
-                redSquare.y = water.y - redSquare.size;
-                redSquare.speedY = 0;
-                redSquare.onGround = true;
+                redSquare.y < water.y + water.height) {
+                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the water
+                    redSquare.y = water.y - redSquare.size;
+                    redSquare.speedY = 0;
+                    redSquare.onGround = true;
+                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the water
+                    redSquare.y = water.y + water.height;
+                    redSquare.speedY = 0;
+                }
             }
         });
 
