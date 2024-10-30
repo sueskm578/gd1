@@ -64,8 +64,6 @@ const backgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw
 const gameMapBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/gameMap-Background.avif"; // Replace with your background image URL for the game map screen
 const gameBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/NightSky-Background.jpg"; // Replace with your background image URL for the game screen
 const cloudImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/cloud-png.webp"; // Replace with your cloud image URL
-const lunaImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/luna.png"; // Replace with your Luna image URL
-const solaraImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/solara.png"; // Replace with your Solara image URL
 
 function createCanvas(level) {
     const canvas = document.createElement("canvas");
@@ -80,16 +78,11 @@ function createCanvas(level) {
     const cloudImage = new Image();
     cloudImage.src = cloudImageURL;
 
-    const lunaImage = new Image();
-    lunaImage.src = lunaImageURL;
-
-    const solaraImage = new Image();
-    solaraImage.src = solaraImageURL;
-
     const blueSquare = {
-        x: level === 1 ? 0 : 50, // Adjusted spawn point for Luna if level 1
-        y: level === 1 ? canvas.height - 300 : canvas.height - 100, // Lowered spawn point for Luna
-        size: 150, // Increased size for Luna
+        x: level === 1 ? 50 : 50, // Adjusted spawn point for Luna if level 1
+        y: level === 1 ? canvas.height - 250 : canvas.height - 50, // Adjusted spawn point for Luna if level 1
+        size: 30,
+        color: "lightblue",
         speedX: 0,
         speedY: 0,
         gravity: 0.5,
@@ -98,9 +91,10 @@ function createCanvas(level) {
     };
 
     const redSquare = {
-        x: level === 1 ? 0 : 150, // Adjusted spawn point for Solara if level 1
-        y: canvas.height - 100, // Lowered spawn point for Solara
-        size: 150, // Increased size for Solara
+        x: level === 1 ? 200 : 150, // Adjusted spawn point for Solara if level 1
+        y: canvas.height - 50, // Adjusted spawn point for Solara if level 1
+        size: 30,
+        color: "red",
         speedX: 0,
         speedY: 0,
         gravity: 0.5,
@@ -164,7 +158,7 @@ function createCanvas(level) {
             if (blueSquare.x < cloud.x + cloud.width &&
                 blueSquare.x + blueSquare.size > cloud.x &&
                 blueSquare.y + blueSquare.size > cloud.y &&
-                blueSquare.y + blueSquare.size < cloud.y + cloud.height) { // Adjusted bounding box
+                blueSquare.y + blueSquare.size < cloud.y + cloud.height) {
                 blueSquare.y = cloud.y - blueSquare.size;
                 blueSquare.speedY = 0;
                 blueSquare.onGround = true;
@@ -187,18 +181,20 @@ function createCanvas(level) {
             if (redSquare.x < cloud.x + cloud.width &&
                 redSquare.x + redSquare.size > cloud.x &&
                 redSquare.y + redSquare.size > cloud.y &&
-                redSquare.y + redSquare.size < cloud.y + cloud.height) { // Adjusted bounding box
+                redSquare.y + redSquare.size < cloud.y + cloud.height) {
                 redSquare.y = cloud.y - redSquare.size;
                 redSquare.speedY = 0;
                 redSquare.onGround = true;
             }
         });
 
-        // Draw blue square (Luna)
-        context.drawImage(lunaImage, blueSquare.x, blueSquare.y, blueSquare.size, blueSquare.size);
+        // Draw blue square
+        context.fillStyle = blueSquare.color;
+        context.fillRect(blueSquare.x, blueSquare.y, blueSquare.size, blueSquare.size);
 
-        // Draw red square (Solara)
-        context.drawImage(solaraImage, redSquare.x, redSquare.y, redSquare.size, redSquare.size);
+        // Draw red square
+        context.fillStyle = redSquare.color;
+        context.fillRect(redSquare.x, redSquare.y, redSquare.size, redSquare.size);
 
         requestAnimationFrame(update);
     }
