@@ -17,31 +17,27 @@
         const createScene = () => {
             const scene = new BABYLON.Scene(engine);
 
-         
             const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, BABYLON.Vector3.Zero(), scene);
             camera.attachControl(canvas, true);
 
-        
             const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
 
-  
-const boardSize = 8;
-const tileSize = 1;
+            const boardSize = 8;
+            const tileSize = 1;
 
-for (let row = 0; row < boardSize; row++) {
-    for (let col = 0; col < boardSize; col++) {
-        const tile = BABYLON.MeshBuilder.CreateBox(`tile${row}_${col}`, {size: tileSize}, scene);
-        tile.position = new BABYLON.Vector3(row - boardSize / 2 + 0.5, 0, col - boardSize / 2 + 0.5);
-        
-        const tileMaterial = new BABYLON.StandardMaterial(`tileMat${row}_${col}`, scene);
-        
-        // Update colors here
-        tileMaterial.diffuseColor = (row + col) % 2 === 0 ? new BABYLON.Color3(0.8, 0.5, 0.3) : new BABYLON.Color3(0.2, 0.4, 0.6);
-        
-        tile.material = tileMaterial;
-    }
-}
-
+            for (let row = 0; row < boardSize; row++) {
+                for (let col = 0; col < boardSize; col++) {
+                    const tile = BABYLON.MeshBuilder.CreateBox(`tile${row}_${col}`, {size: tileSize}, scene);
+                    tile.position = new BABYLON.Vector3(row - boardSize / 2 + 0.5, 0, col - boardSize / 2 + 0.5);
+                    
+                    const tileMaterial = new BABYLON.StandardMaterial(`tileMat${row}_${col}`, scene);
+                    
+                    // Update colors here
+                    tileMaterial.diffuseColor = (row + col) % 2 === 0 ? new BABYLON.Color3(0.5, 0, 0.5) : new BABYLON.Color3(0, 1, 0);
+                    
+                    tile.material = tileMaterial;
+                }
+            }
 
             return scene;
         };
@@ -92,29 +88,24 @@ for (let row = 0; row < boardSize; row++) {
             pieces.push(createPiece("pawn", new BABYLON.Vector3(i - 3.5, 0.5, -2.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
         }
 
-     
         pieces.push(createPiece("rook", new BABYLON.Vector3(-3.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
         pieces.push(createPiece("rook", new BABYLON.Vector3(3.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
         pieces.push(createPiece("rook", new BABYLON.Vector3(-3.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
         pieces.push(createPiece("rook", new BABYLON.Vector3(3.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
 
-     
         pieces.push(createPiece("knight", new BABYLON.Vector3(-2.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
         pieces.push(createPiece("knight", new BABYLON.Vector3(2.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
         pieces.push(createPiece("knight", new BABYLON.Vector3(-2.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
         pieces.push(createPiece("knight", new BABYLON.Vector3(2.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
 
-       
         pieces.push(createPiece("bishop", new BABYLON.Vector3(-1.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
         pieces.push(createPiece("bishop", new BABYLON.Vector3(1.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
         pieces.push(createPiece("bishop", new BABYLON.Vector3(-1.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
         pieces.push(createPiece("bishop", new BABYLON.Vector3(1.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
 
-        // Place queens
         pieces.push(createPiece("queen", new BABYLON.Vector3(-0.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
         pieces.push(createPiece("queen", new BABYLON.Vector3(-0.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
 
-       
         pieces.push(createPiece("king", new BABYLON.Vector3(0.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
         pieces.push(createPiece("king", new BABYLON.Vector3(0.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
 
@@ -247,7 +238,7 @@ for (let row = 0; row < boardSize; row++) {
             }
         }
 
-                   // Function to export the chessboard and pieces as STL
+        // Function to export the chessboard and pieces as STL
         document.getElementById("exportButton").addEventListener("click", () => {
             const stlExporter = new BABYLON.STLExport();
             const meshToExport = [];
