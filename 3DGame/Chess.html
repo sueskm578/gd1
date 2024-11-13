@@ -8,11 +8,8 @@
     <script src="https://cdn.babylonjs.com/gui/babylon.gui.js"></script>
 </head>
 <body>
-    <div id="startScreen" style="position: absolute; width: 100%; height: 100%; background-color: black; display: flex; justify-content: center; align-items: center;">
-        <button id="startButton" style="font-size: 24px; padding: 10px 20px;">Start Game</button>
-    </div>
-    <canvas id="renderCanvas" style="width: 100%; height: 100%; display: none;"></canvas>
-    <button id="exportButton" style="position: absolute; top: 10px; left: 10px; display: none;">Export STL</button>
+    <canvas id="renderCanvas" style="width: 100%; height: 100%;"></canvas>
+    <button id="exportButton" style="position: absolute; top: 10px; left: 10px;">Export STL</button>
     <script>
         const canvas = document.getElementById("renderCanvas");
         const engine = new BABYLON.Engine(canvas, true);
@@ -123,7 +120,7 @@
         text1.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
         text1.text = "White's Turn";
         text1.color = "White";
-        text1.fontSize = 20; // Lowered the font size
+        text1.fontSize = 50;
         advancedTexture.addControl(text1);
 
         scene.onPointerDown = (evt, pickResult) => {
@@ -268,13 +265,6 @@
         // Resize
         window.addEventListener("resize", () => {
             engine.resize();
-        });
-
-        // Start game button functionality
-        document.getElementById("startButton").addEventListener("click", () => {
-            document.getElementById("startScreen").style.display = "none";
-            document.getElementById("renderCanvas").style.display = "block";
-            document.getElementById("exportButton").style.display = "block";
         });
     </script>
 </body>
