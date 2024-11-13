@@ -21,7 +21,7 @@
             scene.clearColor = new BABYLON.Color3(0, 0, 0);
 
             const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, BABYLON.Vector3.Zero(), scene);
-            camera.attachControl(canvas, false); // Disable camera controls
+            camera.attachControl(canvas, true);
 
             const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
 
@@ -123,6 +123,25 @@
         text1.fontSize = 50;
         advancedTexture.addControl(text1);
 
+        // Add countdown timer
+        var timerText = new BABYLON.GUI.TextBlock();
+        timerText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        timerText.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        timerText.text = "05:00";
+        timerText.color = "White";
+        timerText.fontSize = 50;
+        advancedTexture.addControl(timerText);
+
+        let countdown = 300; // 5 minutes in seconds
+        setInterval(() => {
+            if (countdown > 0) {
+                countdown--;
+                let minutes = Math.floor(countdown / 60);
+                let seconds = countdown % 60;
+                timerText.text = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }, 1000);
+
         scene.onPointerDown = (evt, pickResult) => {
             if (selectedPiece) {
                 if (selectedPiece.material.diffuseColor.equals(playerTurn)) {
@@ -146,7 +165,6 @@
                             let rgbValue = selectedPiece.material.diffuseColor.equals(new BABYLON.Color3(1, 1, 1)) ? 0.5 : 1;
                             playerTurn.set(rgbValue, rgbValue, rgbValue);
                             text1.text = playerTurn.equals(new BABYLON.Color3(1, 1, 1)) ? "White's Turn" : "Purple's Turn";
-                            updateCameraPosition();
                         }
                         selectedPiece = null;
                     } else {
@@ -155,16 +173,6 @@
                 }
             }
         };
-
-        function updateCameraPosition() {
-            if (playerTurn.equals(new BABYLON.Color3(1, 1, 1))) {
-                camera.setPosition(new BABYLON.Vector3(0, 10, -15));
-                camera.setTarget(new BABYLON.Vector3(0, 0, 0));
-            } else {
-                camera.setPosition(new BABYLON.Vector3(0, 10, 15));
-                camera.setTarget(new BABYLON.Vector3(0, 0, 0));
-            }
-        }
 
         function canMove(piece, destination) {
             if (findPiece(destination) && piece.material.diffuseColor.equals(findPiece(destination).material.diffuseColor)) {
