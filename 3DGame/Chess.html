@@ -17,30 +17,29 @@
         const createScene = () => {
             const scene = new BABYLON.Scene(engine);
 
-            // Set background color to black
-            scene.clearColor = new BABYLON.Color3(0, 0, 0);
-
+         
             const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, BABYLON.Vector3.Zero(), scene);
             camera.attachControl(canvas, true);
 
+        
             const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
 
-            const boardSize = 8;
-            const tileSize = 1;
-
-            for (let row = 0; row < boardSize; row++) {
-                for (let col = 0; col < boardSize; col++) {
-                    const tile = BABYLON.MeshBuilder.CreateBox(`tile${row}_${col}`, {size: tileSize}, scene);
-                    tile.position = new BABYLON.Vector3(row - boardSize / 2 + 0.5, 0, col - boardSize / 2 + 0.5);
-                    
-                    const tileMaterial = new BABYLON.StandardMaterial(`tileMat${row}_${col}`, scene);
-                    
-                    // Update colors here
-                    tileMaterial.diffuseColor = (row + col) % 2 === 0 ? new BABYLON.Color3(1, 1, 1) : new BABYLON.Color3(0.5, 0, 0.5);
-                    
-                    tile.material = tileMaterial;
-                }
-            }
+  
+const boardSize = 8;
+const tileSize = 1;
+for (let row = 0; row < boardSize; row++) {
+    for (let col = 0; col < boardSize; col++) {
+        const tile = BABYLON.MeshBuilder.CreateBox(`tile${row}_${col}`, {size: tileSize}, scene);
+        tile.position = new BABYLON.Vector3(row - boardSize / 2 + 0.5, 0, col - boardSize / 2 + 0.5);
+        
+        const tileMaterial = new BABYLON.StandardMaterial(`tileMat${row}_${col}`, scene);
+        
+        // Update colors here
+        tileMaterial.diffuseColor = (row + col) % 2 === 0 ? new BABYLON.Color3(0.8, 0.5, 0.3) : new BABYLON.Color3(0.2, 0.4, 0.6);
+        
+        tile.material = tileMaterial;
+    }
+}
 
             return scene;
         };
@@ -82,217 +81,3 @@
             }));
 
             return piece;
-        };
-
-        const pieces = [];
-       
-        for (let i = 0; i < 8; i++) {
-            pieces.push(createPiece("pawn", new BABYLON.Vector3(i - 3.5, 0.5, 2.5), new BABYLON.Color3(1, 1, 1)));
-            pieces.push(createPiece("pawn", new BABYLON.Vector3(i - 3.5, 0.5, -2.5), new BABYLON.Color3(0.5, 0, 0.5)));
-        }
-
-        pieces.push(createPiece("rook", new BABYLON.Vector3(-3.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
-        pieces.push(createPiece("rook", new BABYLON.Vector3(3.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
-        pieces.push(createPiece("rook", new BABYLON.Vector3(-3.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
-        pieces.push(createPiece("rook", new BABYLON.Vector3(3.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
-
-        pieces.push(createPiece("knight", new BABYLON.Vector3(-2.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
-        pieces.push(createPiece("knight", new BABYLON.Vector3(2.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
-        pieces.push(createPiece("knight", new BABYLON.Vector3(-2.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
-        pieces.push(createPiece("knight", new BABYLON.Vector3(2.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
-
-        pieces.push(createPiece("bishop", new BABYLON.Vector3(-1.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
-        pieces.push(createPiece("bishop", new BABYLON.Vector3(1.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
-        pieces.push(createPiece("bishop", new BABYLON.Vector3(-1.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
-        pieces.push(createPiece("bishop", new BABYLON.Vector3(1.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
-
-        pieces.push(createPiece("queen", new BABYLON.Vector3(-0.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
-        pieces.push(createPiece("queen", new BABYLON.Vector3(-0.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
-
-        pieces.push(createPiece("king", new BABYLON.Vector3(0.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
-        pieces.push(createPiece("king", new BABYLON.Vector3(0.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
-
-        let selectedPiece = null;
-        let playerTurn = new BABYLON.Color3(1, 1, 1);
-        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-
-        var text1 = new BABYLON.GUI.TextBlock();
-        text1.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        text1.text = "White's Turn";
-        text1.color = "White";
-        text1.fontSize = 50;
-        advancedTexture.addControl(text1);
-
-        // Add countdown timer
-        var timerText = new BABYLON.GUI.TextBlock();
-        timerText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-        timerText.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        timerText.text = "05:00";
-        timerText.color = "White";
-        timerText.fontSize = 50;
-        advancedTexture.addControl(timerText);
-
-        let countdown = 300; // 5 minutes in seconds
-        let timerStarted = false;
-
-        function startTimer() {
-            if (!timerStarted) {
-                timerStarted = true;
-                setInterval(() => {
-                    if (countdown > 0) {
-                        countdown--;
-                        let minutes = Math.floor(countdown / 60);
-                        let seconds = countdown % 60;
-                        timerText.text = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                    }
-                }, 1000);
-            }
-        }
-
-        scene.onPointerDown = (evt, pickResult) => {
-            if (selectedPiece) {
-                if (selectedPiece.material.diffuseColor.equals(playerTurn)) {
-                    const pickedObject = pickResult.pickedMesh;
-                    if (pickedObject && canMove(selectedPiece, pickedObject) && !(pickedObject.position.x == selectedPiece.x && pickedObject.position.z == selectedPiece.position.z)) { 
-                        startTimer(); // Start the timer when the first move is made
-                        let newPosX = pickedObject.position.x;
-                        let newPosZ = pickedObject.position.z;
-                        let capturedName = pickedObject.name;
-                        if (pickedObject.position.y == 0.5) {
-                            pickedObject.dispose();
-                        }
-                        else if (pickedObject.name.startsWith("tile") && findPiece(pickedObject)) {
-                            findPiece(pickedObject).dispose();
-                        }
-                        selectedPiece.position = new BABYLON.Vector3(newPosX, 0.5, newPosZ);
-                        if (capturedName == "king") {
-                            let winnerName = playerTurn.equals(new BABYLON.Color3(1, 1, 1)) ? "White" : "Purple";
-                            playerTurn.set(0, 0, 0);
-                            text1.text = winnerName + " Wins!";
-                        } else {
-                            let rgbValue = selectedPiece.material.diffuseColor.equals(new BABYLON.Color3(1, 1, 1)) ? 0.5 : 1;
-                            playerTurn.set(rgbValue, rgbValue, rgbValue);
-                            text1.text = playerTurn.equals(new BABYLON.Color3(1, 1, 1)) ? "White's Turn" : "Purple's Turn";
-                        }
-                        selectedPiece = null;
-                    } else {
-                        selectedPiece=null;
-                    }
-                }
-            }
-        };
-
-        function canMove(piece, destination) {
-            if (findPiece(destination) && piece.material.diffuseColor.equals(findPiece(destination).material.diffuseColor)) {
-                return false;
-            }
-            else if (piece.name == "knight") {
-                if (((piece.position.x == destination.position.x + 1 || piece.position.x == destination.position.x - 1) && (piece.position.z == destination.position.z + 2 || piece.position.z == destination.position.z - 2)) || ((piece.position.x == destination.position.x + 2 || piece.position.x == destination.position.x - 2) && (piece.position.z == destination.position.z + 1 || piece.position.z == destination.position.z - 1))) {
-                    return true;
-                }
-            } else if (piece.name == "bishop") {
-                if (((piece.position.x - destination.position.x) == (piece.position.z - destination.position.z)) || ((piece.position.x - destination.position.x) == -(piece.position.z - destination.position.z))) {
-                    return !willCollide(piece, destination);
-                }
-            } else if (piece.name == "pawn" && playerTurn.equals(new BABYLON.Color3(1, 1, 1))) {
-                if ((destination.position.x == piece.position.x && !getPieceAtPosition(destination.position.x, destination.position.z) && (destination.position.z == piece.position.z - 1 || (destination.position.z == piece.position.z - 2 && piece.position.z == 2.5 && !willCollide(piece, destination))) || (destination.position.z == piece.position.z - 1 && (destination.position.x == piece.position.x - 1 || destination.position.x == piece.position.x + 1) && getPieceAtPosition(destination.position.x, destination.position.z)))) {
-                    return true;
-                }
-            } else if (piece.name == "pawn" && !playerTurn.equals(new BABYLON.Color3(1, 1, 1))) {
-                if ((destination.position.x == piece.position.x && !getPieceAtPosition(destination.position.x, destination.position.z) && (destination.position.z == piece.position.z + 1 || (destination.position.z == piece.position.z + 2 && piece.position.z == -2.5 && !willCollide(piece, destination))) || (destination.position.z == piece.position.z + 1 && (destination.position.x == piece.position.x - 1 || destination.position.x == piece.position.x + 1) && getPieceAtPosition(destination.position.x, destination.position.z)))) {
-                    return true;
-                }
-            } else if (piece.name == "king") {
-                if (((destination.position.z == piece.position.z + 1 || destination.position.z == piece.position.z - 1) && (destination.position.x == piece.position.x || destination.position.x == piece.position.x + 1 || destination.position.x == piece.position.x - 1)) || (destination.position.z == piece.position.z && (destination.position.x == piece.position.x + 1 || destination.position.x == piece.position.x - 1))) {
-                    return true;
-                }
-            } else if (piece.name == "queen") {
-                if ((destination.position.z == piece.position.z && destination.position.x != piece.position.x) || (destination.position.x == piece.position.x && destination.position.z != piece.position.z) || ((destination.position.z - piece.position.z) == (destination.position.x - piece.position.x)) || ((destination.position.z - piece.position.z) == -(destination.position.x - piece.position.x))) {
-                    return !willCollide(piece, destination);
-                }
-            } else if (piece.name == "rook") {
-                if ((destination.position.z == piece.position.z && destination.position.x != piece.position.x) || (destination.position.x == piece.position.x && destination.position.z != piece.position.z)) {
-                    return !willCollide(piece, destination);
-                }
-            }
-            return false;
-        }
-
-        function willCollide(piece, destination) {
-            let startPos = piece.position;
-            let dirX = Math.sign(destination.position.x - piece.position.x);
-            let dirZ = Math.sign(destination.position.z - piece.position.z);
-            let distX = Math.abs(destination.position.x - piece.position.x - dirX); // These two values are one space closer to the piece from the destination
-            let distZ = Math.abs(destination.position.z - piece.position.z - dirZ);
-            if (piece.position.z == destination.position.z) { // horizontal
-                for (let i = 1; i <= distX; i++) {
-                    if (getPieceAtPosition(startPos.x + i * dirX, startPos.z)) {
-                        return true;
-                    }
-                }
-            } else if (piece.position.x == destination.position.x) { // vertical something wrong here!!!!!
-                for (let i = 1; i <= distZ; i++) {
-                    if (getPieceAtPosition(startPos.x, startPos.z + i * dirZ)) {
-                        return true;
-                    }
-                }
-            } else if (((destination.position.z - piece.position.z) / (destination.position.x - piece.position.x)) != 0) { // diagonal
-                for (let i = 1; i <= distX; i++) {
-                    if (getPieceAtPosition(startPos.x + i * dirX, startPos.z + i * dirZ)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        function getPieceAtPosition(searchX,searchZ) {
-            for (let piece of pieces) {
-                if (piece.position.x == searchX && piece.position.z == searchZ) {
-                    return piece;
-                }
-            }
-            return null;
-        }
-
-        function findPiece(location) {
-            if (location.name.startsWith("tile")) {
-                for (let piece of pieces) {
-                    if (piece.position.x == location.position.x && piece.position.z == location.position.z) {
-                        return piece;
-                    }
-                }
-                return null;
-            } else {
-                return location;
-            }
-        }
-
-        // Function to export the chessboard and pieces as STL
-        document.getElementById("exportButton").addEventListener("click", () => {
-            const stlExporter = new BABYLON.STLExport();
-            const meshToExport = [];
-            
-            // Add chessboard tiles and pieces to the export array
-            pieces.forEach(piece => {
-                meshToExport.push(piece);
-            });
-            engine.stopRender();
-            stlExporter.exportMesh(meshToExport, "chessboard_with_pieces", scene);
-            engine.runRenderLoop(() => {
-                scene.render();
-            });
-        });
-
-        // Render loop
-        engine.runRenderLoop(() => {
-            scene.render();
-        });
-
-        // Resize
-        window.addEventListener("resize", () => {
-            engine.resize();
-        });
-    </script>
-</body>
-</html>
