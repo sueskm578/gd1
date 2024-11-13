@@ -17,6 +17,9 @@
         const createScene = () => {
             const scene = new BABYLON.Scene(engine);
 
+            // Set background color to black
+            scene.clearColor = new BABYLON.Color3(0, 0, 0);
+
             const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, BABYLON.Vector3.Zero(), scene);
             camera.attachControl(canvas, true);
 
@@ -33,7 +36,7 @@
                     const tileMaterial = new BABYLON.StandardMaterial(`tileMat${row}_${col}`, scene);
                     
                     // Update colors here
-                    tileMaterial.diffuseColor = (row + col) % 2 === 0 ? new BABYLON.Color3(0.5, 0, 0.5) : new BABYLON.Color3(0, 1, 0);
+                    tileMaterial.diffuseColor = (row + col) % 2 === 0 ? new BABYLON.Color3(1, 1, 1) : new BABYLON.Color3(0.5, 0, 0.5);
                     
                     tile.material = tileMaterial;
                 }
@@ -82,32 +85,32 @@
         };
 
         const pieces = [];
-
+       
         for (let i = 0; i < 8; i++) {
             pieces.push(createPiece("pawn", new BABYLON.Vector3(i - 3.5, 0.5, 2.5), new BABYLON.Color3(1, 1, 1)));
-            pieces.push(createPiece("pawn", new BABYLON.Vector3(i - 3.5, 0.5, -2.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
+            pieces.push(createPiece("pawn", new BABYLON.Vector3(i - 3.5, 0.5, -2.5), new BABYLON.Color3(0.5, 0, 0.5)));
         }
 
         pieces.push(createPiece("rook", new BABYLON.Vector3(-3.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
         pieces.push(createPiece("rook", new BABYLON.Vector3(3.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
-        pieces.push(createPiece("rook", new BABYLON.Vector3(-3.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
-        pieces.push(createPiece("rook", new BABYLON.Vector3(3.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
+        pieces.push(createPiece("rook", new BABYLON.Vector3(-3.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
+        pieces.push(createPiece("rook", new BABYLON.Vector3(3.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
 
         pieces.push(createPiece("knight", new BABYLON.Vector3(-2.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
         pieces.push(createPiece("knight", new BABYLON.Vector3(2.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
-        pieces.push(createPiece("knight", new BABYLON.Vector3(-2.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
-        pieces.push(createPiece("knight", new BABYLON.Vector3(2.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
+        pieces.push(createPiece("knight", new BABYLON.Vector3(-2.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
+        pieces.push(createPiece("knight", new BABYLON.Vector3(2.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
 
         pieces.push(createPiece("bishop", new BABYLON.Vector3(-1.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
         pieces.push(createPiece("bishop", new BABYLON.Vector3(1.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
-        pieces.push(createPiece("bishop", new BABYLON.Vector3(-1.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
-        pieces.push(createPiece("bishop", new BABYLON.Vector3(1.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
+        pieces.push(createPiece("bishop", new BABYLON.Vector3(-1.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
+        pieces.push(createPiece("bishop", new BABYLON.Vector3(1.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
 
         pieces.push(createPiece("queen", new BABYLON.Vector3(-0.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
-        pieces.push(createPiece("queen", new BABYLON.Vector3(-0.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
+        pieces.push(createPiece("queen", new BABYLON.Vector3(-0.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
 
         pieces.push(createPiece("king", new BABYLON.Vector3(0.5, 0.5, 3.5), new BABYLON.Color3(1, 1, 1)));
-        pieces.push(createPiece("king", new BABYLON.Vector3(0.5, 0.5, -3.5), new BABYLON.Color3(0.3, 0.3, 0.3)));
+        pieces.push(createPiece("king", new BABYLON.Vector3(0.5, 0.5, -3.5), new BABYLON.Color3(0.5, 0, 0.5)));
 
         let selectedPiece = null;
         let playerTurn = new BABYLON.Color3(1, 1, 1);
@@ -120,11 +123,38 @@
         text1.fontSize = 50;
         advancedTexture.addControl(text1);
 
+        // Add countdown timer
+        var timerText = new BABYLON.GUI.TextBlock();
+        timerText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        timerText.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        timerText.text = "05:00";
+        timerText.color = "White";
+        timerText.fontSize = 50;
+        advancedTexture.addControl(timerText);
+
+        let countdown = 300; // 5 minutes in seconds
+        let timerStarted = false;
+
+        function startTimer() {
+            if (!timerStarted) {
+                timerStarted = true;
+                setInterval(() => {
+                    if (countdown > 0) {
+                        countdown--;
+                        let minutes = Math.floor(countdown / 60);
+                        let seconds = countdown % 60;
+                        timerText.text = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    }
+                }, 1000);
+            }
+        }
+
         scene.onPointerDown = (evt, pickResult) => {
             if (selectedPiece) {
                 if (selectedPiece.material.diffuseColor.equals(playerTurn)) {
                     const pickedObject = pickResult.pickedMesh;
                     if (pickedObject && canMove(selectedPiece, pickedObject) && !(pickedObject.position.x == selectedPiece.x && pickedObject.position.z == selectedPiece.position.z)) { 
+                        startTimer(); // Start the timer when the first move is made
                         let newPosX = pickedObject.position.x;
                         let newPosZ = pickedObject.position.z;
                         let capturedName = pickedObject.name;
@@ -136,13 +166,13 @@
                         }
                         selectedPiece.position = new BABYLON.Vector3(newPosX, 0.5, newPosZ);
                         if (capturedName == "king") {
-                            let winnerName = playerTurn.equals(new BABYLON.Color3(1, 1, 1)) ? "White" : "Black";
+                            let winnerName = playerTurn.equals(new BABYLON.Color3(1, 1, 1)) ? "White" : "Purple";
                             playerTurn.set(0, 0, 0);
                             text1.text = winnerName + " Wins!";
                         } else {
-                            let rgbValue = selectedPiece.material.diffuseColor.equals(new BABYLON.Color3(1, 1, 1)) ? 0.3 : 1;
+                            let rgbValue = selectedPiece.material.diffuseColor.equals(new BABYLON.Color3(1, 1, 1)) ? 0.5 : 1;
                             playerTurn.set(rgbValue, rgbValue, rgbValue);
-                            text1.text = playerTurn.equals(new BABYLON.Color3(1, 1, 1)) ? "White's Turn" : "Black's Turn";
+                            text1.text = playerTurn.equals(new BABYLON.Color3(1, 1, 1)) ? "White's Turn" : "Purple's Turn";
                         }
                         selectedPiece = null;
                     } else {
@@ -242,7 +272,7 @@
         document.getElementById("exportButton").addEventListener("click", () => {
             const stlExporter = new BABYLON.STLExport();
             const meshToExport = [];
-
+            
             // Add chessboard tiles and pieces to the export array
             pieces.forEach(piece => {
                 meshToExport.push(piece);
