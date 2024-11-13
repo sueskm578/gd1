@@ -32,7 +32,7 @@
                     const tileMaterial = new BABYLON.StandardMaterial(`tileMat${row}_${col}`, scene);
                     
                     // Update colors here
-                    tileMaterial.diffuseColor = (row + col) % 2 === 0 ? new BABYLON.Color3(0.5, 0, 0.5) : new BABYLON.Color3(0, 1, 0);
+                    tileMaterial.diffuseColor = (row + col) % 2 === 0 ? new BABYLON.Color3(1, 1, 1) : new BABYLON.Color3(0.5, 0, 0.5);
                     
                     tile.material = tileMaterial;
                 }
@@ -75,10 +75,12 @@
             piece.actionManager = new BABYLON.ActionManager(scene);
             piece.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, () => {
                 selectedPiece = piece;
+                startTimer();
             }));
 
             return piece;
         };
+
         const pieces = [];
         for (let i = 0; i < 8; i++) {
             pieces.push(createPiece("pawn", new BABYLON.Vector3(i - 3.5, 0.5, 2.5), new BABYLON.Color3(1, 1, 1)));
@@ -109,6 +111,37 @@
         text1.color = "White";
         text1.fontSize = 50;
         advancedTexture.addControl(text1);
+
+        // Timer
+        var timerText = new BABYLON.GUI.TextBlock();
+        timerText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        timerText.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        timerText.color = "White";
+        timerText.fontSize = 50;
+        timerText.top = "10px";
+        timerText.left = "-10px";
+        advancedTexture.addControl(timerText);
+
+        let timer;
+        let timeLeft = 300; // 5 minutes in seconds
+
+        function startTimer() {
+            if (timer) {
+                clearInterval(timer);
+            }
+            timer = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timerText.text = "Time's up!";
+                } else {
+                    timeLeft--;
+                    let minutes = Math.floor(timeLeft / 60);
+                    let seconds = timeLeft % 60;
+                    timerText.text = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                }
+            }, 1000);
+        }
+
         scene.onPointerDown = (evt, pickResult) => {
             if (selectedPiece) {
                 if (selectedPiece.material.diffuseColor.equals(playerTurn)) {
@@ -140,6 +173,7 @@
                 }
             }
         };
+
         function canMove(piece, destination) {
             if (findPiece(destination) && piece.material.diffuseColor.equals(findPiece(destination).material.diffuseColor)) {
                 return false;
@@ -175,6 +209,7 @@
             }
             return false;
         }
+
         function willCollide(piece, destination) {
             let startPos = piece.position;
             let dirX = Math.sign(destination.position.x - piece.position.x);
@@ -202,7 +237,8 @@
             }
             return false;
         }
-        function getPieceAtPosition(searchX,searchZ) {
+
+        function getPieceAtPosition(searchX, searchZ) {
             for (let piece of pieces) {
                 if (piece.position.x == searchX && piece.position.z == searchZ) {
                     return piece;
@@ -210,6 +246,7 @@
             }
             return null;
         }
+
         function findPiece(location) {
             if (location.name.startsWith("tile")) {
                 for (let piece of pieces) {
@@ -222,6 +259,7 @@
                 return location;
             }
         }
+
         // Function to export the chessboard and pieces as STL
         document.getElementById("exportButton").addEventListener("click", () => {
             const stlExporter = new BABYLON.STLExport();
@@ -236,10 +274,12 @@
                 scene.render();
             });
         });
+
         // Render loop
         engine.runRenderLoop(() => {
             scene.render();
         });
+
         // Resize
         window.addEventListener("resize", () => {
             engine.resize();
