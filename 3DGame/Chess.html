@@ -133,20 +133,28 @@
         advancedTexture.addControl(timerText);
 
         let countdown = 300; // 5 minutes in seconds
-        setInterval(() => {
-            if (countdown > 0) {
-                countdown--;
-                let minutes = Math.floor(countdown / 60);
-                let seconds = countdown % 60;
-                timerText.text = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        let timerStarted = false;
+
+        function startTimer() {
+            if (!timerStarted) {
+                timerStarted = true;
+                setInterval(() => {
+                    if (countdown > 0) {
+                        countdown--;
+                        let minutes = Math.floor(countdown / 60);
+                        let seconds = countdown % 60;
+                        timerText.text = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    }
+                }, 1000);
             }
-        }, 1000);
+        }
 
         scene.onPointerDown = (evt, pickResult) => {
             if (selectedPiece) {
                 if (selectedPiece.material.diffuseColor.equals(playerTurn)) {
                     const pickedObject = pickResult.pickedMesh;
                     if (pickedObject && canMove(selectedPiece, pickedObject) && !(pickedObject.position.x == selectedPiece.x && pickedObject.position.z == selectedPiece.position.z)) { 
+                        startTimer(); // Start the timer when the first move is made
                         let newPosX = pickedObject.position.x;
                         let newPosZ = pickedObject.position.z;
                         let capturedName = pickedObject.name;
