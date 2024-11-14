@@ -114,11 +114,12 @@
 
         // Timer
         var timerText = new BABYLON.GUI.TextBlock();
-        timerText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+        timerText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
         timerText.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
         timerText.color = "White";
         timerText.fontSize = 50;
-        timerText.top = "60px"; // Adjust the position to be under the player turn indicator
+        timerText.top = "10px";
+        timerText.left = "-10px";
         advancedTexture.addControl(timerText);
 
         let timer;
