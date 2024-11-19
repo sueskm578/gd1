@@ -235,6 +235,15 @@
 
             const wheelLF = wheelRF.clone("wheelLF");
             wheelLF.position.y = -0.2 - 0.035;
+
+            // Move the car
+            let carSpeed = 0.01;
+            scene.onBeforeRenderObservable.add(() => {
+                car.position.z += carSpeed;
+                if (car.position.z > 10 || car.position.z < -10) {
+                    carSpeed = -carSpeed;
+                }
+            });
         };
 
         var scene = createScene();
