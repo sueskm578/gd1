@@ -175,15 +175,15 @@
                 angle += rotationSpeed;
                 sun.position.x = 10 * Math.cos(angle);
                 sun.position.z = 10 * Math.sin(angle);
+                sun.position.y = 10 * Math.sin(angle);
+
                 moon.position.x = 10 * Math.cos(angle + Math.PI);
                 moon.position.z = 10 * Math.sin(angle + Math.PI);
+                moon.position.y = 10 * Math.sin(angle + Math.PI);
 
-                const sunHeight = sun.position.y;
-                const moonHeight = moon.position.y;
-
-                if (sunHeight > 0) {
+                if (sun.position.y > 0) {
                     light.intensity = 1;
-                } else if (moonHeight > 0) {
+                } else if (moon.position.y > 0) {
                     light.intensity = 0.2;
                 }
             });
