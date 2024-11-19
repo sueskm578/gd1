@@ -19,6 +19,8 @@
 
         const createScene = function () {
             const scene = new BABYLON.Scene(engine);
+            scene.autoClear = true; // Enable auto clear
+            scene.clearColor = new BABYLON.Color4(0.5, 0.8, 0.92, 1); // Set a clear color (sky blue)
 
             // Camera and light
             const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 1.5, Math.PI / 2.2, 15, new BABYLON.Vector3(0, 0, 0));
