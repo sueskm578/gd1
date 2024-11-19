@@ -27,8 +27,7 @@
 
             // Green grass ground
             const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 50, height: 50 }, scene);
-            const
- grassMaterial = new BABYLON.StandardMaterial("grassMaterial", scene);
+            const grassMaterial = new BABYLON.StandardMaterial("grassMaterial", scene);
             grassMaterial.diffuseColor = new BABYLON.Color3(0, 1, 0);
             ground.material = grassMaterial;
 
@@ -140,12 +139,64 @@
                 });
             });
 
+            // Add the blocky character walking randomly in the scene
+            BABYLON.SceneLoader.ImportMeshAsync("", "https://models.babylonjs.com/", "blocky.babylon", scene).then((result) => {
+                const blockyCharacter = result.meshes[0]; // The character mesh is the first item in the result array
+
+                // Add walking animation (if the model has it)
+                const walkingAnimation = blockyCharacter.animations.find(anim => anim.name === "Walk");
+                if (walkingAnimation) {
+                    scene.beginAnimation(blockyCharacter, walkingAnimation.from, walkingAnimation.to, true);
+                }
+
+                // Set initial position of the blocky character
+                blockyCharacter.position = new BABYLON.Vector3(0, 0, 0); // Start position (you can adjust)
+
+                // Define movement boundaries
+                const moveBounds = {
+                    minX: -20, maxX: 20,
+                    minZ: -20, maxZ: 20
+                };
+
+                // Function to generate random positions
+                function randomPosition() {
+                    return new BABYLON.Vector3(
+                        Math.random() * (moveBounds.maxX - moveBounds.minX) + moveBounds.minX,
+                        0,  // Keep the blocky character on the ground level
+                        Math.random() * (moveBounds.maxZ - moveBounds.minZ) + moveBounds.minZ
+                    );
+                }
+
+                // Set initial random movement direction
+                let targetPosition = randomPosition();
+                let moveSpeed = 0.1; // Speed of movement
+
+                // Register function to animate the blocky character walking
+                scene.registerBeforeRender(() => {
+                    // Move the character towards the target position
+                    const direction = targetPosition.subtract(blockyCharacter.position);
+                    if (direction.length() > 0.1) {
+                        direction.normalize();
+                        blockyCharacter.position.addInPlace(direction.scale(moveSpeed));
+                    } else {
+                        // If the blocky character reaches the target, choose a new random position
+                        targetPosition = randomPosition();
+                    }
+                });
+            });
+
             return scene;
         };
 
         const scene = createScene();
-        engine.runRenderLoop(() => scene.render());
-        window.addEventListener("resize", () => engine.resize());
+
+        engine.runRenderLoop(function () {
+            scene.render();
+        });
+
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
     </script>
 </body>
 </html>
