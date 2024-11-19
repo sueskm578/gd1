@@ -27,7 +27,9 @@
 
             // Green grass ground
             const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 50, height: 50 }, scene);
-            const grassMaterial = new BABYLON.StandardMaterial("grassMaterial", scene);
+            const
+
+ grassMaterial = new BABYLON.StandardMaterial("grassMaterial", scene);
             grassMaterial.diffuseColor = new BABYLON.Color3(0, 1, 0);
             ground.material = grassMaterial;
 
@@ -132,7 +134,7 @@
                 let carSpeed = 0.05;
                 scene.registerBeforeRender(() => {
                     car.position.z += carSpeed;
-                    car.rotation.y = Math.PI; // Ensure the car faces the direction it is moving
+                    car.rotation.y = Math.PI / 2; // Rotate the car 90 degrees to face the direction it is moving
                     if (car.position.z > 25) {
                         car.position.z = -25;
                     }
