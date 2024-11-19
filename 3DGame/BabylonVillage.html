@@ -11,8 +11,8 @@
     <canvas id="renderCanvas" style="width: 100%; height: 100%;"></canvas>
     <input type="range" id="snowSlider" min="0" max="1000" value="100" style="position: absolute; top: 60px; left: 20px; z-index: 10;">
     <label for="snowSlider" style="position: absolute; top: 40px; left: 20px; z-index: 10;">Snow Intensity</label>
-    <input type="range" id="rotationSpeedSlider" min="0" max="10" value="1" style="position: absolute; top: 80px; left: 20px; z-index: 10;">
-    <label for="rotationSpeedSlider" style="position: absolute; top: 60px; left: 20px; z-index: 10;">Rotation Speed</label>
+    <input type="range" id="rotationSpeedSlider" min="0" max="10" value="1" style="position: absolute; top: 120px; left: 20px; z-index: 10;">
+    <label for="rotationSpeedSlider" style="position: absolute; top: 100px; left: 20px; z-index: 10;">Rotation Speed</label>
     <script>
         const canvas = document.getElementById("renderCanvas");
         const engine = new BABYLON.Engine(canvas, true);
@@ -60,7 +60,7 @@
                 });
             });
 
-     // Create snow particle system
+            // Create snow particle system
             const snowParticleSystem = new BABYLON.ParticleSystem("snow", 1000, scene);
             snowParticleSystem.particleTexture = new BABYLON.Texture("https://www.babylonjs-playground.com/textures/flare.png", scene);
             snowParticleSystem.emitter = new BABYLON.Vector3(0, 10, 0); // Emitter position
@@ -132,6 +132,7 @@
                 let carSpeed = 0.05;
                 scene.registerBeforeRender(() => {
                     car.position.z += carSpeed;
+                    car.rotation.y = Math.PI; // Ensure the car faces the direction it is moving
                     if (car.position.z > 25) {
                         car.position.z = -25;
                     }
