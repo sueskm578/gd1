@@ -160,37 +160,53 @@
             }, 1000);
         }
 
-        scene.onPointerDown = (evt, pickResult) => {
-            if (selectedPiece) {
-                if (selectedPiece.material.diffuseColor.equals(playerTurn)) {
-                    const pickedObject = pickResult.pickedMesh;
-                    if (pickedObject && canMove(selectedPiece, pickedObject) && !(pickedObject.position.x == selectedPiece.x && pickedObject.position.z == selectedPiece.position.z)) { 
-                        let newPosX = pickedObject.position.x;
-                        let newPosZ = pickedObject.position.z;
-                        let capturedName = pickedObject.name;
-                        if (pickedObject.position.y == 0.5) {
-                            pickedObject.dispose();
-                        }
-                        else if (pickedObject.name.startsWith("tile") && findPiece(pickedObject)) {
-                            findPiece(pickedObject).dispose();
-                        }
-                        selectedPiece.position = new BABYLON.Vector3(newPosX, 0.5, newPosZ);
-                        if (capturedName == "king") {
-                            let winnerName = playerTurn.equals(new BABYLON.Color3(1, 1, 1)) ? "White" : "Black";
-                            playerTurn.set(0, 0, 0);
-                            text1.text = winnerName + " Wins!";
-                        } else {
-                            let rgbValue = selectedPiece.material.diffuseColor.equals(new BABYLON.Color3(1, 1, 1)) ? 0.3 : 1;
-                            playerTurn.set(rgbValue, rgbValue, rgbValue);
-                            text1.text = playerTurn.equals(new BABYLON.Color3(1, 1, 1)) ? "White's Turn" : "Black's Turn";
-                        }
-                        selectedPiece = null;
-                    } else {
-                        selectedPiece=null;
-                    }
+       scene.onPointerDown = (evt, pickResult) => {
+    if (selectedPiece) {
+        if (selectedPiece.material.diffuseColor.equals(playerTurn)) {
+            const pickedObject = pickResult.pickedMesh;
+            if (pickedObject && canMove(selectedPiece, pickedObject) && 
+                !(pickedObject.position.x == selectedPiece.x && pickedObject.position.z == selectedPiece.position.z)) {
+                
+                let newPosX = pickedObject.position.x;
+                let newPosZ = pickedObject.position.z;
+                let capturedName = pickedObject.name;
+
+                if (pickedObject.position.y == 0.5) {
+                    // Play capture sound when a piece is captured
+                    captureSound.play();
+                    pickedObject.dispose();
+                } else if (pickedObject.name.startsWith("tile") && findPiece(pickedObject)) {
+                    // Play capture sound when capturing a piece on a tile
+                    captureSound.play();
+                    findPiece(pickedObject).dispose();
+                } else {
+                    // Play move sound for normal moves
+                    moveSound.play();
                 }
+
+                selectedPiece.position = new BABYLON.Vector3(newPosX, 0.5, newPosZ);
+
+                if (capturedName == "king") {
+                    let winnerName = playerTurn.equals(new BABYLON.Color3(1, 1, 1)) ? "White" : "Black";
+                    playerTurn.set(0, 0, 0);
+                    text1.text = winnerName + " Wins!";
+                    
+                    // Play win sound when the king is captured
+                    winSound.play();
+                } else {
+                    let rgbValue = selectedPiece.material.diffuseColor.equals(new BABYLON.Color3(1, 1, 1)) ? 0.3 : 1;
+                    playerTurn.set(rgbValue, rgbValue, rgbValue);
+                    text1.text = playerTurn.equals(new BABYLON.Color3(1, 1, 1)) ? "White's Turn" : "Black's Turn";
+                }
+
+                selectedPiece = null;
+            } else {
+                // Deselect the piece if move is invalid
+                selectedPiece = null;
             }
-        };
+        }
+    }
+};
 
         function canMove(piece, destination) {
             if (findPiece(destination) && piece.material.diffuseColor.equals(findPiece(destination).material.diffuseColor)) {
