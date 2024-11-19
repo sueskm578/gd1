@@ -27,7 +27,8 @@
 
             // Green grass ground
             const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 50, height: 50 }, scene);
-            const grassMaterial = new BABYLON.StandardMaterial("grassMaterial", scene);
+            const
+ grassMaterial = new BABYLON.StandardMaterial("grassMaterial", scene);
             grassMaterial.diffuseColor = new BABYLON.Color3(0, 1, 0);
             ground.material = grassMaterial;
 
@@ -83,42 +84,10 @@
             snowParticleSystem.maxEmitPower = 3;
             snowParticleSystem.updateSpeed = 0.005;
             snowParticleSystem.start();
-
             // Slider to control snow intensity
             const snowSlider = document.getElementById("snowSlider");
             snowSlider.addEventListener("input", (event) => {
                 snowParticleSystem.emitRate = event.target.value;
-            });
-
-            // Load dude (human model)
-            let dude;
-            BABYLON.SceneLoader.ImportMeshAsync("", "https://assets.babylonjs.com/meshes/", "dude.glb", scene).then((result) => {
-                dude = result.meshes[0];
-                dude.position = new BABYLON.Vector3(0, 0, 0); // Starting position
-
-                // Random walking animation
-                const walkingSpeed = 0.1; // Speed of walking
-                const moveDistance = 10; // Distance the dude moves in each step
-
-                // Function to move the dude to a random position
-                const moveDudeRandomly = () => {
-                    const targetX = (Math.random() - 0.5) * moveDistance; // Random target position
-                    const targetZ = (Math.random() - 0.5) * moveDistance; // Random target position
-
-                    const targetPosition = new BABYLON.Vector3(targetX, 0, targetZ);
-                    const moveAnimation = new BABYLON.Animation("move", "position", 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
-                    const keys = [];
-                    keys.push({ frame: 0, value: dude.position });
-                    keys.push({ frame: 100, value: targetPosition });
-                    moveAnimation.setKeys(keys);
-                    dude.animations = [moveAnimation];
-                    scene.beginAnimation(dude, 0, 100, true);
-                };
-
-                // Move the dude randomly every 2-5 seconds
-                setInterval(() => {
-                    moveDudeRandomly();
-                }, Math.random() * 3000 + 2000); // Random interval between 2 and 5 seconds
             });
 
             // Create sun and moon
@@ -144,24 +113,39 @@
             const radius = 20;
             scene.registerBeforeRender(() => {
                 angle += rotationSpeed;
-                sun.position.x = Math.cos(angle) * radius;
-                sun.position.z = Math.sin(angle) * radius;
+                sun.position.x = radius * Math.cos(angle);
+                sun.position.z = radius * Math.sin(angle);
+                sun.position.y = radius * Math.sin(angle);
 
-                moon.position.x = Math.cos(angle + Math.PI) * radius;
-                moon.position.z = Math.sin(angle + Math.PI) * radius;
+                moon.position.x = radius * Math.cos(angle + Math.PI);
+                moon.position.z = radius * Math.sin(angle + Math.PI);
+                moon.position.y = radius * Math.sin(angle + Math.PI);
+
+                light.intensity = sun.position.y > 0 ? 1 : 0.2;
+            });
+
+            // Load and animate car
+            BABYLON.SceneLoader.ImportMeshAsync("", "https://assets.babylonjs.com/meshes/", "car.glb", scene).then((result) => {
+                const car = result.meshes[0];
+                car.scaling = new BABYLON.Vector3(2, 2, 2); // Further increased size to fit the road
+                car.position = new BABYLON.Vector3(0, 0.5, -25);
+
+                let carSpeed = 0.05;
+                scene.registerBeforeRender(() => {
+                    car.position.z += carSpeed;
+                    car.rotation.y = Math.PI / 2; // Rotate the car 90 degrees to face the direction it is moving
+                    if (car.position.z > 25) {
+                        car.position.z = -25;
+                    }
+                });
             });
 
             return scene;
         };
 
         const scene = createScene();
-        engine.runRenderLoop(function () {
-            scene.render();
-        });
-
-        window.addEventListener("resize", function () {
-            engine.resize();
-        });
+        engine.runRenderLoop(() => scene.render());
+        window.addEventListener("resize", () => engine.resize());
     </script>
 </body>
 </html>
