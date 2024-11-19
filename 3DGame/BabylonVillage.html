@@ -195,78 +195,59 @@
         };
 
 const createCar = function (scene) {
-    // Define car body shape
-    const outline = [
-        new BABYLON.Vector3(-0.3, 0, -0.1),
-        new BABYLON.Vector3(0.2, 0, -0.1),
-    ];
+            const outline = [
+                new BABYLON.Vector3(-0.3, 0, -0.1),
+                new BABYLON.Vector3(0.2, 0, -0.1)
+            ];
 
-    // Curved front
-    for (let i = 0; i < 20; i++) {
-        outline.push(new BABYLON.Vector3(
-            0.2 * Math.cos(i * Math.PI / 40),
-            0,
-            0.2 * Math.sin(i * Math.PI / 40) - 0.1
-        ));
-    }
+            for (let i = 0; i < 20; i++) {
+                outline.push(new BABYLON.Vector3(
+                    0.2 * Math.cos(i * Math.PI / 40),
+                    0,
+                    0.2 * Math.sin(i * Math.PI / 40) - 0.1
+                ));
+            }
 
-    // Top and back to starting point
-    outline.push(new BABYLON.Vector3(0, 0, 0.1));
-    outline.push(new BABYLON.Vector3(-0.3, 0, 0.1));
-    outline.push(outline[0]); // Close the loop
+            outline.push(new BABYLON.Vector3(0, 0, 0.1));
+            outline.push(new BABYLON.Vector3(-0.3, 0, 0.1));
+            outline.push(outline[0]); 
 
-    // Create the car body
-    const car = BABYLON.MeshBuilder.ExtrudePolygon("car", { shape: outline, depth: 0.2 }, scene);
-    car.position = new BABYLON.Vector3(0, 0.1, 0);
+            const car = BABYLON.MeshBuilder.ExtrudePolygon("car", { shape: outline, depth: 0.2 }, scene);
+            car.position = new BABYLON.Vector3(2, 0.1, 2);
 
-    // Assign a basic material to the car body
-    const carMaterial = new BABYLON.StandardMaterial("carMaterial", scene);
-    carMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5); // Gray color
-    car.material = carMaterial;
+            const carMaterial = new BABYLON.StandardMaterial("carMaterial", scene);
+            carMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5); 
+            car.material = carMaterial;
 
-    // Create wheels
-    const wheelRB = BABYLON.MeshBuilder.CreateCylinder("wheelRB", { diameter: 0.125, height: 0.05 }, scene);
-    wheelRB.parent = car;
-    wheelRB.position.set(-0.2, -0.035, -0.1);
+            const wheelMaterial = new BABYLON.StandardMaterial("wheelMaterial", scene);
+            wheelMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0); 
 
-    const wheelRF = wheelRB.clone("wheelRF");
-    wheelRF.position.x = 0.1;
+            const wheelRB = BABYLON.MeshBuilder.CreateCylinder("wheelRB", { diameter: 0.125, height: 0.05 }, scene);
+            wheelRB.parent = car;
+            wheelRB.position.set(-0.2, -0.035, -0.1);
+            wheelRB.material = wheelMaterial;
 
-    const wheelLB = wheelRB.clone("wheelLB");
-    wheelLB.position.y = -0.2 - 0.035;
+            const wheelRF = wheelRB.clone("wheelRF");
+            wheelRF.position.x = 0.1;
 
-    const wheelLF = wheelRF.clone("wheelLF");
-    wheelLF.position.y = -0.2 - 0.035;
+            const wheelLB = wheelRB.clone("wheelLB");
+            wheelLB.position.y = -0.2 - 0.035;
 
-    // Assign a material to the wheels
-    const wheelMaterial = new BABYLON.StandardMaterial("wheelMaterial", scene);
-    wheelMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0); // Black color
-    wheelRB.material = wheelMaterial;
-    wheelRF.material = wheelMaterial;
-    wheelLB.material = wheelMaterial;
-    wheelLF.material = wheelMaterial;
-};
-
+            const wheelLF = wheelRF.clone("wheelLF");
+            wheelLF.position.y = -0.2 - 0.035;
+        };
 
         var scene = createScene();
 
         engine.runRenderLoop(function () {
-            scene.render();
+            if (scene) {
+                scene.render();
+            }
         });
 
         window.addEventListener("resize", function () {
             engine.resize();
         });
-
-        // Function to export as GLB
-        function exportToGLB() {
-            BABYLON.GLTF2Export.GLBAsync(scene, "stickman.glb").then((glb) => {
-                glb.downloadFiles();
-            });
-        }
-
-        // Attach export function to the download button
-        document.getElementById("downloadButton").addEventListener("click", exportToGLB);
     </script>
 </body>
 </html>
