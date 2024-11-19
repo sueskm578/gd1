@@ -77,8 +77,7 @@
                 for (let index = 0; index < particles.length; index++) {
                     const particle = particles[index];
                     if (particle.position.y < 0) {
-                        particle.position.y = 0;
-                        particle.velocity = new BABYLON.Vector3(0, 0, 0);
+                        particle.position.y = 10; // Reset particle position to the top
                     }
                 }
             };
@@ -89,13 +88,6 @@
             snowSlider.addEventListener("input", (event) => {
                 snowParticleSystem.emitRate = event.target.value;
             });
-
-            // Create snow layer
-            const snowLayer = BABYLON.MeshBuilder.CreateGround("snowLayer", { width: 50, height: 50 }, scene);
-            const snowMaterial = new BABYLON.StandardMaterial("snowMaterial", scene);
-            snowMaterial.diffuseColor = new BABYLON.Color3(1, 1, 1);
-            snowLayer.material = snowMaterial;
-            snowLayer.position.y = 0.01; // Slightly above the ground to avoid z-fighting
 
             // Create sun and moon
             const sun = BABYLON.MeshBuilder.CreateSphere("sun", { diameter: 2 }, scene);
