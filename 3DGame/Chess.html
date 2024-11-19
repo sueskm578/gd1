@@ -13,6 +13,11 @@
         const canvas = document.getElementById("renderCanvas");
         const engine = new BABYLON.Engine(canvas, true);
 
+        // Add background music
+        const backgroundMusic = new Audio("https://github.com/sueskm578/sueskm578.github.io/raw/main/React/ChessBackgroundmusic.mp3");
+        backgroundMusic.loop = true;
+        backgroundMusic.play();
+
         const createScene = () => {
             const scene = new BABYLON.Scene(engine);
 
