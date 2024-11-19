@@ -6,10 +6,13 @@
     <title>Babylon.js Village</title>
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
-    <script src="https://cdn.babylonjs.com/particles.js"></script>
 </head>
 <body>
     <canvas id="renderCanvas" style="width: 100%; height: 100%;"></canvas>
+    <input type="range" id="snowSlider" min="0" max="1000" value="100" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
+    <label for="snowSlider" style="position: absolute; top: 0px; left: 20px; z-index: 10;">Snow Intensity</label>
+    <input type="range" id="rotationSpeedSlider" min="0" max="10" value="1" style="position: absolute; top: 80px; left: 20px; z-index: 10;">
+    <label for="rotationSpeedSlider" style="position: absolute; top: 60px; left: 20px; z-index: 10;">Rotation Speed</label>
     <script>
         const canvas = document.getElementById("renderCanvas");
         const engine = new BABYLON.Engine(canvas, true);
@@ -18,121 +21,87 @@
             const scene = new BABYLON.Scene(engine);
 
             // Camera and light
-            const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 1.5, Math.PI / 2.2, 20, new BABYLON.Vector3(0, 0, 0), scene);
+            const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 1.5, Math.PI / 2.2, 15, new BABYLON.Vector3(0, 0, 0));
             camera.attachControl(canvas, true);
+            const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0));
 
-            const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0), scene);
-
-            // Ground
+            // Green grass ground
             const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 50, height: 50 }, scene);
             const grassMaterial = new BABYLON.StandardMaterial("grassMaterial", scene);
             grassMaterial.diffuseColor = new BABYLON.Color3(0, 1, 0);
             ground.material = grassMaterial;
 
-            // Load village
-            BABYLON.SceneLoader.ImportMeshAsync("", "https://assets.babylonjs.com/meshes/", "village.glb", scene).then(() => {
-                createCar(scene);
-            });
-
-            // Create car function
-            const createCar = function (scene) {
-                const outline = [
-                    new BABYLON.Vector3(-0.3, 0, -0.1),
-                    new BABYLON.Vector3(0.2, 0, -0.1),
+            // Load and duplicate houses
+            BABYLON.SceneLoader.ImportMeshAsync("", "https://assets.babylonjs.com/meshes/", "village.glb", scene).then((result) => {
+                const house = result.meshes[0];
+                const housePositions = [
+                    new BABYLON.Vector3(-10, 0, -10),
+                    new BABYLON.Vector3(10, 0, -10),
+                    new BABYLON.Vector3(-10, 0, 10),
+                    new BABYLON.Vector3(10, 0, 10),
+                    new BABYLON.Vector3(0, 0, 0)
                 ];
 
-                for (let i = 0; i < 20; i++) {
-                    outline.push(new BABYLON.Vector3(
-                        0.2 * Math.cos(i * Math.PI / 20),
-                        0,
-                        0.2 * Math.sin(i * Math.PI / 20) - 0.1
-                    ));
-                }
-
-                outline.push(new BABYLON.Vector3(0, 0, 0.1));
-                outline.push(new BABYLON.Vector3(-0.3, 0, 0.1));
-                outline.push(outline[0]);
-
-                const car = BABYLON.MeshBuilder.ExtrudePolygon("car", { shape: outline, depth: 0.2, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, scene);
-                car.position = new BABYLON.Vector3(2, 0.1, 2);
-                car.scaling = new BABYLON.Vector3(10, 10, 10);
-
-                const carMaterial = new BABYLON.StandardMaterial("carMaterial", scene);
-                carMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
-                car.material = carMaterial;
-
-                // Wheels
-                const wheelMaterial = new BABYLON.StandardMaterial("wheelMaterial", scene);
-                wheelMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-
-                const wheelRB = BABYLON.MeshBuilder.CreateCylinder("wheelRB", { diameter: 1.25, height: 0.5 }, scene);
-                wheelRB.parent = car;
-                wheelRB.position.set(-2, -0.5, -1);
-                wheelRB.rotation.z = Math.PI / 2;
-                wheelRB.material = wheelMaterial;
-
-                const wheelRF = wheelRB.clone("wheelRF");
-                wheelRF.position.x = 1;
-
-                const wheelLB = wheelRB.clone("wheelLB");
-                wheelLB.position.y = -2;
-
-                const wheelLF = wheelRF.clone("wheelLF");
-                wheelLF.position.y = -2;
-
-                // Car animation
-                let carSpeed = 0.1;
-                scene.onBeforeRenderObservable.add(() => {
-                    car.position.z += carSpeed;
-                    if (car.position.z > 25 || car.position.z < -25) {
-                        carSpeed = -carSpeed;
-                    }
+                housePositions.forEach((position) => {
+                    const houseClone = house.clone("houseClone");
+                    houseClone.position = position;
                 });
-
-                // Animate wheels
-                scene.registerBeforeRender(() => {
-                    const wheelRotationSpeed = carSpeed * 5;
-                    wheelRB.rotation.x += wheelRotationSpeed;
-                    wheelRF.rotation.x += wheelRotationSpeed;
-                    wheelLB.rotation.x += wheelRotationSpeed;
-                    wheelLF.rotation.x += wheelRotationSpeed;
-                });
-            };
-
-            // Sun and Moon Rotation
-            const sun = BABYLON.MeshBuilder.CreateSphere("sun", { diameter: 2 }, scene);
-            sun.material = new BABYLON.StandardMaterial("sunMaterial", scene);
-            sun.material.emissiveColor = new BABYLON.Color3(1, 1, 0);
-            sun.position = new BABYLON.Vector3(0, 10, 0);
-
-            const moon = BABYLON.MeshBuilder.CreateSphere("moon", { diameter: 1 }, scene);
-            moon.material = new BABYLON.StandardMaterial("moonMaterial", scene);
-            moon.material.emissiveColor = new BABYLON.Color3(0.8, 0.8, 1);
-            moon.position = new BABYLON.Vector3(0, -10, 0);
-
-            const rotateSpeed = 0.01;
-            scene.registerBeforeRender(() => {
-                sun.rotation.y += rotateSpeed;
-                moon.rotation.y -= rotateSpeed;
             });
 
-            // Snow effect
-            const snowParticleSystem = new BABYLON.ParticleSystem("snow", 2000, scene);
-            snowParticleSystem.particleTexture = new BABYLON.Texture("https://playground.babylonjs.com/textures/flake.png", scene);
+            // Create snow particle system
+            const snowParticleSystem = new BABYLON.ParticleSystem("snow", 1000, scene);
+            snowParticleSystem.particleTexture = new BABYLON.Texture("https://www.babylonjs-playground.com/textures/flare.png", scene);
             snowParticleSystem.emitter = new BABYLON.Vector3(0, 10, 0);
-            snowParticleSystem.minEmitBox = new BABYLON.Vector3(-20, 0, -20);
-            snowParticleSystem.maxEmitBox = new BABYLON.Vector3(20, 0, 20);
-            snowParticleSystem.color1 = new BABYLON.Color4(1, 1, 1, 1);
-            snowParticleSystem.color2 = new BABYLON.Color4(1, 1, 1, 1);
+            snowParticleSystem.minEmitBox = new BABYLON.Vector3(-25, 0, -25);
+            snowParticleSystem.maxEmitBox = new BABYLON.Vector3(25, 0, 25);
+            snowParticleSystem.color1 = new BABYLON.Color4(1, 1, 1, 1.0);
+            snowParticleSystem.color2 = new BABYLON.Color4(1, 1, 1, 1.0);
             snowParticleSystem.minSize = 0.1;
             snowParticleSystem.maxSize = 0.5;
-            snowParticleSystem.minLifeTime = 2;
-            snowParticleSystem.maxLifeTime = 4;
-            snowParticleSystem.emitRate = 500;
-            snowParticleSystem.gravity = new BABYLON.Vector3(0, -0.2, 0);
-            snowParticleSystem.direction1 = new BABYLON.Vector3(-1, -1, -1);
-            snowParticleSystem.direction2 = new BABYLON.Vector3(1, -1, 1);
+            snowParticleSystem.emitRate = 100;
+            snowParticleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+            snowParticleSystem.gravity = new BABYLON.Vector3(0, -0.5, 0);
             snowParticleSystem.start();
+
+            // Snow intensity slider
+            const snowSlider = document.getElementById("snowSlider");
+            snowSlider.addEventListener("input", (event) => {
+                snowParticleSystem.emitRate = event.target.value;
+            });
+
+            // Create sun and moon
+            const sun = BABYLON.MeshBuilder.CreateSphere("sun", { diameter: 2 }, scene);
+            const sunMaterial = new BABYLON.StandardMaterial("sunMaterial", scene);
+            sunMaterial.emissiveColor = new BABYLON.Color3(1, 1, 0);
+            sun.material = sunMaterial;
+            sun.position = new BABYLON.Vector3(0, 10, 0);
+
+            const moon = BABYLON.MeshBuilder.CreateSphere("moon", { diameter: 2 }, scene);
+            const moonMaterial = new BABYLON.StandardMaterial("moonMaterial", scene);
+            moonMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
+            moon.material = moonMaterial;
+            moon.position = new BABYLON.Vector3(0, -10, 0);
+
+            let rotationSpeed = 0.01;
+            const rotationSpeedSlider = document.getElementById("rotationSpeedSlider");
+            rotationSpeedSlider.addEventListener("input", (event) => {
+                rotationSpeed = event.target.value / 1000;
+            });
+
+            let angle = 0;
+            const radius = 20;
+            scene.registerBeforeRender(() => {
+                angle += rotationSpeed;
+                sun.position.x = radius * Math.cos(angle);
+                sun.position.z = radius * Math.sin(angle);
+                sun.position.y = radius * Math.sin(angle);
+
+                moon.position.x = radius * Math.cos(angle + Math.PI);
+                moon.position.z = radius * Math.sin(angle + Math.PI);
+                moon.position.y = radius * Math.sin(angle + Math.PI);
+
+                light.intensity = sun.position.y > 0 ? 1 : 0.2;
+            });
 
             return scene;
         };
