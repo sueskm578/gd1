@@ -13,6 +13,8 @@
     <button id="downloadButton" style="position: absolute; top: 20px; left: 20px; z-index: 10;">Download Stickman GLB</button>
     <input type="range" id="snowSlider" min="0" max="1000" value="100" style="position: absolute; top: 60px; left: 20px; z-index: 10;">
     <label for="snowSlider" style="position: absolute; top: 40px; left: 20px; z-index: 10;">Snow Intensity</label>
+    <input type="range" id="rotationSpeedSlider" min="0" max="10" value="1" style="position: absolute; top: 120px; left: 20px; z-index: 10;">
+    <label for="rotationSpeedSlider" style="position: absolute; top: 100px; left: 20px; z-index: 10;">Rotation Speed</label>
     
     <script>
         var canvas = document.getElementById("renderCanvas");
@@ -146,7 +148,42 @@
                 snowParticleSystem.emitRate = event.target.value;
             });
 
-            alert("village, dude, bunny, and snow should have been loaded with animation.");
+            // Create sun and moon
+            const sun = BABYLON.MeshBuilder.CreateSphere("sun", {diameter: 2}, scene);
+            const sunMaterial = new BABYLON.StandardMaterial("sunMaterial", scene);
+            sunMaterial.emissiveColor = new BABYLON.Color3(1, 1, 0); // Yellow color
+            sun.material = sunMaterial;
+            sun.position = new BABYLON.Vector3(0, 10, 0);
+
+            const moon = BABYLON.MeshBuilder.CreateSphere("moon", {diameter: 2}, scene);
+            const moonMaterial = new BABYLON.StandardMaterial("moonMaterial", scene);
+            moonMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1); // White color
+            moon.material = moonMaterial;
+            moon.position = new BABYLON.Vector3(0, -10, 0);
+
+            let rotationSpeed = 0.01;
+            const rotationSpeedSlider = document.getElementById("rotationSpeedSlider");
+            rotationSpeedSlider.addEventListener("input", (event) => {
+                rotationSpeed = event.target.value / 1000;
+            });
+
+            scene.registerBeforeRender(() => {
+                sun.position.x = 10 * Math.cos(engine.getDeltaTime() * rotationSpeed);
+                sun.position.z = 10 * Math.sin(engine.getDeltaTime() * rotationSpeed);
+                moon.position.x = 10 * Math.cos(engine.getDeltaTime() * rotationSpeed + Math.PI);
+                moon.position.z = 10 * Math.sin(engine.getDeltaTime() * rotationSpeed + Math.PI);
+
+                const sunHeight = sun.position.y;
+                const moonHeight = moon.position.y;
+
+                if (sunHeight > 0) {
+                    light.intensity = 1;
+                } else if (moonHeight > 0) {
+                    light.intensity = 0.2;
+                }
+            });
+
+            alert("village, dude, bunny, snow, sun, and moon should have been loaded with animation.");
             
             return scene;
         };
