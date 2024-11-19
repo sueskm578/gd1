@@ -16,20 +16,15 @@
         var canvas = document.getElementById("renderCanvas");
         var engine = new BABYLON.Engine(canvas, true);
 
-
         const createScene = function () {
-            
             const scene = new BABYLON.Scene(engine);
 
             const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 1.5, Math.PI / 2.2, 15, new BABYLON.Vector3(0, 0, 0));
             camera.attachControl(canvas, true);
             const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0));
 
-            
-
             BABYLON.SceneLoader.ImportMeshAsync("", "https://assets.babylonjs.com/meshes/", "village.glb");
-     
-            
+
             const walk = function (turn, dist) {
                 this.turn = turn;
                 this.dist = dist;
@@ -66,7 +61,6 @@
                     distance += step;
                       
                     if (distance > track[p].dist) {
-                        
                         dude.rotate(BABYLON.Axis.Y, BABYLON.Tools.ToRadians(track[p].turn), BABYLON.Space.LOCAL);
                         p +=1;
                         p %= track.length; 
@@ -76,54 +70,9 @@
                             dude.rotationQuaternion = startRotation.clone();
                         }
                     }
-                    
-                })
+                });
             });
 
-            // Create the sphere
-var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {
-    diameter: 0.5, // diameter of the sphere
-    segments: 32, // number of segments
-}, scene);
-
-// Position the sphere
-sphere.position = new BABYLON.Vector3(0, 0, 6);
-var material = new BABYLON.StandardMaterial("material", scene); 
-material.diffuseColor = new BABYLON.Color3(1, 0, 0); // red color // Create red material
-sphere.material = material;// Assign material to sphere
-
-            // Define sphere properties
-var sphereProperties = {
-    diameter: 2,
-    segments: 32,
-};
-
-// Define materials
-var materials = [
-    new BABYLON.StandardMaterial("material1", scene),
-    new BABYLON.StandardMaterial("material2", scene),
-    new BABYLON.StandardMaterial("material3", scene)
-];
-
-materials[0].diffuseColor = new BABYLON.Color3(1, 0, 0); // Red
-materials[1].diffuseColor = new BABYLON.Color3(0, 1, 0); // Green
-materials[2].diffuseColor = new BABYLON.Color3(0, 0, 1); // Blue
-
-// Define positions
-var positions = [
-    new BABYLON.Vector3(0, 0, 0),
-    new BABYLON.Vector3(0, 2, 0),
-    new BABYLON.Vector3(2, 0, 0)
-];
-
-// Create spheres
-for (var i = 0; i < 3; i++) {
-    var sphere = BABYLON.MeshBuilder.CreateSphere("sphere" + i, sphereProperties, scene);
-    sphere.position = positions[i];
-    sphere.material = materials[i];
-}
-            
-            
             // Load the bunny OBJ model
             BABYLON.SceneLoader.ImportMesh(
                 "",                        // No name filter; load all meshes
@@ -143,12 +92,10 @@ for (var i = 0; i < 3; i++) {
                     console.error("Error loading OBJ file:", message, exception);
                 }
             );
-                   alert("village, dude and bunny should have been loaded with animation.");
+            alert("village, dude and bunny should have been loaded with animation.");
             
             return scene;
         };
-
-  
 
         var scene = createScene();
 
