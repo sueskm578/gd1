@@ -171,15 +171,16 @@
             });
 
             let angle = 0;
+            const radius = 20; // Increase the radius for better fit around the village
             scene.registerBeforeRender(() => {
                 angle += rotationSpeed;
-                sun.position.x = 10 * Math.cos(angle);
-                sun.position.z = 10 * Math.sin(angle);
-                sun.position.y = 10 * Math.sin(angle);
+                sun.position.x = radius * Math.cos(angle);
+                sun.position.z = radius * Math.sin(angle);
+                sun.position.y = radius * Math.sin(angle);
 
-                moon.position.x = 10 * Math.cos(angle + Math.PI);
-                moon.position.z = 10 * Math.sin(angle + Math.PI);
-                moon.position.y = 10 * Math.sin(angle + Math.PI);
+                moon.position.x = radius * Math.cos(angle + Math.PI);
+                moon.position.z = radius * Math.sin(angle + Math.PI);
+                moon.position.y = radius * Math.sin(angle + Math.PI);
 
                 if (sun.position.y > 0) {
                     light.intensity = 1;
