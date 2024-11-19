@@ -9,6 +9,7 @@
 <body>
     <canvas id="renderCanvas" style="width: 100%; height: 100%; background-color: lavender;"></canvas>
     <button id="resetButton" style="position: absolute; top: 10px; left: 10px;">Reset</button>
+    <button id="musicButton" style="position: absolute; top: 50px; left: 10px;">Play Music</button>
     <script>
         const canvas = document.getElementById("renderCanvas");
         const engine = new BABYLON.Engine(canvas, true);
@@ -16,7 +17,10 @@
         // Add background music
         const backgroundMusic = new Audio("https://github.com/sueskm578/sueskm578.github.io/raw/main/React/ChessBackgroundmusic.mp3");
         backgroundMusic.loop = true;
-        backgroundMusic.play();
+
+        document.getElementById("musicButton").addEventListener("click", () => {
+            backgroundMusic.play();
+        });
 
         const createScene = () => {
             const scene = new BABYLON.Scene(engine);
