@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Babylon.js Chessboard with Reset</title>
+    <title>Babylon.js Chessboard with Reset and Pawn Promotion</title>
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <script src="https://cdn.babylonjs.com/gui/babylon.gui.js"></script>
 </head>
 <body>
     <canvas id="renderCanvas" style="width: 100%; height: 100%; background-color: lavender;"></canvas>
-    <button id="resetButton" style="position: absolute; top: 10px; left: 10px;">Reset</button>
+    <button id="resetButton" style="position: absolute; top: 10px; left: 10px; font-size: 20px; padding: 10px;">Reset</button>
     <script>
         const canvas = document.getElementById("renderCanvas");
         const engine = new BABYLON.Engine(canvas, true);
@@ -173,6 +173,7 @@
                             text1.text = playerTurn.equals(new BABYLON.Color3(1, 1, 1)) ? "White's Turn" : "Black's Turn";
                         }
                         selectedPiece = null;
+                        checkPawnPromotion();
                     } else {
                         selectedPiece=null;
                     }
@@ -264,6 +265,22 @@
             } else {
                 return location;
             }
+        }
+
+        function checkPawnPromotion() {
+            pieces.forEach(piece => {
+                if (piece.name === "pawn" && (piece.position.z === -3.5 || piece.position.z === 3.5)) {
+                    promotePawn(piece);
+                }
+            });
+        }
+
+        function promotePawn(pawn) {
+            const color = pawn.material.diffuseColor;
+            const position = pawn.position;
+            pawn.dispose();
+            const newQueen = createPiece("queen", position, color);
+            pieces.push(newQueen);
         }
 
         // Function to reset the chessboard and pieces
