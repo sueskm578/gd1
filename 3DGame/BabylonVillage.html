@@ -115,6 +115,21 @@
                 light.intensity = sun.position.y > 0 ? 1 : 0.2;
             });
 
+            // Load and animate car
+            BABYLON.SceneLoader.ImportMeshAsync("", "https://assets.babylonjs.com/meshes/", "car.glb", scene).then((result) => {
+                const car = result.meshes[0];
+                car.scaling = new BABYLON.Vector3(0.5, 0.5, 0.5);
+                car.position = new BABYLON.Vector3(0, 0.5, -25);
+
+                let carSpeed = 0.05;
+                scene.registerBeforeRender(() => {
+                    car.position.z += carSpeed;
+                    if (car.position.z > 25) {
+                        car.position.z = -25;
+                    }
+                });
+            });
+
             return scene;
         };
 
