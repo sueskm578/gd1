@@ -270,35 +270,85 @@
         function checkPawnPromotion() {
             pieces.forEach(piece => {
                 if (piece.name === "pawn" && (piece.position.z === -3.5 || piece.position.z === 3.5)) {
-                    promotePawn(piece);
+                    showPromotionOptions(piece);
                 }
             });
         }
 
-        function promotePawn(pawn) {
+        function showPromotionOptions(pawn) {
             const color = pawn.material.diffuseColor;
             const position = pawn.position;
-            pawn.dispose();
-            const newQueen = createPiece("queen", position, color);
-            pieces.push(newQueen);
+
+            const promotionMenu = new BABYLON.GUI.Rectangle();
+            promotionMenu.width = "200px";
+            promotionMenu.height = "100px";
+            promotionMenu.cornerRadius = 20;
+            promotionMenu.color = "White";
+            promotionMenu.thickness = 4;
+            promotionMenu.background = "black";
+            advancedTexture.addControl(promotionMenu);
+
+            const buttonNames = ["queen", "rook", "knight", "bishop"];
+buttonNames.forEach((name, index) => {
+    const button = BABYLON.GUI.Button.CreateSimpleButton(name, name.charAt(0).toUpperCase() + name.slice(1));
+    button.width = "150px";
+    button.height = "40px";
+    button.color = "white";
+    button.background = "black";
+    button.top = `${index * 50 - 75}px`;
+    button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+    button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+    button.onPointerClickObservable.add(() => {
+        promotePawn(selectedPawn, name);
+        promotionMenu.isVisible = false;
+    });
+    promotionMenu.addControl(button);
+});
+
+function checkPawnPromotion() {
+    pieces.forEach(piece => {
+        if (piece.name === "pawn" && (piece.position.z === -3.5 || piece.position.z === 3.5)) {
+            selectedPawn = piece;
+            promotionMenu.isVisible = true;
         }
+    });
+}
 
-        // Function to reset the chessboard and pieces
-        document.getElementById("resetButton").addEventListener("click", () => {
-            initializePieces();
-            playerTurn.set(1, 1, 1);
-            text1.text = "White's Turn";
-            timeLeft = 300;
-            startTimer();
-        });
+function promotePawn(pawn, newPieceName) {
+    const color = pawn.material.diffuseColor;
+    const position = pawn.position;
+    pawn.dispose();
+    const newPiece = createPiece(newPieceName, position, color);
+    pieces.push(newPiece);
+}
 
-        // Render loop
-        engine.runRenderLoop(() => {
-            scene.render();
-        });
+// Create promotion menu
+var promotionMenu = new BABYLON.GUI.Rectangle();
+promotionMenu.width = "200px";
+promotionMenu.height = "300px";
+promotionMenu.cornerRadius = 20;
+promotionMenu.color = "white";
+promotionMenu.thickness = 4;
+promotionMenu.background = "black";
+promotionMenu.isVisible = false;
+advancedTexture.addControl(promotionMenu);
 
-        // Resize
-        window.addEventListener("resize", () => {
+// Function to reset the chessboard and pieces
+document.getElementById("resetButton").addEventListener("click", () => {
+    initializePieces();
+    playerTurn.set(1, 1, 1);
+    text1.text = "White's Turn";
+    timeLeft = 300;
+    startTimer();
+});
+
+// Render loop
+engine.runRenderLoop(() => {
+    scene.render();
+});
+
+ // Resize
+ window.addEventListener("resize", () => {
             engine.resize();
         });
     </script>
