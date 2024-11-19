@@ -31,12 +31,17 @@
             grassMaterial.diffuseColor = new BABYLON.Color3(0, 1, 0);
             ground.material = grassMaterial;
 
-            // Create road
-            const road = BABYLON.MeshBuilder.CreateGround("road", { width: 5, height: 50 }, scene);
+            // Create first road
+            const road1 = BABYLON.MeshBuilder.CreateGround("road1", { width: 5, height: 50 }, scene);
             const roadMaterial = new BABYLON.StandardMaterial("roadMaterial", scene);
             roadMaterial.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.2); // Dark gray color for the road
-            road.material = roadMaterial;
-            road.position.z = 0; // Position the road in the middle
+            road1.material = roadMaterial;
+            road1.position.z = 0; // Position the road in the middle
+
+            // Create intersecting road
+            const road2 = BABYLON.MeshBuilder.CreateGround("road2", { width: 50, height: 5 }, scene);
+            road2.material = roadMaterial;
+            road2.position.x = 0; // Position the intersecting road in the middle
 
             // Load and duplicate houses
             BABYLON.SceneLoader.ImportMeshAsync("", "https://assets.babylonjs.com/meshes/", "village.glb", scene).then((result) => {
