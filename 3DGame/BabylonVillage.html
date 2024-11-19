@@ -214,6 +214,7 @@
 
             const car = BABYLON.MeshBuilder.ExtrudePolygon("car", { shape: outline, depth: 0.2 }, scene);
             car.position = new BABYLON.Vector3(2, 0.1, 2);
+            car.scaling = new BABYLON.Vector3(10, 10, 10); // Increase the size of the car
 
             const carMaterial = new BABYLON.StandardMaterial("carMaterial", scene);
             carMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5); 
@@ -222,22 +223,22 @@
             const wheelMaterial = new BABYLON.StandardMaterial("wheelMaterial", scene);
             wheelMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0); 
 
-            const wheelRB = BABYLON.MeshBuilder.CreateCylinder("wheelRB", { diameter: 0.125, height: 0.05 }, scene);
+            const wheelRB = BABYLON.MeshBuilder.CreateCylinder("wheelRB", { diameter: 1.25, height: 0.5 }, scene); // Increase wheel size
             wheelRB.parent = car;
-            wheelRB.position.set(-0.2, -0.035, -0.1);
+            wheelRB.position.set(-2, -0.35, -1);
             wheelRB.material = wheelMaterial;
 
             const wheelRF = wheelRB.clone("wheelRF");
-            wheelRF.position.x = 0.1;
+            wheelRF.position.x = 1;
 
             const wheelLB = wheelRB.clone("wheelLB");
-            wheelLB.position.y = -0.2 - 0.035;
+            wheelLB.position.y = -2 - 0.35;
 
             const wheelLF = wheelRF.clone("wheelLF");
-            wheelLF.position.y = -0.2 - 0.035;
+            wheelLF.position.y = -2 - 0.35;
 
             // Move the car
-            let carSpeed = 0.01;
+            let carSpeed = 0.1; // Increase the speed for better visibility
             scene.onBeforeRenderObservable.add(() => {
                 car.position.z += carSpeed;
                 if (car.position.z > 10 || car.position.z < -10) {
