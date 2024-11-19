@@ -170,11 +170,13 @@
                 rotationSpeed = event.target.value / 1000;
             });
 
+            let angle = 0;
             scene.registerBeforeRender(() => {
-                sun.position.x = 10 * Math.cos(engine.getDeltaTime() * rotationSpeed);
-                sun.position.z = 10 * Math.sin(engine.getDeltaTime() * rotationSpeed);
-                moon.position.x = 10 * Math.cos(engine.getDeltaTime() * rotationSpeed + Math.PI);
-                moon.position.z = 10 * Math.sin(engine.getDeltaTime() * rotationSpeed + Math.PI);
+                angle += rotationSpeed;
+                sun.position.x = 10 * Math.cos(angle);
+                sun.position.z = 10 * Math.sin(angle);
+                moon.position.x = 10 * Math.cos(angle + Math.PI);
+                moon.position.z = 10 * Math.sin(angle + Math.PI);
 
                 const sunHeight = sun.position.y;
                 const moonHeight = moon.position.y;
