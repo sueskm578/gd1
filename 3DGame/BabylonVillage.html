@@ -9,8 +9,8 @@
 </head>
 <body>
     <canvas id="renderCanvas" style="width: 100%; height: 100%;"></canvas>
-    <input type="range" id="snowSlider" min="0" max="1000" value="100" style="position: absolute; top: 20px; left: 20px; z-index: 10;">
-    <label for="snowSlider" style="position: absolute; top: 0px; left: 20px; z-index: 10;">Snow Intensity</label>
+    <input type="range" id="snowSlider" min="0" max="1000" value="100" style="position: absolute; top: 60px; left: 20px; z-index: 10;">
+    <label for="snowSlider" style="position: absolute; top: 40px; left: 20px; z-index: 10;">Snow Intensity</label>
     <input type="range" id="rotationSpeedSlider" min="0" max="10" value="1" style="position: absolute; top: 80px; left: 20px; z-index: 10;">
     <label for="rotationSpeedSlider" style="position: absolute; top: 60px; left: 20px; z-index: 10;">Rotation Speed</label>
     <script>
@@ -60,30 +60,30 @@
                 });
             });
 
-            // Create snow particle system
+     // Create snow particle system
             const snowParticleSystem = new BABYLON.ParticleSystem("snow", 1000, scene);
             snowParticleSystem.particleTexture = new BABYLON.Texture("https://www.babylonjs-playground.com/textures/flare.png", scene);
-            snowParticleSystem.emitter = new BABYLON.Vector3(0, 10, 0);
-            snowParticleSystem.minEmitBox = new BABYLON.Vector3(-25, 0, -25);
-            snowParticleSystem.maxEmitBox = new BABYLON.Vector3(25, 0, 25);
+            snowParticleSystem.emitter = new BABYLON.Vector3(0, 10, 0); // Emitter position
+            snowParticleSystem.minEmitBox = new BABYLON.Vector3(-25, 0, -25); // Starting point
+            snowParticleSystem.maxEmitBox = new BABYLON.Vector3(25, 0, 25); // Ending point
             snowParticleSystem.color1 = new BABYLON.Color4(1, 1, 1, 1.0);
             snowParticleSystem.color2 = new BABYLON.Color4(1, 1, 1, 1.0);
             snowParticleSystem.minSize = 0.1;
             snowParticleSystem.maxSize = 0.5;
+            snowParticleSystem.minLifeTime = 2;
+            snowParticleSystem.maxLifeTime = 3.5;
             snowParticleSystem.emitRate = 100;
             snowParticleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
             snowParticleSystem.gravity = new BABYLON.Vector3(0, -0.5, 0);
-            snowParticleSystem.updateFunction = function (particles) {
-                for (let index = 0; index < particles.length; index++) {
-                    const particle = particles[index];
-                    if (particle.position.y < 0) {
-                        particle.position.y = 10; // Reset particle position to the top
-                    }
-                }
-            };
+            snowParticleSystem.direction1 = new BABYLON.Vector3(-1, -1, -1);
+            snowParticleSystem.direction2 = new BABYLON.Vector3(1, -1, 1);
+            snowParticleSystem.minAngularSpeed = 0;
+            snowParticleSystem.maxAngularSpeed = Math.PI;
+            snowParticleSystem.minEmitPower = 1;
+            snowParticleSystem.maxEmitPower = 3;
+            snowParticleSystem.updateSpeed = 0.005;
             snowParticleSystem.start();
-
-            // Snow intensity slider
+            // Slider to control snow intensity
             const snowSlider = document.getElementById("snowSlider");
             snowSlider.addEventListener("input", (event) => {
                 snowParticleSystem.emitRate = event.target.value;
