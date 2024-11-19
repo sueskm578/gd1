@@ -22,6 +22,11 @@
             backgroundMusic.play();
         });
 
+        // Add sound effects
+        const moveSound = new Audio("https://github.com/sueskm578/sueskm578.github.io/raw/main/React/ChessMove.wav");
+        const captureSound = new Audio("https://github.com/sueskm578/sueskm578.github.io/raw/main/React/Chesscapture.mp3");
+        const winSound = new Audio("https://github.com/sueskm578/sueskm578.github.io/raw/main/React/WinGame.mp3");
+
         const createScene = () => {
             const scene = new BABYLON.Scene(engine);
 
