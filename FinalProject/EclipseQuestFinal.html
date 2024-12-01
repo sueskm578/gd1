@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Eclipse Quest</title>
 <style>
     body, html {
         height: 100%;
@@ -187,6 +189,7 @@ function createCanvas(level) {
             const image = new Image();
             image.src = obstacle.type;
             image.onload = () => {
+                console.log(`Drawing obstacle at (${obstacle.x}, ${obstacle.y}) with width ${obstacle.width} and height ${obstacle.height}`);
                 context.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
             };
         });
