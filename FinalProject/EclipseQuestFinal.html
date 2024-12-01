@@ -134,36 +134,33 @@ function createCanvas(level) {
         onGround: true
     };
 
-    const clouds = [];
-    const solaraGrasses = [];
-    const lunaGrasses = [];
+    const obstacles = [];
 
-    function createCloudsAndWaters() {
-        // Create a continuous line of grass obstacles at the bottom left
-        const grassTypes = [grassImageURL, solaraGrassImageURL, grassImageURL, lunaGrassImageURL, grassImageURL];
-        for (let i = 0; i < grassTypes.length; i++) {
-            clouds.push({
-                x: i * 200,
-                y: canvas.height - 200, // Lowered height
-                width: 200,
-                height: 50,
-                type: grassTypes[i]
-            });
-        }
+    function createObstacles() {
+        // Create a few grass obstacles for testing
+        obstacles.push({
+            x: 300,
+            y: canvas.height - 100,
+            width: 100,
+            height: 50,
+            type: grassImageURL
+        });
 
-        // Create the obstacle on the bottom right
-        const obstacleStartX = canvas.width - 600; // Adjust the starting position of the obstacle
-        const obstacleStartY = canvas.height - 300; // Lowered height
+        obstacles.push({
+            x: 500,
+            y: canvas.height - 150,
+            width: 100,
+            height: 50,
+            type: solaraGrassImageURL
+        });
 
-        for (let i = 0; i < 3; i++) {
-            clouds.push({
-                x: obstacleStartX + i * 200,
-                y: obstacleStartY - i * 50,
-                width: 200,
-                height: 50,
-                type: grassImageURL // All ascending obstacles are the new grass obstacle
-            });
-        }
+        obstacles.push({
+            x: 700,
+            y: canvas.height - 200,
+            width: 100,
+            height: 50,
+            type: lunaGrassImageURL
+        });
     }
 
     function endGame(message) {
@@ -179,25 +176,13 @@ function createCanvas(level) {
         // Draw game background image
         context.drawImage(gameBackgroundImage, 0, 0, canvas.width, canvas.height);
 
-        // Draw obstacles if level 1
-        if (level === 1) {
-            clouds.forEach(cloud => {
-                const image = new Image();
-                image.src = cloud.type;
-                image.onload = () => {
-                    context.drawImage(image, cloud.x, cloud.y, cloud.width, cloud.height);
-                };
-            });
-        }
-
-        // Draw solara grass
-        solaraGrasses.forEach(grass => {
-            context.drawImage(solaraGrassImage, grass.x, grass.y, grass.width, grass.height);
-        });
-
-        // Draw luna grass
-        lunaGrasses.forEach(grass => {
-            context.drawImage(lunaGrassImage, grass.x, grass.y, grass.width, grass.height);
+        // Draw obstacles
+        obstacles.forEach(obstacle => {
+            const image = new Image();
+            image.src = obstacle.type;
+            image.onload = () => {
+                context.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            };
         });
 
         // Update blue square
@@ -211,57 +196,22 @@ function createCanvas(level) {
             blueSquare.onGround = true;
         }
 
-        // Check collision with clouds for blue square
-        clouds.forEach(cloud => {
-            if (blueSquare.x < cloud.x + cloud.width &&
-                blueSquare.x + blueSquare.size > cloud.x &&
-                blueSquare.y + blueSquare.size > cloud.y &&
-                blueSquare.y < cloud.y + cloud.height) {
-                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the clouds
-                    blueSquare.y = cloud.y - blueSquare.size;
+        // Check collision with obstacles for blue square
+        obstacles.forEach(obstacle => {
+            if (blueSquare.x < obstacle.x + obstacle.width &&
+                blueSquare.x + blueSquare.size > obstacle.x &&
+                blueSquare.y + blueSquare.size > obstacle.y &&
+                blueSquare.y < obstacle.y + obstacle.height) {
+                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the obstacles
+                    blueSquare.y = obstacle.y - blueSquare.size;
                     blueSquare.speedY = 0;
                     blueSquare.onGround = true;
-                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the cloud
-                    blueSquare.y = cloud.y + cloud.height;
+                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the obstacle
+                    blueSquare.y = obstacle.y + obstacle.height;
                     blueSquare.speedY = 0;
                 }
-                if (cloud.type === solaraGrassImageURL) {
+                if (obstacle.type === solaraGrassImageURL) {
                     endGame("Luna hit the Solaragrass! Game Over.");
-                }
-            }
-        });
-
-        // Check collision with solara grass for blue square
-        solaraGrasses.forEach(grass => {
-            if (blueSquare.x < grass.x + grass.width &&
-                blueSquare.x + blueSquare.size > grass.x &&
-                blueSquare.y + blueSquare.size > grass.y &&
-                blueSquare.y < grass.y + grass.height) {
-                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the grass
-                    blueSquare.y = grass.y - blueSquare.size;
-                    blueSquare.speedY = 0;
-                    blueSquare.onGround = true;
-                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the grass
-                    blueSquare.y = grass.y + grass.height;
-                    blueSquare.speedY = 0;
-                }
-                endGame("Luna hit the Solaragrass! Game Over.");
-            }
-        });
-
-        // Check collision with luna grass for blue square
-        lunaGrasses.forEach(grass => {
-            if (blueSquare.x < grass.x + grass.width &&
-                blueSquare.x + blueSquare.size > grass.x &&
-                blueSquare.y + blueSquare.size > grass.y &&
-                blueSquare.y < grass.y + grass.height) {
-                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the grass
-                    blueSquare.y = grass.y - blueSquare.size;
-                    blueSquare.speedY = 0;
-                    blueSquare.onGround = true;
-                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the grass
-                    blueSquare.y = grass.y + grass.height;
-                    blueSquare.speedY = 0;
                 }
             }
         });
@@ -277,58 +227,23 @@ function createCanvas(level) {
             redSquare.onGround = true;
         }
 
-        // Check collision with clouds for red square
-        clouds.forEach(cloud => {
-            if (redSquare.x < cloud.x + cloud.width &&
-                redSquare.x + redSquare.size > cloud.x &&
-                redSquare.y + redSquare.size > cloud.y &&
-                redSquare.y < cloud.y + cloud.height) {
-                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the clouds
-                    redSquare.y = cloud.y - redSquare.size;
+        // Check collision with obstacles for red square
+        obstacles.forEach(obstacle => {
+            if (redSquare.x < obstacle.x + obstacle.width &&
+                redSquare.x + redSquare.size > obstacle.x &&
+                redSquare.y + redSquare.size > obstacle.y &&
+                redSquare.y < obstacle.y + obstacle.height) {
+                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the obstacles
+                    redSquare.y = obstacle.y - redSquare.size;
                     redSquare.speedY = 0;
                     redSquare.onGround = true;
-                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the cloud
-                    redSquare.y = cloud.y + cloud.height;
+                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the obstacle
+                    redSquare.y = obstacle.y + obstacle.height;
                     redSquare.speedY = 0;
                 }
-                if (cloud.type === lunaGrassImageURL) {
+                if (obstacle.type === lunaGrassImageURL) {
                     endGame("Solara hit the Lunagrass! Game Over.");
                 }
-            }
-        });
-
-        // Check collision with solara grass for red square
-        solaraGrasses.forEach(grass => {
-            if (redSquare.x < grass.x + grass.width &&
-                redSquare.x + redSquare.size > grass.x &&
-                redSquare.y + redSquare.size > grass.y &&
-                redSquare.y < grass.y + grass.height) {
-                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the grass
-                    redSquare.y = grass.y - redSquare.size;
-                    redSquare.speedY = 0;
-                    redSquare.onGround = true;
-                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the grass
-                    redSquare.y = grass.y + grass.height;
-                    redSquare.speedY = 0;
-                }
-            }
-        });
-
-        // Check collision with luna grass for red square
-        lunaGrasses.forEach(grass => {
-            if (redSquare.x < grass.x + grass.width &&
-                redSquare.x + redSquare.size > grass.x &&
-                redSquare.y + redSquare.size > grass.y &&
-                redSquare.y < grass.y + grass.height) {
-                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the grass
-                    redSquare.y = grass.y - redSquare.size;
-                    redSquare.speedY = 0;
-                    redSquare.onGround = true;
-                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the grass
-                    redSquare.y = grass.y + grass.height;
-                    redSquare.speedY = 0;
-                }
-                endGame("Solara hit the Lunagrass! Game Over.");
             }
         });
 
@@ -387,7 +302,7 @@ function createCanvas(level) {
     window.addEventListener("keyup", handleKeyUp);
 
     if (level === 1) {
-        createCloudsAndWaters();
+        createObstacles();
     }
 
     update();
