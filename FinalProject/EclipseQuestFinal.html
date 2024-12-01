@@ -176,6 +176,9 @@ function createCanvas(level) {
         obstacles.push({ x: startX - tileSize, y: startY, width: tileSize, height: tileSize, type: 'grass' });
         obstacles.push({ x: startX - 2 * tileSize, y: startY + tileSize, width: tileSize, height: tileSize, type: 'grass' });
         obstacles.push({ x: startX - 3 * tileSize, y: startY + 2 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+        obstacles.push({ x: startX - 4 * tileSize, y: startY + 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+        obstacles.push({ x: startX - 5 * tileSize, y: startY + 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+        obstacles.push({ x: startX + tileSize, y: startY, width: tileSize, height: tileSize, type: 'grass' });
     }
 
     function endGame(message) {
