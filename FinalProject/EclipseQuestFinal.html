@@ -152,30 +152,33 @@ function createCanvas(level) {
     const obstacles = [];
 
     function createObstacles() {
-        // Create a few grass obstacles for testing
-        obstacles.push({
-            x: 300,
-            y: canvas.height - 100,
-            width: 100,
-            height: 50,
-            type: 'grass'
-        });
+        // Clear existing obstacles
+        obstacles.length = 0;
 
-        obstacles.push({
-            x: 500,
-            y: canvas.height - 150,
-            width: 100,
-            height: 50,
-            type: 'solaraGrass'
-        });
+        // Create a row of grass on the left-hand side above the height of the players
+        const rowY = canvas.height - 300; // Adjust the y position as needed
+        const tileSize = 100; // Width and height of each tile
 
-        obstacles.push({
-            x: 700,
-            y: canvas.height - 200,
-            width: 100,
-            height: 50,
-            type: 'lunaGrass'
-        });
+        obstacles.push({ x: 0, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+        obstacles.push({ x: tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+        obstacles.push({ x: 2 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'solaraGrass' });
+        obstacles.push({ x: 3 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+        obstacles.push({ x: 4 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+        obstacles.push({ x: 5 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'lunaGrass' });
+        obstacles.push({ x: 6 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+        obstacles.push({ x: 7 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+
+        // Create an ascending row of grass on the right side
+        const startX = canvas.width - 800; // Adjust the starting x position as needed
+        for (let i = 0; i < 8; i++) {
+            obstacles.push({
+                x: startX + i * tileSize,
+                y: canvas.height - (i + 1) * tileSize,
+                width: tileSize,
+                height: tileSize,
+                type: 'grass'
+            });
+        }
     }
 
     function endGame(message) {
