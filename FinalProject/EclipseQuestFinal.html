@@ -1,1 +1,452 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+    body, html {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f1f1f1;
+    }
+    #titleScreen, #gameMap, #endScreen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        color: white;
+        font-family: Arial, sans-serif;
+    }
+    #startButton, .levelButton, #retryButton, #menuButton {
+        padding: 10px 20px;
+        font-size: 20px;
+        margin-top: 20px;
+        cursor: pointer;
+    }
+    .levelButton, #retryButton, #menuButton {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+    }
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+    #topRightButtons {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+</style>
+</head>
+<body>
+<div id="titleScreen">
+    <h1>Eclipse Quest</h1>
+    <button id="startButton">Start Game</button>
+</div>
+<div id="gameMap" style="display: none;">
+    <h1>Select a Level</h1>
+    <button class="levelButton" data-level="1">Level 1</button>
+    <button class="levelButton" data-level="2">Level 2</button>
+    <button class="levelButton" data-level="3">Level 3</button>
+    <button class="levelButton" data-level="4">Level 4</button>
+    <button class="levelButton" data-level="5">Level 5</button>
+</div>
+<div id="endScreen" style="display: none;">
+    <h1>Game Over</h1>
+    <button id="retryButton">Retry</button>
+    <button id="menuButton">Main Menu</button>
+</div>
+<div id="topRightButtons" style="display: none;">
+    <button id="retryButtonTop">Retry</button>
+    <button id="menuButtonTop">Main Menu</button>
+</div>
+<script>
+const backgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/SunMoon-Background.webp"; // Replace with your background image URL for the title screen
+const gameMapBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/NightSky-Background.jpg"; // Replace with your background image URL for the game map screen
+const gameBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/NightSky-Background.jpg"; // Replace with your background image URL for the game screen
+const cloudImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/cloud-png.webp"; // Replace with your cloud image URL
+const lunaImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/luna.png"; // Replace with the actual URL for Luna's image
+const solaraImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/solara.png"; // Replace with the actual URL for Solara's image
+const redWaterImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/red water.jpg"; // Replace with the actual URL for red water image
+const blueWaterImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/water.jpg"; // Replace with the actual URL for blue water image
 
+let currentLevel = 1;
+
+function createCanvas(level) {
+    const canvas = document.createElement("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    document.body.appendChild(canvas);
+    const context = canvas.getContext("2d");
+
+    const gameBackgroundImage = new Image();
+    gameBackgroundImage.src = gameBackgroundImageURL;
+
+    const cloudImage = new Image();
+    cloudImage.src = cloudImageURL;
+
+    const lunaImage = new Image();
+    lunaImage.src = lunaImageURL;
+
+    const solaraImage = new Image();
+    solaraImage.src = solaraImageURL;
+
+    const redWaterImage = new Image();
+    redWaterImage.src = redWaterImageURL;
+
+    const blueWaterImage = new Image();
+    blueWaterImage.src = blueWaterImageURL;
+
+    const blueSquare = {
+        x: level === 1 ? 50 : 50, // Adjusted spawn point for Luna if level 1
+        y: level === 1 ? canvas.height - 250 : canvas.height - 50, // Adjusted spawn point for Luna if level 1
+        size: 50, // Increased size for Luna
+        speedX: 0,
+        speedY: 0,
+        gravity: 0.5,
+        jumpPower: -15, // Increased jump power
+        onGround: true
+    };
+
+    const redSquare = {
+        x: level === 1 ? 200 : 150, // Adjusted spawn point for Solara if level 1
+        y: canvas.height - 50, // Adjusted spawn point for Solara if level 1
+        size: 50, // Increased size for Solara
+        speedX: 0,
+        speedY: 0,
+        gravity: 0.5,
+        jumpPower: -15, // Increased jump power
+        onGround: true
+    };
+
+    const clouds = [];
+    const redWaters = [];
+    const blueWaters = [];
+
+    function createCloudsAndWaters() {
+        // Create a continuous line of clouds at the bottom left
+        for (let i = 0; i < canvas.width / 2 - 100; i += 200) {
+            clouds.push({
+                x: i,
+                y: canvas.height - 200, // Lowered height
+                width: 200,
+                height: 50
+            });
+        }
+
+        // Create the obstacle on the bottom right
+        const obstacleStartX = canvas.width - 600; // Adjust the starting position of the obstacle
+        const obstacleStartY = canvas.height - 300; // Lowered height
+
+        for (let i = 0; i < 3; i++) {
+            clouds.push({
+                x: obstacleStartX + i * 200,
+                y: obstacleStartY - i * 50,
+                width: 200,
+                height: 50
+            });
+        }
+
+        // Add red and blue water obstacles on top of the left cloud obstacles
+        redWaters.push({
+            x: 150, // Moved to the right
+            y: canvas.height - 225, // Raised height to be on top of the cloud
+            width: 100,
+            height: 25
+        });
+
+        blueWaters.push({
+            x: 350, // Moved to the right
+            y: canvas.height - 225, // Raised height to be on top of the cloud
+            width: 100,
+            height: 25
+        });
+
+        // Add red and blue water at the bottom of the screen
+        redWaters.push({
+            x: canvas.width / 4 - 50, // Centered and made longer
+            y: canvas.height - 25, // Fixed at the bottom
+            width: 150,
+            height: 25
+        });
+
+        blueWaters.push({
+            x: (canvas.width / 4) * 3 - 50, // Centered and made longer
+            y: canvas.height - 25, // Fixed at the bottom
+            width: 150,
+            height: 25
+        });
+    }
+
+    function endGame(message) {
+        document.getElementById("endScreen").style.display = "flex";
+        document.getElementById("topRightButtons").style.display = "none";
+        document.body.removeChild(canvas);
+    }
+
+    function update() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw game background image
+        context.drawImage(gameBackgroundImage, 0, 0, canvas.width, canvas.height);
+
+        // Draw cloud image if level 1
+        if (level === 1) {
+            clouds.forEach(cloud => {
+                context.drawImage(cloudImage, cloud.x, cloud.y, cloud.width, cloud.height);
+            });
+        }
+
+        // Draw red water
+        redWaters.forEach(water => {
+            context.drawImage(redWaterImage, water.x, water.y, water.width, water.height);
+        });
+
+        // Draw blue water
+        blueWaters.forEach(water => {
+            context.drawImage(blueWaterImage, water.x, water.y, water.width, water.height);
+        });
+
+        // Update blue square
+        blueSquare.speedY += blueSquare.gravity;
+        blueSquare.x += blueSquare.speedX;
+        blueSquare.y += blueSquare.speedY;
+
+        if (blueSquare.y + blueSquare.size > canvas.height) {
+            blueSquare.y = canvas.height - blueSquare.size;
+            blueSquare.speedY = 0;
+            blueSquare.onGround = true;
+        }
+
+        // Check collision with clouds for blue square
+        clouds.forEach(cloud => {
+            if (blueSquare.x < cloud.x + cloud.width &&
+                blueSquare.x + blueSquare.size > cloud.x &&
+                blueSquare.y + blueSquare.size > cloud.y &&
+                blueSquare.y < cloud.y + cloud.height) {
+                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the clouds
+                    blueSquare.y = cloud.y - blueSquare.size;
+                    blueSquare.speedY = 0;
+                    blueSquare.onGround = true;
+                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the cloud
+                    blueSquare.y = cloud.y + cloud.height;
+                    blueSquare.speedY = 0;
+                }
+            }
+        });
+
+        // Check collision with red water for blue square
+        redWaters.forEach(water => {
+            if (blueSquare.x < water.x + water.width &&
+                blueSquare.x + blueSquare.size > water.x &&
+                blueSquare.y + blueSquare.size > water.y &&
+                blueSquare.y < water.y + water.height) {
+                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the water
+                    blueSquare.y = water.y - blueSquare.size;
+                    blueSquare.speedY = 0;
+                    blueSquare.onGround = true;
+                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the water
+                    blueSquare.y = water.y + water.height;
+                    blueSquare.speedY = 0;
+                }
+                endGame("Luna hit the red water! Game Over.");
+            }
+        });
+
+        // Check collision with blue water for blue square
+        blueWaters.forEach(water => {
+            if (blueSquare.x < water.x + water.width &&
+                blueSquare.x + blueSquare.size > water.x &&
+                blueSquare.y + blueSquare.size > water.y &&
+                blueSquare.y < water.y + water.height) {
+                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the water
+                    blueSquare.y = water.y - blueSquare.size;
+                    blueSquare.speedY = 0;
+                    blueSquare.onGround = true;
+                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the water
+                    blueSquare.y = water.y + water.height;
+                    blueSquare.speedY = 0;
+                }
+            }
+        });
+
+        // Update red square
+        redSquare.speedY += redSquare.gravity;
+        redSquare.x += redSquare.speedX;
+        redSquare.y += redSquare.speedY;
+
+        if (redSquare.y + redSquare.size > canvas.height) {
+            redSquare.y = canvas.height - redSquare.size;
+            redSquare.speedY = 0;
+            redSquare.onGround = true;
+        }
+
+        // Check collision with clouds for red square
+        clouds.forEach(cloud => {
+            if (redSquare.x < cloud.x + cloud.width &&
+                redSquare.x + redSquare.size > cloud.x &&
+                redSquare.y + redSquare.size > cloud.y &&
+                redSquare.y < cloud.y + cloud.height) {
+                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the clouds
+                    redSquare.y = cloud.y - redSquare.size;
+                    redSquare.speedY = 0;
+                    redSquare.onGround = true;
+                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the cloud
+                    redSquare.y = cloud.y + cloud.height;
+                    redSquare.speedY = 0;
+                }
+            }
+        });
+
+        // Check collision with red water for red square
+        redWaters.forEach(water => {
+            if (redSquare.x < water.x + water.width &&
+                redSquare.x + redSquare.size > water.x &&
+                redSquare.y + redSquare.size > water.y &&
+                redSquare.y < water.y + water.height) {
+                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the water
+                    redSquare.y = water.y - redSquare.size;
+                    redSquare.speedY = 0;
+                    redSquare.onGround = true;
+                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the water
+                    redSquare.y = water.y + water.height;
+                    redSquare.speedY = 0;
+                }
+            }
+        });
+
+        // Check collision with blue water for red square
+        blueWaters.forEach(water => {
+            if (redSquare.x < water.x + water.width &&
+                redSquare.x + redSquare.size > water.x &&
+                redSquare.y + redSquare.size > water.y &&
+                redSquare.y < water.y + water.height) {
+                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the water
+                    redSquare.y = water.y - redSquare.size;
+                    redSquare.speedY = 0;
+                    redSquare.onGround = true;
+                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the water
+                    redSquare.y = water.y + water.height;
+                    redSquare.speedY = 0;
+                }
+                endGame("Solara hit the blue water! Game Over.");
+            }
+        });
+
+        // Draw Luna image
+        context.drawImage(lunaImage, blueSquare.x, blueSquare.y, blueSquare.size, blueSquare.size);
+
+        // Draw Solara image
+        context.drawImage(solaraImage, redSquare.x, redSquare.y, redSquare.size, redSquare.size);
+
+        requestAnimationFrame(update);
+    }
+
+    function handleKeyDown(event) {
+        switch (event.key) {
+            case "a":
+                blueSquare.speedX = -5;
+                break;
+            case "d":
+                blueSquare.speedX = 5;
+                break;
+            case "w":
+                if (blueSquare.onGround) {
+                    blueSquare.speedY = blueSquare.jumpPower;
+                    blueSquare.onGround = false;
+                }
+                break;
+            case "ArrowLeft":
+                redSquare.speedX = -5;
+                break;
+            case "ArrowRight":
+                redSquare.speedX = 5;
+                break;
+            case "ArrowUp":
+                if (redSquare.onGround) {
+                    redSquare.speedY = redSquare.jumpPower;
+                    redSquare.onGround = false;
+                }
+                break;
+        }
+    }
+
+    function handleKeyUp(event) {
+        switch (event.key) {
+            case "a":
+            case "d":
+                blueSquare.speedX = 0;
+                break;
+            case "ArrowLeft":
+            case "ArrowRight":
+                redSquare.speedX = 0;
+                break;
+        }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    if (level === 1) {
+        createCloudsAndWaters();
+    }
+
+    update();
+}
+
+document.getElementById("startButton").addEventListener("click", () => {
+    document.getElementById("titleScreen").style.display = "none";
+    document.getElementById("gameMap").style.display = "flex";
+});
+
+document.querySelectorAll(".levelButton").forEach(button => {
+    button.addEventListener("click", () => {
+        currentLevel = parseInt(button.getAttribute("data-level"));
+        document.getElementById("gameMap").style.display = "none";
+        document.getElementById("topRightButtons").style.display = "flex";
+        createCanvas(currentLevel);
+    });
+});
+
+document.getElementById("retryButton").addEventListener("click", () => {
+    document.getElementById("endScreen").style.display = "none";
+    document.getElementById("topRightButtons").style.display = "flex";
+    createCanvas(currentLevel);
+});
+
+document.getElementById("menuButton").addEventListener("click", () => {
+    document.getElementById("endScreen").style.display = "none";
+    document.getElementById("gameMap").style.display = "flex";
+});
+
+document.getElementById("retryButtonTop").addEventListener("click", () => {
+    document.getElementById("topRightButtons").style.display = "flex";
+    createCanvas(currentLevel);
+});
+
+document.getElementById("menuButtonTop").addEventListener("click", () => {
+    document.getElementById("topRightButtons").style.display = "none";
+    document.getElementById("gameMap").style.display = "flex";
+});
+
+document.getElementById("titleScreen").style.backgroundImage = `url(${backgroundImageURL})`;
+document.getElementById("gameMap").style.backgroundImage = `url(${gameMapBackgroundImageURL})`;
+document.getElementById("endScreen").style.backgroundImage = `url(${backgroundImageURL})`;
+</script>
+</body>
+</html>
