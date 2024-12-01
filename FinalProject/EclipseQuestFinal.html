@@ -79,11 +79,11 @@
 const backgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/SunMoon-Background.webp"; // Replace with your background image URL for the title screen
 const gameMapBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/NightSky-Background.jpg"; // Replace with your background image URL for the game map screen
 const gameBackgroundImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/NightSky-Background.jpg"; // Replace with your background image URL for the game screen
-const cloudImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/Grass.png"; // Replace with your cloud image URL
+const grassImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/Grass.png"; // Replace with your grass image URL
 const lunaImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/luna.png"; // Replace with the actual URL for Luna's image
 const solaraImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/solara.png"; // Replace with the actual URL for Solara's image
-const redWaterImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/Solaragrass.png"; // Replace with the actual URL for red water image
-const blueWaterImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/Lunagrass.png"; // Replace with the actual URL for blue water image
+const solaraGrassImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/Solaragrass.png"; // Replace with the actual URL for Solara grass image
+const lunaGrassImageURL = "https://github.com/sueskm578/sueskm578.github.io/raw/main/FinalProject/Lunagrass.png"; // Replace with the actual URL for Luna grass image
 
 let currentLevel = 1;
 
@@ -97,8 +97,8 @@ function createCanvas(level) {
     const gameBackgroundImage = new Image();
     gameBackgroundImage.src = gameBackgroundImageURL;
 
-    const cloudImage = new Image();
-    cloudImage.src = cloudImageURL;
+    const grassImage = new Image();
+    grassImage.src = grassImageURL;
 
     const lunaImage = new Image();
     lunaImage.src = lunaImageURL;
@@ -106,11 +106,11 @@ function createCanvas(level) {
     const solaraImage = new Image();
     solaraImage.src = solaraImageURL;
 
-    const redWaterImage = new Image();
-    redWaterImage.src = redWaterImageURL;
+    const solaraGrassImage = new Image();
+    solaraGrassImage.src = solaraGrassImageURL;
 
-    const blueWaterImage = new Image();
-    blueWaterImage.src = blueWaterImageURL;
+    const lunaGrassImage = new Image();
+    lunaGrassImage.src = lunaGrassImageURL;
 
     const blueSquare = {
         x: level === 1 ? 50 : 50, // Adjusted spawn point for Luna if level 1
@@ -135,12 +135,12 @@ function createCanvas(level) {
     };
 
     const clouds = [];
-    const redWaters = [];
-    const blueWaters = [];
+    const solaraGrasses = [];
+    const lunaGrasses = [];
 
     function createCloudsAndWaters() {
         // Create a continuous line of grass obstacles at the bottom left
-        const grassTypes = [cloudImageURL, redWaterImageURL, cloudImageURL, blueWaterImageURL, cloudImageURL];
+        const grassTypes = [grassImageURL, solaraGrassImageURL, grassImageURL, lunaGrassImageURL, grassImageURL];
         for (let i = 0; i < grassTypes.length; i++) {
             clouds.push({
                 x: i * 200,
@@ -161,7 +161,7 @@ function createCanvas(level) {
                 y: obstacleStartY - i * 50,
                 width: 200,
                 height: 50,
-                type: cloudImageURL // All ascending obstacles are the new grass obstacle
+                type: grassImageURL // All ascending obstacles are the new grass obstacle
             });
         }
     }
@@ -190,14 +190,14 @@ function createCanvas(level) {
             });
         }
 
-        // Draw red water
-        redWaters.forEach(water => {
-            context.drawImage(redWaterImage, water.x, water.y, water.width, water.height);
+        // Draw solara grass
+        solaraGrasses.forEach(grass => {
+            context.drawImage(solaraGrassImage, grass.x, grass.y, grass.width, grass.height);
         });
 
-        // Draw blue water
-        blueWaters.forEach(water => {
-            context.drawImage(blueWaterImage, water.x, water.y, water.width, water.height);
+        // Draw luna grass
+        lunaGrasses.forEach(grass => {
+            context.drawImage(lunaGrassImage, grass.x, grass.y, grass.width, grass.height);
         });
 
         // Update blue square
@@ -225,42 +225,42 @@ function createCanvas(level) {
                     blueSquare.y = cloud.y + cloud.height;
                     blueSquare.speedY = 0;
                 }
-                if (cloud.type === redWaterImageURL) {
+                if (cloud.type === solaraGrassImageURL) {
                     endGame("Luna hit the Solaragrass! Game Over.");
                 }
             }
         });
 
-        // Check collision with red water for blue square
-        redWaters.forEach(water => {
-            if (blueSquare.x < water.x + water.width &&
-                blueSquare.x + blueSquare.size > water.x &&
-                blueSquare.y + blueSquare.size > water.y &&
-                blueSquare.y < water.y + water.height) {
-                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the water
-                    blueSquare.y = water.y - blueSquare.size;
+        // Check collision with solara grass for blue square
+        solaraGrasses.forEach(grass => {
+            if (blueSquare.x < grass.x + grass.width &&
+                blueSquare.x + blueSquare.size > grass.x &&
+                blueSquare.y + blueSquare.size > grass.y &&
+                blueSquare.y < grass.y + grass.height) {
+                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the grass
+                    blueSquare.y = grass.y - blueSquare.size;
                     blueSquare.speedY = 0;
                     blueSquare.onGround = true;
-                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the water
-                    blueSquare.y = water.y + water.height;
+                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the grass
+                    blueSquare.y = grass.y + grass.height;
                     blueSquare.speedY = 0;
                 }
-                endGame("Luna hit the red water! Game Over.");
+                endGame("Luna hit the Solaragrass! Game Over.");
             }
         });
 
-        // Check collision with blue water for blue square
-        blueWaters.forEach(water => {
-            if (blueSquare.x < water.x + water.width &&
-                blueSquare.x + blueSquare.size > water.x &&
-                blueSquare.y + blueSquare.size > water.y &&
-                blueSquare.y < water.y + water.height) {
-                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the water
-                    blueSquare.y = water.y - blueSquare.size;
+        // Check collision with luna grass for blue square
+        lunaGrasses.forEach(grass => {
+            if (blueSquare.x < grass.x + grass.width &&
+                blueSquare.x + blueSquare.size > grass.x &&
+                blueSquare.y + blueSquare.size > grass.y &&
+                blueSquare.y < grass.y + grass.height) {
+                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the grass
+                    blueSquare.y = grass.y - blueSquare.size;
                     blueSquare.speedY = 0;
                     blueSquare.onGround = true;
-                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the water
-                    blueSquare.y = water.y + water.height;
+                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the grass
+                    blueSquare.y = grass.y + grass.height;
                     blueSquare.speedY = 0;
                 }
             }
@@ -291,44 +291,44 @@ function createCanvas(level) {
                     redSquare.y = cloud.y + cloud.height;
                     redSquare.speedY = 0;
                 }
-                if (cloud.type === blueWaterImageURL) {
+                if (cloud.type === lunaGrassImageURL) {
                     endGame("Solara hit the Lunagrass! Game Over.");
                 }
             }
         });
 
-        // Check collision with red water for red square
-        redWaters.forEach(water => {
-            if (redSquare.x < water.x + water.width &&
-                redSquare.x + redSquare.size > water.x &&
-                redSquare.y + redSquare.size > water.y &&
-                redSquare.y < water.y + water.height) {
-                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the water
-                    redSquare.y = water.y - redSquare.size;
+        // Check collision with solara grass for red square
+        solaraGrasses.forEach(grass => {
+            if (redSquare.x < grass.x + grass.width &&
+                redSquare.x + redSquare.size > grass.x &&
+                redSquare.y + redSquare.size > grass.y &&
+                redSquare.y < grass.y + grass.height) {
+                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the grass
+                    redSquare.y = grass.y - redSquare.size;
                     redSquare.speedY = 0;
                     redSquare.onGround = true;
-                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the water
-                    redSquare.y = water.y + water.height;
+                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the grass
+                    redSquare.y = grass.y + grass.height;
                     redSquare.speedY = 0;
                 }
             }
         });
 
-        // Check collision with blue water for red square
-        blueWaters.forEach(water => {
-            if (redSquare.x < water.x + water.width &&
-                redSquare.x + redSquare.size > water.x &&
-                redSquare.y + redSquare.size > water.y &&
-                redSquare.y < water.y + water.height) {
-                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the water
-                    redSquare.y = water.y - redSquare.size;
+        // Check collision with luna grass for red square
+        lunaGrasses.forEach(grass => {
+            if (redSquare.x < grass.x + grass.width &&
+                redSquare.x + redSquare.size > grass.x &&
+                redSquare.y + redSquare.size > grass.y &&
+                redSquare.y < grass.y + grass.height) {
+                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the grass
+                    redSquare.y = grass.y - redSquare.size;
                     redSquare.speedY = 0;
                     redSquare.onGround = true;
-                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the water
-                    redSquare.y = water.y + water.height;
+                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the grass
+                    redSquare.y = grass.y + grass.height;
                     redSquare.speedY = 0;
                 }
-                endGame("Solara hit the blue water! Game Over.");
+                endGame("Solara hit the Lunagrass! Game Over.");
             }
         });
 
