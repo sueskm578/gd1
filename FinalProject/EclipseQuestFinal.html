@@ -156,7 +156,7 @@ function createCanvas(level) {
         obstacles.length = 0;
 
         // Create a row of grass on the left-hand side above the height of the players
-        const rowY = canvas.height - 200; // Adjust the y position as needed
+        const rowY = canvas.height - 300; // Adjust the y position as needed
         const tileSize = 100; // Width and height of each tile
 
         obstacles.push({ x: 0, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
@@ -170,7 +170,7 @@ function createCanvas(level) {
 
         // Create an ascending row of grass on the right side
         const startX = canvas.width - 200; // Adjust the starting x position as needed
-        const startY = canvas.height - 500; // Starting y position for the highest obstacle
+        const startY = canvas.height - 600; // Starting y position for the highest obstacle
 
         obstacles.push({ x: startX, y: startY, width: tileSize, height: tileSize, type: 'grass' });
         obstacles.push({ x: startX - tileSize, y: startY, width: tileSize, height: tileSize, type: 'grass' });
@@ -179,6 +179,11 @@ function createCanvas(level) {
         obstacles.push({ x: startX - 4 * tileSize, y: startY + 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
         obstacles.push({ x: startX - 5 * tileSize, y: startY + 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
         obstacles.push({ x: startX + tileSize, y: startY, width: tileSize, height: tileSize, type: 'grass' });
+
+        // Add a row of grass obstacles at the bottom of the screen
+        for (let i = 0; i < canvas.width / tileSize; i++) {
+            obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: 'grass' });
+        }
     }
 
     function endGame(message) {
