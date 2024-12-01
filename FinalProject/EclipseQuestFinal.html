@@ -96,21 +96,27 @@ function createCanvas(level) {
 
     const gameBackgroundImage = new Image();
     gameBackgroundImage.src = gameBackgroundImageURL;
+    gameBackgroundImage.onload = () => console.log("Game background image loaded");
 
     const grassImage = new Image();
     grassImage.src = grassImageURL;
+    grassImage.onload = () => console.log("Grass image loaded");
 
     const lunaImage = new Image();
     lunaImage.src = lunaImageURL;
+    lunaImage.onload = () => console.log("Luna image loaded");
 
     const solaraImage = new Image();
     solaraImage.src = solaraImageURL;
+    solaraImage.onload = () => console.log("Solara image loaded");
 
     const solaraGrassImage = new Image();
     solaraGrassImage.src = solaraGrassImageURL;
+    solaraGrassImage.onload = () => console.log("Solara grass image loaded");
 
     const lunaGrassImage = new Image();
     lunaGrassImage.src = lunaGrassImageURL;
+    lunaGrassImage.onload = () => console.log("Luna grass image loaded");
 
     const blueSquare = {
         x: level === 1 ? 50 : 50, // Adjusted spawn point for Luna if level 1
