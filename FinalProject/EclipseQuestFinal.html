@@ -184,7 +184,9 @@ function createCanvas(level) {
             clouds.forEach(cloud => {
                 const image = new Image();
                 image.src = cloud.type;
-                context.drawImage(image, cloud.x, cloud.y, cloud.width, cloud.height);
+                image.onload = () => {
+                    context.drawImage(image, cloud.x, cloud.y, cloud.width, cloud.height);
+                };
             });
         }
 
