@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -170,6 +170,7 @@ function createCanvas(level) {
         document.getElementById("endScreen").style.display = "flex";
         document.getElementById("topRightButtons").style.display = "none";
         document.body.removeChild(canvas);
+        alert(message);
     }
 
     function update() {
@@ -221,6 +222,9 @@ function createCanvas(level) {
                 } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the cloud
                     blueSquare.y = cloud.y + cloud.height;
                     blueSquare.speedY = 0;
+                }
+                if (cloud.type === redWaterImageURL) {
+                    endGame("Luna hit the Solaragrass! Game Over.");
                 }
             }
         });
@@ -284,6 +288,9 @@ function createCanvas(level) {
                 } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the cloud
                     redSquare.y = cloud.y + cloud.height;
                     redSquare.speedY = 0;
+                }
+                if (cloud.type === blueWaterImageURL) {
+                    endGame("Solara hit the Lunagrass! Game Over.");
                 }
             }
         });
