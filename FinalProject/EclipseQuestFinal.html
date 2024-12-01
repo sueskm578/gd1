@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -139,13 +139,15 @@ function createCanvas(level) {
     const blueWaters = [];
 
     function createCloudsAndWaters() {
-        // Create a continuous line of clouds at the bottom left
-        for (let i = 0; i < canvas.width / 2 - 100; i += 200) {
+        // Create a continuous line of grass obstacles at the bottom left
+        const grassTypes = [cloudImageURL, redWaterImageURL, cloudImageURL, blueWaterImageURL, cloudImageURL];
+        for (let i = 0; i < grassTypes.length; i++) {
             clouds.push({
-                x: i,
+                x: i * 200,
                 y: canvas.height - 200, // Lowered height
                 width: 200,
-                height: 50
+                height: 50,
+                type: grassTypes[i]
             });
         }
 
@@ -158,39 +160,10 @@ function createCanvas(level) {
                 x: obstacleStartX + i * 200,
                 y: obstacleStartY - i * 50,
                 width: 200,
-                height: 50
+                height: 50,
+                type: cloudImageURL // All ascending obstacles are the new grass obstacle
             });
         }
-
-        // Add red and blue water obstacles on top of the left cloud obstacles
-        redWaters.push({
-            x: 150, // Moved to the right
-            y: canvas.height - 225, // Raised height to be on top of the cloud
-            width: 100,
-            height: 25
-        });
-
-        blueWaters.push({
-            x: 350, // Moved to the right
-            y: canvas.height - 225, // Raised height to be on top of the cloud
-            width: 100,
-            height: 25
-        });
-
-        // Add red and blue water at the bottom of the screen
-        redWaters.push({
-            x: canvas.width / 4 - 50, // Centered and made longer
-            y: canvas.height - 25, // Fixed at the bottom
-            width: 150,
-            height: 25
-        });
-
-        blueWaters.push({
-            x: (canvas.width / 4) * 3 - 50, // Centered and made longer
-            y: canvas.height - 25, // Fixed at the bottom
-            width: 150,
-            height: 25
-        });
     }
 
     function endGame(message) {
@@ -205,10 +178,12 @@ function createCanvas(level) {
         // Draw game background image
         context.drawImage(gameBackgroundImage, 0, 0, canvas.width, canvas.height);
 
-        // Draw cloud image if level 1
+        // Draw obstacles if level 1
         if (level === 1) {
             clouds.forEach(cloud => {
-                context.drawImage(cloudImage, cloud.x, cloud.y, cloud.width, cloud.height);
+                const image = new Image();
+                image.src = cloud.type;
+                context.drawImage(image, cloud.x, cloud.y, cloud.width, cloud.height);
             });
         }
 
