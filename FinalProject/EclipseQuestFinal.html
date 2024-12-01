@@ -89,36 +89,43 @@ const lunaGrassImageURL = "Lunagrass.png"; // Replace with the actual URL for Lu
 
 let currentLevel = 1;
 
+const images = {};
+
+function preloadImages() {
+    const imageUrls = [
+        { name: 'gameBackground', url: gameBackgroundImageURL },
+        { name: 'grass', url: grassImageURL },
+        { name: 'luna', url: lunaImageURL },
+        { name: 'solara', url: solaraImageURL },
+        { name: 'solaraGrass', url: solaraGrassImageURL },
+        { name: 'lunaGrass', url: lunaGrassImageURL }
+    ];
+
+    let loadedImagesCount = 0;
+    const totalImages = imageUrls.length;
+
+    return new Promise((resolve, reject) => {
+        imageUrls.forEach(imageInfo => {
+            const img = new Image();
+            img.src = imageInfo.url;
+            img.onload = () => {
+                images[imageInfo.name] = img;
+                loadedImagesCount++;
+                if (loadedImagesCount === totalImages) {
+                    resolve();
+                }
+            };
+            img.onerror = reject;
+        });
+    });
+}
+
 function createCanvas(level) {
     const canvas = document.createElement("canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     document.body.appendChild(canvas);
     const context = canvas.getContext("2d");
-
-    const gameBackgroundImage = new Image();
-    gameBackgroundImage.src = gameBackgroundImageURL;
-    gameBackgroundImage.onload = () => console.log("Game background image loaded");
-
-    const grassImage = new Image();
-    grassImage.src = grassImageURL;
-    grassImage.onload = () => console.log("Grass image loaded");
-
-    const lunaImage = new Image();
-    lunaImage.src = lunaImageURL;
-    lunaImage.onload = () => console.log("Luna image loaded");
-
-    const solaraImage = new Image();
-    solaraImage.src = solaraImageURL;
-    solaraImage.onload = () => console.log("Solara image loaded");
-
-    const solaraGrassImage = new Image();
-    solaraGrassImage.src = solaraGrassImageURL;
-    solaraGrassImage.onload = () => console.log("Solara grass image loaded");
-
-    const lunaGrassImage = new Image();
-    lunaGrassImage.src = lunaGrassImageURL;
-    lunaGrassImage.onload = () => console.log("Luna grass image loaded");
 
     const blueSquare = {
         x: level === 1 ? 50 : 50, // Adjusted spawn point for Luna if level 1
@@ -151,7 +158,7 @@ function createCanvas(level) {
             y: canvas.height - 100,
             width: 100,
             height: 50,
-            type: grassImageURL
+            type: 'grass'
         });
 
         obstacles.push({
@@ -159,7 +166,7 @@ function createCanvas(level) {
             y: canvas.height - 150,
             width: 100,
             height: 50,
-            type: solaraGrassImageURL
+            type: 'solaraGrass'
         });
 
         obstacles.push({
@@ -167,7 +174,7 @@ function createCanvas(level) {
             y: canvas.height - 200,
             width: 100,
             height: 50,
-            type: lunaGrassImageURL
+            type: 'lunaGrass'
         });
     }
 
@@ -182,16 +189,12 @@ function createCanvas(level) {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         // Draw game background image
-        context.drawImage(gameBackgroundImage, 0, 0, canvas.width, canvas.height);
+        context.drawImage(images.gameBackground, 0, 0, canvas.width, canvas.height);
 
         // Draw obstacles
         obstacles.forEach(obstacle => {
-            const image = new Image();
-            image.src = obstacle.type;
-            image.onload = () => {
-                console.log(`Drawing obstacle at (${obstacle.x}, ${obstacle.y}) with width ${obstacle.width} and height ${obstacle.height}`);
-                context.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-            };
+            const image = images[obstacle.type];
+            context.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
         });
 
         // Update blue square
@@ -219,7 +222,7 @@ function createCanvas(level) {
                     blueSquare.y = obstacle.y + obstacle.height;
                     blueSquare.speedY = 0;
                 }
-                if (obstacle.type === solaraGrassImageURL) {
+                if (obstacle.type === 'solaraGrass') {
                     endGame("Luna hit the Solaragrass! Game Over.");
                 }
             }
@@ -250,17 +253,17 @@ function createCanvas(level) {
                     redSquare.y = obstacle.y + obstacle.height;
                     redSquare.speedY = 0;
                 }
-                if (obstacle.type === lunaGrassImageURL) {
+                if (obstacle.type === 'lunaGrass') {
                     endGame("Solara hit the Lunagrass! Game Over.");
                 }
             }
         });
 
         // Draw Luna image
-        context.drawImage(lunaImage, blueSquare.x, blueSquare.y, blueSquare.size, blueSquare.size);
+        context.drawImage(images.luna, blueSquare.x, blueSquare.y, blueSquare.size, blueSquare.size);
 
         // Draw Solara image
-        context.drawImage(solaraImage, redSquare.x, redSquare.y, redSquare.size, redSquare.size);
+        context.drawImage(images.solara, redSquare.x, redSquare.y, redSquare.size, redSquare.size);
 
         requestAnimationFrame(update);
     }
@@ -355,6 +358,12 @@ document.getElementById("menuButtonTop").addEventListener("click", () => {
 document.getElementById("titleScreen").style.backgroundImage = `url(${backgroundImageURL})`;
 document.getElementById("gameMap").style.backgroundImage = `url(${gameMapBackgroundImageURL})`;
 document.getElementById("endScreen").style.backgroundImage = `url(${backgroundImageURL})`;
+
+preloadImages().then(() => {
+    console.log("All images preloaded");
+}).catch(error => {
+    console.error("Error preloading images:", error);
+});
 </script>
 </body>
 </html>
