@@ -97,6 +97,14 @@ const lunagemImageURL = "Lunagem.jpg"; // Replace with the actual URL for Lunage
 const lunaDoorImageURL = "Lunadoor.png"; // Replace with the actual URL for Luna door image
 const solaraDoorImageURL = "Solaradoor.png"; // Replace with the actual URL for Solara door image
 
+const levelBackgroundImages = {
+    1: "creepy cave.jpg",
+    2: "creepy cave level 2.avif",
+    3: "creepy cave 3.jpg",
+    4: "creepy cave 4.avif",
+    5: "creepy cave 5.jpg"
+};
+
 let currentLevel = 1;
 let lunaGemsCollected = 0;
 let solaraGemsCollected = 0;
@@ -362,7 +370,7 @@ function createCanvas(level) {
                 }
             });
 
-            // Check collision with doors for red square
+                       // Check collision with doors for red square
             doors.forEach(door => {
                 if (redSquare.x < door.x + door.width &&
                     redSquare.x + redSquare.size > door.x &&
@@ -442,7 +450,13 @@ function createCanvas(level) {
         createObstacles();
     }
 
-    update();
+    // Set the background image for the current level
+    const levelBackgroundImage = new Image();
+    levelBackgroundImage.src = levelBackgroundImages[level];
+    levelBackgroundImage.onload = () => {
+        context.drawImage(levelBackgroundImage, 0, 0, canvas.width, canvas.height);
+        update();
+    };
 }
 
 document.getElementById("startButton").addEventListener("click", () => {
