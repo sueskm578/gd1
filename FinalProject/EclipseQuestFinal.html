@@ -240,17 +240,14 @@ function createCanvas(level) {
             obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
         }
 
-        // Create an ascending row of grass starting from the 8th from the right placed directly above the grass obstacle at the bottom
-        const startX = (Math.floor(canvas.width / tileSize) - 8) * tileSize;
+        // Create an ascending row of grass starting from the rightmost position, but remove the top row
+        const startX = canvas.width - tileSize * 4; // Adjust the starting x position to the rightmost position
         for (let i = 1; i <= 2; i++) {
             obstacles.push({ x: startX + i * tileSize, y: canvas.height - (i + 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
         }
 
-        // Move the top row of the ascending obstacle down one space
-        obstacles.push({ x: startX + 3 * tileSize, y: canvas.height - 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
-
         // Add one more grass obstacle next to the top one
-        obstacles.push({ x: startX + 4 * tileSize, y: canvas.height - 4 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+        obstacles.push({ x: startX + 3 * tileSize, y: canvas.height - 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
     }
 }
 
