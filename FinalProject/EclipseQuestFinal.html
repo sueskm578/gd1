@@ -203,6 +203,18 @@ function createObstacles() {
     // Add Lunagem positioned on top of the grass obstacle 6 from the left
     collectibles.push({ x: 6 * tileSize, y: bottomY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
 
+    // Create a row of grass on the left-hand side above the height of the players
+    const rowY = canvas.height - 300; // Adjust the y position as needed
+
+    obstacles.push({ x: 0, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+    obstacles.push({ x: tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+    obstacles.push({ x: 2 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'solaraGrass' });
+    obstacles.push({ x: 3 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+    obstacles.push({ x: 4 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+    obstacles.push({ x: 5 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'lunaGrass' });
+    obstacles.push({ x: 6 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+    obstacles.push({ x: 7 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+
     // Create an ascending row of grass on the right side
     const startX = canvas.width - 200; // Adjust the starting x position as needed
     const startY = canvas.height - 600; // Starting y position for the highest obstacle
