@@ -188,7 +188,7 @@ function createCanvas(level) {
 
         // Add a row of grass obstacles at the bottom of the screen
         for (let i = 0; i < canvas.width / tileSize; i++) {
-            const type = (i === Math.floor(canvas.width / tileSize) - 4) ? 'lunaGrass' : 'grass';
+            const type = (i === Math.floor(canvas.width / tileSize) - 3) ? 'lunaGrass' : 'grass';
             obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
         }
 
