@@ -153,9 +153,11 @@ function createCanvas(level) {
     document.body.appendChild(canvas);
     const context = canvas.getContext("2d");
 
+    const tileSize = 100; // Width and height of each tile
+
     const blueSquare = {
-        x: level === 1 ? 50 : 50, // Adjusted spawn point for Luna if level 1
-        y: level === 1 ? canvas.height - 250 : canvas.height - 50, // Adjusted spawn point for Luna if level 1
+        x: 0, // Adjusted spawn point for Luna
+        y: canvas.height - 4 * tileSize, // Adjusted spawn point for Luna (three spaces up from the bottom)
         size: 50, // Increased size for Luna
         speedX: 0,
         speedY: 0,
@@ -166,8 +168,8 @@ function createCanvas(level) {
     };
 
     const redSquare = {
-        x: level === 1 ? 200 : 150, // Adjusted spawn point for Solara if level 1
-        y: canvas.height - 150, // Adjusted spawn point for Solara on top of the grass obstacles at the bottom
+        x: 0, // Adjusted spawn point for Solara
+        y: canvas.height - tileSize, // Adjusted spawn point for Solara on top of the bottom grass obstacles
         size: 50, // Increased size for Solara
         speedX: 0,
         speedY: 0,
