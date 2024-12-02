@@ -236,18 +236,18 @@ function createCanvas(level) {
 
             // Add a row of grass obstacles at the bottom of the screen
             for (let i = 0; i < canvas.width / tileSize; i++) {
-                const type = (i === Math.floor(canvas.width / tileSize) - 3) ? 'radioactiveGrass' : 'grass';
+                const type = (i === Math.floor(canvas.width / tileSize) - 8) ? 'radioactiveGrass' : 'grass'; // Move radioactiveGrass 5 spaces to the right
                 obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
             }
 
-            // Create an ascending row of grass starting from the 3rd from the right placed directly above the grass obstacle at the bottom
-            const startX = (Math.floor(canvas.width / tileSize) - 3) * tileSize;
+            // Create an ascending row of grass starting from the 8th from the right placed directly above the grass obstacle at the bottom
+            const startX = (Math.floor(canvas.width / tileSize) - 8) * tileSize;
             for (let i = 1; i <= 5; i++) {
-                obstacles.push({ x: startX, y: canvas.height - (i + 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+                obstacles.push({ x: startX + i * tileSize, y: canvas.height - (i + 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
             }
 
             // Add Luna door at the top of the ascending grass obstacles
-            doors.push({ x: startX, y: canvas.height - 7 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
+            doors.push({ x: startX + 5 * tileSize, y: canvas.height - 7 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
 
             // Add Solara door at the bottom right
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
@@ -361,7 +361,7 @@ function createCanvas(level) {
                 redSquare.onGround = true;
             }
 
-                        // Check collision with obstacles for red square
+                       // Check collision with obstacles for red square
             obstacles.forEach(obstacle => {
                 if (redSquare.x < obstacle.x + obstacle.width &&
                     redSquare.x + redSquare.size > obstacle.x &&
