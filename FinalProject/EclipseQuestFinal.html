@@ -231,25 +231,25 @@ function createCanvas(level) {
             // Add Solara door one spot to the right on top of the grass obstacle
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
         } else if (level === 2) {
-            // Level 2 obstacles, collectibles, and doors setup
-            const tileSize = 100; // Width and height of each tile
+        // Level 2 obstacles, collectibles, and doors setup
+        const tileSize = 100; // Width and height of each tile
 
-            // Add a row of grass obstacles at the bottom of the screen
-            for (let i = 0; i < canvas.width / tileSize; i++) {
-                const type = (i === Math.floor(canvas.width / tileSize) - 8) ? 'radioactiveGrass' : 'grass'; // Move radioactiveGrass 5 spaces to the right
-                obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
-            }
-
-            // Create an ascending row of grass starting from the 8th from the right placed directly above the grass obstacle at the bottom
-            const startX = (Math.floor(canvas.width / tileSize) - 8) * tileSize;
-            for (let i = 1; i <= 3; i++) {
-                obstacles.push({ x: startX + i * tileSize, y: canvas.height - (i + 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
-            }
-
-            // Add one more grass obstacle next to the top one
-            obstacles.push({ x: startX + 4 * tileSize, y: canvas.height - 4 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+        // Add a row of grass obstacles at the bottom of the screen
+        for (let i = 0; i < canvas.width / tileSize; i++) {
+            const type = (i === Math.floor(canvas.width / tileSize) - 8) ? 'radioactiveGrass' : 'grass'; // Move radioactiveGrass 5 spaces to the right
+            obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
         }
+
+        // Create an ascending row of grass starting from the rightmost position
+        const startX = canvas.width - tileSize * 4; // Adjust the starting x position to the rightmost position
+        for (let i = 1; i <= 3; i++) {
+            obstacles.push({ x: startX + i * tileSize, y: canvas.height - (i + 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+        }
+
+        // Add one more grass obstacle next to the top one
+        obstacles.push({ x: startX + 4 * tileSize, y: canvas.height - 4 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
     }
+}
 
     function endGame(message) {
         document.getElementById("endScreen").style.display = "flex";
