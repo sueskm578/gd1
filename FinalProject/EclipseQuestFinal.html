@@ -370,7 +370,7 @@ function createCanvas(level) {
                 }
             });
 
-                       // Check collision with doors for red square
+            // Check collision with doors for red square
             doors.forEach(door => {
                 if (redSquare.x < door.x + door.width &&
                     redSquare.x + redSquare.size > door.x &&
@@ -388,7 +388,7 @@ function createCanvas(level) {
             context.drawImage(images.luna, blueSquare.x, blueSquare.y, blueSquare.size, blueSquare.size);
         }
 
-        // Draw Solara image if visible
+                // Draw Solara image if visible
         if (redSquare.visible) {
             context.drawImage(images.solara, redSquare.x, redSquare.y, redSquare.size, redSquare.size);
         }
