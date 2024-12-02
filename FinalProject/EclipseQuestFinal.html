@@ -225,8 +225,8 @@ function createObstacles() {
     // Add Luna door at the top of the right-hand grass obstacles on the last grass to the right
     doors.push({ x: startX + tileSize, y: startY - tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
 
-    // Add Solara door at the bottom right of the screen on top of the grass obstacle
-    doors.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
+    // Add Solara door one spot to the right on top of the grass obstacle
+    doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
 }
 
     function endGame(message) {
