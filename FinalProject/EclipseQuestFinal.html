@@ -255,22 +255,6 @@ function createCanvas(level) {
         const leftRowY = canvas.height - 3 * tileSize; // Three spaces up from the bottom
         for (let i = 0; i < 3; i++) {
             obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
-            
-        // Example: Adding the new row of grass
-        const grassWidth = 50; // Example width of a grass block
-        const grassHeight = 50; // Example height of a grass block
-        const startX = 12 * grassWidth; // Starting x-position (12 spaces over)
-        const startY = canvas.height - (5 * grassHeight); // Starting y-position (5 spaces up from the bottom)
-
-        const numGrassBlocks = 8; // Example number of blocks in the row
-        for (let i = 0; i < numGrassBlocks; i++) {
-            obstacles.push({
-                x: startX + i * grassWidth,
-                y: startY,
-                width: grassWidth,
-                height: grassHeight,
-                type: 'grass', // Assuming 'grass' is the type of this obstacle
-            });
         }
     }
 }
