@@ -256,6 +256,12 @@ function createCanvas(level) {
         for (let i = 0; i < 3; i++) {
             obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
         }
+            
+        //Add row of grass 5 spaces up and 12 spaces across    
+        const leftRowY = canvas.height - 5 * tileSize; 
+        for (let i = 0; i < 12; i++) {
+            obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
+        }
     }
 }
 
