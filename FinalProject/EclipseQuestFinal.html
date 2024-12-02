@@ -209,8 +209,6 @@ function createCanvas(level) {
             obstacles.push({ x: startX - tileSize, y: startY, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: startX - 2 * tileSize, y: startY + tileSize, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: startX - 3 * tileSize, y: startY + 2 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
-            obstacles.push({ x: startX - 4 * tileSize, y: startY + 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
-            obstacles.push({ x: startX - 5 * tileSize, y: startY + 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: startX + tileSize, y: startY, width: tileSize, height: tileSize, type: 'grass' });
 
             // Add a row of grass obstacles at the bottom of the screen
@@ -236,19 +234,18 @@ function createCanvas(level) {
 
             // Add a row of grass obstacles at the bottom of the screen
             for (let i = 0; i < canvas.width / tileSize; i++) {
-                const type = (i === Math.floor(canvas.width / tileSize) - 3) ? 'radioactiveGrass' : 'grass'; // Move radioactiveGrass 5 spaces to the right
-                obstacles.push({ x: (i + 5) * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
+                const type = (i === Math.floor(canvas.width / tileSize) - 8) ? 'radioactiveGrass' : 'grass'; // Move radioactiveGrass 5 spaces to the right
+                obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
             }
 
             // Create an ascending row of grass starting from the 8th from the right placed directly above the grass obstacle at the bottom
             const startX = (Math.floor(canvas.width / tileSize) - 3) * tileSize;
             for (let i = 1; i <= 2; i++) {
-                obstacles.push({ x: (startX + (i + 5) * tileSize), y: canvas.height - (i + 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+                obstacles.push({ x: startX + (i + 5) * tileSize, y: canvas.height - (i + 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
             }
 
             // Add one more grass obstacle next to the top one
-            obstacles.push({ x: (startX + 8 * tileSize), y: canvas.height - 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
-            obstacles.push({ x: (startX + 9 * tileSize), y: canvas.height - 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+            obstacles.push({ x: startX + 8 * tileSize, y: canvas.height - 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
         }
     }
 
@@ -359,7 +356,7 @@ function createCanvas(level) {
                 redSquare.onGround = true;
             }
 
-                       // Check collision with obstacles for red square
+                        // Check collision with obstacles for red square
             obstacles.forEach(obstacle => {
                 if (redSquare.x < obstacle.x + obstacle.width &&
                     redSquare.x + redSquare.size > obstacle.x &&
