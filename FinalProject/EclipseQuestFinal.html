@@ -188,12 +188,12 @@ function createCanvas(level) {
 
         // Add a row of grass obstacles at the bottom of the screen
         for (let i = 0; i < canvas.width / tileSize; i++) {
-            const type = (i === canvas.width / tileSize - 4) ? 'lunaGrass' : 'grass';
+            const type = (i === Math.floor(canvas.width / tileSize) - 4) ? 'lunaGrass' : 'grass';
             obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
         }
 
         // Add Solaragem positioned over the grass obstacle 2 from the right at the bottom of the screen
-        collectibles.push({ x: (canvas.width / tileSize - 2) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
+        collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 2) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
 
         // Add Lunagem positioned on top of the left-hand grass obstacle that is 5 from the right
         collectibles.push({ x: 3 * tileSize, y: rowY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
