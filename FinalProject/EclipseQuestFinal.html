@@ -209,6 +209,8 @@ function createCanvas(level) {
             obstacles.push({ x: startX - tileSize, y: startY, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: startX - 2 * tileSize, y: startY + tileSize, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: startX - 3 * tileSize, y: startY + 2 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+            obstacles.push({ x: startX - 4 * tileSize, y: startY + 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+            obstacles.push({ x: startX - 5 * tileSize, y: startY + 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: startX + tileSize, y: startY, width: tileSize, height: tileSize, type: 'grass' });
 
             // Add a row of grass obstacles at the bottom of the screen
@@ -239,13 +241,13 @@ function createCanvas(level) {
             }
 
             // Create an ascending row of grass starting from the 8th from the right placed directly above the grass obstacle at the bottom
-            const startX = (Math.floor(canvas.width / tileSize) - 3) * tileSize;
-            for (let i = 1; i <= 2; i++) {
-                obstacles.push({ x: startX + (i + 5) * tileSize, y: canvas.height - (i + 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+            const startX = (Math.floor(canvas.width / tileSize) - 8) * tileSize;
+            for (let i = 1; i <= 3; i++) {
+                obstacles.push({ x: startX + i * tileSize, y: canvas.height - (i + 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
             }
 
             // Add one more grass obstacle next to the top one
-            obstacles.push({ x: startX + 8 * tileSize, y: canvas.height - 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+            obstacles.push({ x: startX + 4 * tileSize, y: canvas.height - 4 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
         }
     }
 
