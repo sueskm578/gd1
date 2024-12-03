@@ -275,8 +275,8 @@ function createCanvas(level) {
             const startXNewRow = 11 * tileSize; // Rightmost position of the new grass row
             obstacles.push({ x: startXNewRow + tileSize, y: fiveSpacesUpY + tileSize, width: tileSize, height: tileSize, type: 'grass' });
 
-            // Add a button on the new grass row, 4 spaces from the right
-            const buttonX = (Math.floor(canvas.width / tileSize) - 4) * tileSize;
+            // Add a button on the new grass row, 4 spaces from the left
+            const buttonX = 4 * tileSize;
             const buttonY = fiveSpacesUpY - tileSize;
             buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button' });
         }
@@ -338,7 +338,7 @@ function createCanvas(level) {
                 blueSquare.onGround = true;
             }
 
-                      // Check collision with obstacles for blue square
+                     // Check collision with obstacles for blue square
             obstacles.forEach(obstacle => {
                 if (blueSquare.x < obstacle.x + obstacle.width &&
                     blueSquare.x + blueSquare.size > obstacle.x &&
@@ -365,10 +365,10 @@ function createCanvas(level) {
                     blueSquare.y + blueSquare.size > button.y &&
                     blueSquare.y < button.y + button.height) {
                     buttonPressed = true;
-                    // Move the grass obstacle closest to the left side upward
-                    const leftMostGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0);
-                    if (leftMostGrass) {
-                        leftMostGrass.y -= tileSize; // Move the grass obstacle up by one tile size
+                    // Move the new grass row obstacle on the left side upward slowly
+                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.y === canvas.height - 5 * tileSize);
+                    if (leftRowGrass) {
+                        leftRowGrass.y -= 1; // Move the grass obstacle up slowly
                     }
                 }
             });
@@ -437,10 +437,10 @@ function createCanvas(level) {
                     redSquare.y + redSquare.size > button.y &&
                     redSquare.y < button.y + button.height) {
                     buttonPressed = true;
-                    // Move the grass obstacle closest to the left side upward
-                    const leftMostGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0);
-                    if (leftMostGrass) {
-                        leftMostGrass.y -= tileSize; // Move the grass obstacle up by one tile size
+                    // Move the new grass row obstacle on the left side upward slowly
+                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.y === canvas.height - 5 * tileSize);
+                    if (leftRowGrass) {
+                        leftRowGrass.y -= 1; // Move the grass obstacle up slowly
                     }
                 }
             });
