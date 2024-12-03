@@ -169,7 +169,9 @@ function createCanvas(level) {
 
     const redSquare = {
         x: 0, // Adjusted spawn point for Solara
-        y: canvas.height - tileSize, // Adjusted spawn point for Solara on top of the bottom grass obstacles
+        y: canvas.height - tileSize, // Adjusted spawn point for Solara on top of the bottom
+
+ grass obstacles
         size: 50, // Increased size for Solara
         speedX: 0,
         speedY: 0,
@@ -267,7 +269,9 @@ function createCanvas(level) {
     }
 
     function levelComplete() {
-        document.getElementById("levelCompleteScreen").style.display = "flex";
+        document.getElementById("levelCompleteScreen
+
+").style.display = "flex";
         document.getElementById("topRightButtons").style.display = "none";
         document.body.removeChild(canvas);
         document.getElementById("gemCount").innerText = `Luna Gems: ${lunaGemsCollected} | Solara Gems: ${solaraGemsCollected}`;
@@ -323,8 +327,8 @@ function createCanvas(level) {
                         blueSquare.y = obstacle.y + obstacle.height;
                         blueSquare.speedY = 0;
                     }
-                    if (obstacle.type === 'radioactiveGrass') {
-                        endGame("Luna hit the Radioactivegrass! Game Over.");
+                    if (obstacle.type === 'solaraGrass') {
+                        endGame("Luna hit the SolaraGrass! Game Over.");
                     }
                 }
             });
@@ -341,7 +345,7 @@ function createCanvas(level) {
                 }
             });
 
-            // Check collision with doors for blue square
+                      // Check collision with doors for blue square
             doors.forEach(door => {
                 if (blueSquare.x < door.x + door.width &&
                     blueSquare.x + blueSquare.size > door.x &&
@@ -366,7 +370,7 @@ function createCanvas(level) {
                 redSquare.onGround = true;
             }
 
-                        // Check collision with obstacles for red square
+            // Check collision with obstacles for red square
             obstacles.forEach(obstacle => {
                 if (redSquare.x < obstacle.x + obstacle.width &&
                     redSquare.x + redSquare.size > obstacle.x &&
@@ -381,7 +385,7 @@ function createCanvas(level) {
                         redSquare.speedY = 0;
                     }
                     if (obstacle.type === 'lunaGrass') {
-                        endGame("Solara hit the Lunagrass! Game Over.");
+                        endGame("Solara hit the LunaGrass! Game Over.");
                     }
                 }
             });
