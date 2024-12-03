@@ -24,9 +24,7 @@
         background-size: cover;
         background-position: center;
         color: white;
-       
-
- font-family: Arial, sans-serif;
+        font-family: Arial, sans-serif;
     }
     #startButton, .levelButton, #retryButton, #menuButton, #retryLevelButton, #mainMenuButton {
         padding: 10px 20px;
@@ -99,9 +97,7 @@ const lunaDoorImageURL = "Lunadoor.png"; // Replace with the actual URL for Luna
 const solaraDoorImageURL = "Solaradoor.png"; // Replace with the actual URL for Solara door image
 const radioactiveGrassImageURL = "Radioactivegrass.png"; // Replace with the actual URL for Radioactivegrass image
 
-const level
-
-BackgroundImages = {
+const levelBackgroundImages = {
     1: "creepy cave.jpg",
     2: "creepy cave.jpg",
     3: "creepy cave 2.jpg",
@@ -364,7 +360,7 @@ function createCanvas(level) {
             });
         }
 
-              // Update red square
+               // Update red square
         if (redSquare.visible) {
             redSquare.speedY += redSquare.gravity;
             redSquare.x += redSquare.speedX;
