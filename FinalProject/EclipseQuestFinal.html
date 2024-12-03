@@ -24,7 +24,9 @@
         background-size: cover;
         background-position: center;
         color: white;
-        font-family: Arial, sans-serif;
+       
+
+ font-family: Arial, sans-serif;
     }
     #startButton, .levelButton, #retryButton, #menuButton, #retryLevelButton, #mainMenuButton {
         padding: 10px 20px;
@@ -97,7 +99,9 @@ const lunaDoorImageURL = "Lunadoor.png"; // Replace with the actual URL for Luna
 const solaraDoorImageURL = "Solaradoor.png"; // Replace with the actual URL for Solara door image
 const radioactiveGrassImageURL = "Radioactivegrass.png"; // Replace with the actual URL for Radioactivegrass image
 
-const levelBackgroundImages = {
+const level
+
+BackgroundImages = {
     1: "creepy cave.jpg",
     2: "creepy cave.jpg",
     3: "creepy cave 2.jpg",
@@ -233,31 +237,37 @@ function createCanvas(level) {
             // Add Solara door one spot to the right on top of the grass obstacle
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
         } else if (level === 2) {
-        // Level 2 obstacles, collectibles, and doors setup
-        const tileSize = 100; // Width and height of each tile
+            // Level 2 obstacles, collectibles, and doors setup
+            const tileSize = 100; // Width and height of each tile
 
-        // Add a row of grass obstacles at the bottom of the screen
-        for (let i = 0; i < canvas.width / tileSize; i++) {
-            const type = (i === Math.floor(canvas.width / tileSize) - 8) ? 'radioactiveGrass' : 'grass'; // Move radioactiveGrass 5 spaces to the right
-            obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
-        }
+            // Add a row of grass obstacles at the bottom of the screen
+            for (let i = 0; i < canvas.width / tileSize; i++) {
+                const type = (i === Math.floor(canvas.width / tileSize) - 8) ? 'radioactiveGrass' : 'grass'; // Move radioactiveGrass 5 spaces to the right
+                obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
+            }
 
-        // Create an ascending row of grass starting from the rightmost position, but remove the top row
-        const startX = canvas.width - tileSize * 4; // Adjust the starting x position to the rightmost position
-        for (let i = 1; i <= 2; i++) {
-            obstacles.push({ x: startX + i * tileSize, y: canvas.height - (i + 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
-        }
+            // Create an ascending row of grass starting from the rightmost position, but remove the top row
+            const startX = canvas.width - tileSize * 4; // Adjust the starting x position to the rightmost position
+            for (let i = 1; i <= 2; i++) {
+                obstacles.push({ x: startX + i * tileSize, y: canvas.height - (i + 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+            }
 
-        // Add one more grass obstacle next to the top one
-        obstacles.push({ x: startX + 3 * tileSize, y: canvas.height - 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+            // Add one more grass obstacle next to the top one
+            obstacles.push({ x: startX + 3 * tileSize, y: canvas.height - 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
 
-        // Add a row of grass three spaces up and three grass obstacles long on the left-hand side of the screen
-        const leftRowY = canvas.height - 3 * tileSize; // Three spaces up from the bottom
-        for (let i = 0; i < 3; i++) {
-            obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
+            // Add a row of grass three spaces up and three grass obstacles long on the left-hand side of the screen
+            const leftRowY = canvas.height - 3 * tileSize; // Three spaces up from the bottom
+            for (let i = 0; i < 3; i++) {
+                obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
+            }
+
+            // Add another row of grass starting from the left side, 5 spaces up, and extending 12 grass spaces across
+            const fiveSpacesUpY = canvas.height - 5 * tileSize;
+            for (let i = 0; i < 12; i++) {
+                obstacles.push({ x: i * tileSize, y: fiveSpacesUpY, width: tileSize, height: tileSize, type: 'grass' });
+            }
         }
     }
-}
 
     function endGame(message) {
         document.getElementById("endScreen").style.display = "flex";
@@ -354,7 +364,7 @@ function createCanvas(level) {
             });
         }
 
-        // Update red square
+              // Update red square
         if (redSquare.visible) {
             redSquare.speedY += redSquare.gravity;
             redSquare.x += redSquare.speedX;
@@ -366,7 +376,7 @@ function createCanvas(level) {
                 redSquare.onGround = true;
             }
 
-                       // Check collision with obstacles for red square
+            // Check collision with obstacles for red square
             obstacles.forEach(obstacle => {
                 if (redSquare.x < obstacle.x + obstacle.width &&
                     redSquare.x + redSquare.size > obstacle.x &&
