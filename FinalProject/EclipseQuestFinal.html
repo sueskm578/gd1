@@ -169,9 +169,7 @@ function createCanvas(level) {
 
     const redSquare = {
         x: 0, // Adjusted spawn point for Solara
-        y: canvas.height - tileSize, // Adjusted spawn point for Solara on top of the bottom
-
- grass obstacles
+        y: canvas.height - tileSize, // Adjusted spawn point for Solara on top of the bottom grass obstacles
         size: 50, // Increased size for Solara
         speedX: 0,
         speedY: 0,
@@ -269,9 +267,7 @@ function createCanvas(level) {
     }
 
     function levelComplete() {
-        document.getElementById("levelCompleteScreen
-
-").style.display = "flex";
+        document.getElementById("levelCompleteScreen").style.display = "flex";
         document.getElementById("topRightButtons").style.display = "none";
         document.body.removeChild(canvas);
         document.getElementById("gemCount").innerText = `Luna Gems: ${lunaGemsCollected} | Solara Gems: ${solaraGemsCollected}`;
@@ -344,6 +340,7 @@ function createCanvas(level) {
                     lunaGemsCollected++;
                 }
             });
+
             // Check collision with doors for blue square
             doors.forEach(door => {
                 if (blueSquare.x < door.x + door.width &&
@@ -369,7 +366,7 @@ function createCanvas(level) {
                 redSquare.onGround = true;
             }
 
-            // Check collision with obstacles for red square
+                       // Check collision with obstacles for red square
             obstacles.forEach(obstacle => {
                 if (redSquare.x < obstacle.x + obstacle.width &&
                     redSquare.x + redSquare.size > obstacle.x &&
