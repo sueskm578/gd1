@@ -262,6 +262,12 @@ function createCanvas(level) {
             for (let i = 0; i < 12; i++) {
                 obstacles.push({ x: i * tileSize, y: fiveSpacesUpY, width: tileSize, height: tileSize, type: 'grass' });
             }
+
+            // Add an ascending grass obstacle down on the right side of the new grass row
+            const startXNewRow = 11 * tileSize; // Rightmost position of the new grass row
+            for (let i = 1; i <= 3; i++) {
+                obstacles.push({ x: startXNewRow + i * tileSize, y: fiveSpacesUpY + i * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+            }
         }
     }
 
@@ -360,7 +366,7 @@ function createCanvas(level) {
             });
         }
 
-               // Update red square
+        // Update red square
         if (redSquare.visible) {
             redSquare.speedY += redSquare.gravity;
             redSquare.x += redSquare.speedX;
