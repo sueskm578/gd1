@@ -344,8 +344,7 @@ function createCanvas(level) {
                     lunaGemsCollected++;
                 }
             });
-
-                      // Check collision with doors for blue square
+            // Check collision with doors for blue square
             doors.forEach(door => {
                 if (blueSquare.x < door.x + door.width &&
                     blueSquare.x + blueSquare.size > door.x &&
