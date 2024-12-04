@@ -100,8 +100,8 @@ const lunagemImageURL = "Lunagem.jpg"; // Replace with the actual URL for Lunage
 const lunaDoorImageURL = "Lunadoor.png"; // Replace with the actual URL for Luna door image
 const solaraDoorImageURL = "Solaradoor.png"; // Replace with the actual URL for Solara door image
 const radioactiveGrassImageURL = "Radioactivegrass.png"; // Replace with the actual URL for Radioactivegrass image
-const buttonImageURL = "Button.png"; // Replace with the actual URL for the unpressed button image
-const buttonPressedImageURL = "Buttonpress.png"; // Replace with the actual URL for the pressed button image
+const buttonImageURL = "Buttongrass.png"; // Replace with the actual URL for the unpressed button image
+const buttonPressedImageURL = "Buttonpressgrass.png"; // Replace with the actual URL for the pressed button image
 
 const levelBackgroundImages = {
     1: "creepy cave.jpg",
@@ -279,14 +279,14 @@ function createCanvas(level) {
         const startXNewRow = 11 * tileSize; // Rightmost position of the new grass row
         obstacles.push({ x: startXNewRow + tileSize, y: fiveSpacesUpY + tileSize, width: tileSize, height: tileSize, type: 'grass' });
 
-        // Add a button on the new grass row, 4 spaces from the left
-        const buttonX = 4 * tileSize;
-        const buttonY = fiveSpacesUpY - tileSize;
+        // Add a button on the new grass row, 4 spaces from the right
+        const buttonX = (Math.floor(canvas.width / tileSize) - 4) * tileSize;
+        const buttonY = canvas.height - 3 * tileSize;
         buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button' });
 
         // Add another button on top of the grass row above the previous button
-        const buttonYAbove = fiveSpacesUpY - 1 * tileSize;
-        buttons.push({ x: buttonX, y: buttonYAbove, width: tileSize, height: tileSize, type: 'button' });
+        const buttonYAbove = 0;
+        buttons.push({ x: 3 * tileSize, y: buttonYAbove, width: tileSize, height: tileSize, type: 'button' });
 
         // Add another row of grass two spaces down from the top, leaving one space open on the left-hand side
         const twoSpacesDownY = 1 * tileSize;
@@ -333,7 +333,7 @@ function createCanvas(level) {
             context.drawImage(image, door.x, door.y, door.width, door.height);
         });
 
-                // Draw buttons
+                      // Draw buttons
         buttons.forEach(button => {
             const image = images[buttonPressed ? 'buttonPressed' : 'button'];
             context.drawImage(image, button.x, button.y, button.width, button.height);
@@ -396,6 +396,7 @@ function createCanvas(level) {
                     leftRowGrass.y += tileSize; // Move the grass obstacle down by one tile size
                 }
             }
+
             // Check collision with collectibles for blue square
             collectibles.forEach((collectible, index) => {
                 if (blueSquare.x < collectible.x + collectible.width &&
@@ -478,6 +479,7 @@ function createCanvas(level) {
                     leftRowGrass.y += tileSize; // Move the grass obstacle down by one tile size
                 }
             }
+
             // Check collision with collectibles for red square
             collectibles.forEach((collectible, index) => {
                 if (redSquare.x < collectible.x + collectible.width &&
@@ -636,3 +638,4 @@ preloadImages().then(() => {
 </script>
 </body>
 </html>
+       
