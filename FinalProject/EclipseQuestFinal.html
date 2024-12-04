@@ -267,7 +267,7 @@ function createCanvas(level) {
         // Add another row of grass starting from the left side, 5 spaces up, and extending 12 grass spaces across
         const fiveSpacesUpY = canvas.height - 5 * tileSize;
         for (let i = 0; i < 12; i++) {
-            const type = (i >= 8 && i <= 9) ? 'radioactiveGrass' : 'grass'; // Add radioactiveGrass on the new row, 8 and 9 spaces from the right
+            const type = (i >= 8) ? 'radioactiveGrass' : 'grass'; // Add radioactiveGrass on the new row, 8 and 9 spaces from the right
             obstacles.push({ x: i * tileSize, y: fiveSpacesUpY, width: tileSize, height: tileSize, type: type });
         }
 
