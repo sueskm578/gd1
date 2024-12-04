@@ -275,15 +275,15 @@ function createCanvas(level) {
         const startXNewRow = 11 * tileSize; // Rightmost position of the new grass row
         obstacles.push({ x: startXNewRow + tileSize, y: fiveSpacesUpY + tileSize, width: tileSize, height: tileSize, type: 'grass' });
 
-        // Add a button on the new grass row, 4 spaces from the left
-        const buttonX = 4 * tileSize;
-        const buttonY = fiveSpacesUpY - tileSize;
-        buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button' });
-
-        // Add another button on top of the grass row above the previous button
-        const buttonYAbove = fiveSpacesUpY - 1 * tileSize;
-        buttons.push({ x: buttonX, y: buttonYAbove, width: tileSize, height: tileSize, type: 'button' });
-
+       // Add a button on the new grass row, 4 spaces from the left
+            const buttonX = 4 * tileSize;
+            const buttonY = fiveSpacesUpY - tileSize;
+            buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button' });
+            
+            // Move the button down to be on top of the grass
+            const buttonYAbove = fiveSpacesUpY; // Adjusted to be on top of the grass
+            buttons.push({ x: buttonX, y: buttonYAbove, width: tileSize, height: tileSize, type: 'button' });
+            
         // Add another row of grass two spaces down from the top, leaving one space open on the left-hand side
         const twoSpacesDownY = 1 * tileSize;
         for (let i = 1; i < canvas.width / tileSize; i++) {
