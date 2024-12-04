@@ -114,6 +114,8 @@ const levelBackgroundImages = {
 let currentLevel = 1;
 let lunaGemsCollected = 0;
 let solaraGemsCollected = 0;
+
+
 let lunaReachedDoor = false;
 let solaraReachedDoor = false;
 let buttonPressed = false;
@@ -288,6 +290,12 @@ function createCanvas(level) {
         const buttonYAbove = 0;
         buttons.push({ x: 3 * tileSize, y: buttonYAbove, width: tileSize, height: tileSize, type: 'button' });
 
+        // Replace the grass obstacle in the top row with the button grass
+        const topRowGrassIndex = obstacles.findIndex(obstacle => obstacle.x === 3 * tileSize && obstacle.y === 0);
+        if (topRowGrassIndex !== -1) {
+            obstacles[topRowGrassIndex].type = 'button';
+        }
+
         // Add another row of grass two spaces down from the top, leaving one space open on the left-hand side
         const twoSpacesDownY = 1 * tileSize;
         for (let i = 1; i < canvas.width / tileSize; i++) {
@@ -327,13 +335,13 @@ function createCanvas(level) {
             context.drawImage(image, collectible.x, collectible.y, collectible.width, collectible.height);
         });
 
-        // Draw doors
+               // Draw doors
         doors.forEach(door => {
             const image = images[door.type];
             context.drawImage(image, door.x, door.y, door.width, door.height);
         });
 
-                      // Draw buttons
+        // Draw buttons
         buttons.forEach(button => {
             const image = images[buttonPressed ? 'buttonPressed' : 'button'];
             context.drawImage(image, button.x, button.y, button.width, button.height);
@@ -638,4 +646,3 @@ preloadImages().then(() => {
 </script>
 </body>
 </html>
-       
