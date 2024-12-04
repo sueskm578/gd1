@@ -281,11 +281,11 @@ function createCanvas(level) {
         buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button' });
 
         // Add another button on top of the grass row above the previous button
-        const buttonYAbove = fiveSpacesUpY - 2 * tileSize;
+        const buttonYAbove = fiveSpacesUpY - 1 * tileSize;
         buttons.push({ x: buttonX, y: buttonYAbove, width: tileSize, height: tileSize, type: 'button' });
 
         // Add another row of grass two spaces down from the top, leaving one space open on the left-hand side
-        const twoSpacesDownY = 2 * tileSize;
+        const twoSpacesDownY = 1 * tileSize;
         for (let i = 1; i < canvas.width / tileSize; i++) {
             obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: 'grass' });
         }
