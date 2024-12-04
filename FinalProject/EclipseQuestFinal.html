@@ -277,7 +277,7 @@ function createCanvas(level) {
 
             // Add a button on the new grass row, 4 spaces from the left
             const buttonX = 4 * tileSize;
-            const buttonY = fiveSpacesUpY; // Adjusted to be fused with the grass obstacle
+            const buttonY = fiveSpacesUpY - tileSize;
             buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button' });
         }
     }
@@ -383,7 +383,6 @@ function createCanvas(level) {
                     leftRowGrass.y += tileSize; // Move the grass obstacle down by one tile size
                 }
             }
-
             // Check collision with collectibles for blue square
             collectibles.forEach((collectible, index) => {
                 if (blueSquare.x < collectible.x + collectible.width &&
@@ -466,7 +465,6 @@ function createCanvas(level) {
                     leftRowGrass.y += tileSize; // Move the grass obstacle down by one tile size
                 }
             }
-
             // Check collision with collectibles for red square
             collectibles.forEach((collectible, index) => {
                 if (redSquare.x < collectible.x + collectible.width &&
