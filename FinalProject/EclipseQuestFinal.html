@@ -52,6 +52,10 @@
         right: 10px;
         display: flex;
         flex-direction: column;
+        z-index: 10; /* Ensure buttons are on top */
+    }
+    .button {
+        z-index: 10; /* Ensure buttons are on top */
     }
 </style>
 </head>
@@ -80,8 +84,8 @@
     <button id="mainMenuButton">Main Menu</button>
 </div>
 <div id="topRightButtons" style="display: none;">
-    <button id="retryButtonTop">Retry</button>
-    <button id="menuButtonTop">Main Menu</button>
+    <button id="retryButtonTop" class="button">Retry</button>
+    <button id="menuButtonTop" class="button">Main Menu</button>
 </div>
 <script>
 const backgroundImageURL = "SunMoon-Background.webp"; // Replace with your background image URL for the title screen
@@ -329,7 +333,7 @@ function createCanvas(level) {
             context.drawImage(image, door.x, door.y, door.width, door.height);
         });
 
-        // Draw buttons
+                // Draw buttons
         buttons.forEach(button => {
             const image = images[buttonPressed ? 'buttonPressed' : 'button'];
             context.drawImage(image, button.x, button.y, button.width, button.height);
@@ -347,7 +351,7 @@ function createCanvas(level) {
                 blueSquare.onGround = true;
             }
 
-                       // Check collision with obstacles for blue square
+            // Check collision with obstacles for blue square
             obstacles.forEach(obstacle => {
                 if (blueSquare.x < obstacle.x + obstacle.width &&
                     blueSquare.x + blueSquare.size > obstacle.x &&
@@ -392,6 +396,7 @@ function createCanvas(level) {
                     leftRowGrass.y += tileSize; // Move the grass obstacle down by one tile size
                 }
             }
+
             // Check collision with collectibles for blue square
             collectibles.forEach((collectible, index) => {
                 if (blueSquare.x < collectible.x + collectible.width &&
@@ -474,6 +479,7 @@ function createCanvas(level) {
                     leftRowGrass.y += tileSize; // Move the grass obstacle down by one tile size
                 }
             }
+
             // Check collision with collectibles for red square
             collectibles.forEach((collectible, index) => {
                 if (redSquare.x < collectible.x + collectible.width &&
