@@ -338,7 +338,7 @@ function createCanvas(level) {
                 blueSquare.onGround = true;
             }
 
-                        // Check collision with obstacles for blue square
+                       // Check collision with obstacles for blue square
             obstacles.forEach(obstacle => {
                 if (blueSquare.x < obstacle.x + obstacle.width &&
                     blueSquare.x + blueSquare.size > obstacle.x &&
@@ -359,11 +359,13 @@ function createCanvas(level) {
             });
 
             // Check collision with buttons for blue square
+            let isOnButton = false;
             buttons.forEach(button => {
                 if (blueSquare.x < button.x + button.width &&
                     blueSquare.x + blueSquare.size > button.x &&
                     blueSquare.y + blueSquare.size > button.y &&
                     blueSquare.y < button.y + button.height) {
+                    isOnButton = true;
                     buttonPressed = true;
                     // Move the left grass obstacle in the row upward
                     const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
@@ -372,6 +374,15 @@ function createCanvas(level) {
                     }
                 }
             });
+
+            if (!isOnButton) {
+                buttonPressed = false;
+                // Move the left grass obstacle in the row downward
+                const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize - tileSize);
+                if (leftRowGrass) {
+                    leftRowGrass.y += tileSize; // Move the grass obstacle down by one tile size
+                }
+            }
 
             // Check collision with collectibles for blue square
             collectibles.forEach((collectible, index) => {
@@ -431,11 +442,13 @@ function createCanvas(level) {
             });
 
             // Check collision with buttons for red square
+            let isOnButtonRed = false;
             buttons.forEach(button => {
                 if (redSquare.x < button.x + button.width &&
                     redSquare.x + redSquare.size > button.x &&
                     redSquare.y + redSquare.size > button.y &&
                     redSquare.y < button.y + button.height) {
+                    isOnButtonRed = true;
                     buttonPressed = true;
                     // Move the left grass obstacle in the row upward
                     const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
@@ -444,6 +457,15 @@ function createCanvas(level) {
                     }
                 }
             });
+
+            if (!isOnButtonRed) {
+                buttonPressed = false;
+                // Move the left grass obstacle in the row downward
+                const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize - tileSize);
+                if (leftRowGrass) {
+                    leftRowGrass.y += tileSize; // Move the grass obstacle down by one tile size
+                }
+            }
 
             // Check collision with collectibles for red square
             collectibles.forEach((collectible, index) => {
