@@ -245,7 +245,7 @@ function createCanvas(level) {
 
         // Add a row of grass obstacles at the bottom of the screen
         for (let i = 0; i < canvas.width / tileSize; i++) {
-            const type = (i >= Math.floor(canvas.width / tileSize) - 8 && i < Math.floor(canvas.width / tileSize) - 6) ? 'radioactiveGrass' : 'grass'; // Make radioactiveGrass two spaces
+            const type = (i === Math.floor(canvas.width / tileSize) - 7) ? 'radioactiveGrass' : 'grass'; // Make radioactiveGrass one space
             obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
         }
 
@@ -264,7 +264,7 @@ function createCanvas(level) {
             obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
         }
 
-         // Add another row of grass starting from the left side, 5 spaces up, and extending 12 grass spaces across
+        // Add another row of grass starting from the left side, 5 spaces up, and extending 12 grass spaces across
         const fiveSpacesUpY = canvas.height - 5 * tileSize;
         for (let i = 0; i < 12; i++) {
             const type = (i === 8) ? 'radioactiveGrass' : 'grass'; // Add radioactiveGrass on the new row, 8 spaces from the right
@@ -280,8 +280,12 @@ function createCanvas(level) {
         const buttonY = fiveSpacesUpY - tileSize;
         buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button' });
 
+        // Add another button on top of the grass row above the previous button
+        const buttonYAbove = fiveSpacesUpY - 2 * tileSize;
+        buttons.push({ x: buttonX, y: buttonYAbove, width: tileSize, height: tileSize, type: 'button' });
+
         // Add another row of grass two spaces down from the top, leaving one space open on the left-hand side
-        const twoSpacesDownY = 1 * tileSize;
+        const twoSpacesDownY = 2 * tileSize;
         for (let i = 1; i < canvas.width / tileSize; i++) {
             obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: 'grass' });
         }
