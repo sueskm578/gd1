@@ -277,7 +277,7 @@ function createCanvas(level) {
 
             // Add a button on the new grass row, 4 spaces from the left
             const buttonX = 4 * tileSize;
-            const buttonY = fiveSpacesUpY - tileSize;
+            const buttonY = fiveSpacesUpY; // Adjusted to be fused with the grass obstacle
             buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button' });
         }
     }
