@@ -114,8 +114,6 @@ const levelBackgroundImages = {
 let currentLevel = 1;
 let lunaGemsCollected = 0;
 let solaraGemsCollected = 0;
-
-
 let lunaReachedDoor = false;
 let solaraReachedDoor = false;
 let buttonPressed = false;
@@ -290,10 +288,13 @@ function createCanvas(level) {
         const buttonYAbove = 0;
         buttons.push({ x: 3 * tileSize, y: buttonYAbove, width: tileSize, height: tileSize, type: 'button' });
 
-        // Replace the grass obstacle in the top row with the button grass
-        const topRowGrassIndex = obstacles.findIndex(obstacle => obstacle.x === 3 * tileSize && obstacle.y === 0);
-        if (topRowGrassIndex !== -1) {
-            obstacles[topRowGrassIndex].type = 'button';
+        // Replace the grass obstacle in the row that the top button is over with the grass button
+        const topButton = buttons.find(button => button.y === 0);
+        if (topButton) {
+            const grassBelowButtonIndex = obstacles.findIndex(obstacle => obstacle.x === topButton.x && obstacle.y === tileSize);
+            if (grassBelowButtonIndex !== -1) {
+                obstacles[grassBelowButtonIndex].type = 'button';
+            }
         }
 
         // Add another row of grass two spaces down from the top, leaving one space open on the left-hand side
@@ -329,13 +330,13 @@ function createCanvas(level) {
             context.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
         });
 
-        // Draw collectibles
+               // Draw collectibles
         collectibles.forEach(collectible => {
             const image = images[collectible.type];
             context.drawImage(image, collectible.x, collectible.y, collectible.width, collectible.height);
         });
 
-               // Draw doors
+        // Draw doors
         doors.forEach(door => {
             const image = images[door.type];
             context.drawImage(image, door.x, door.y, door.width, door.height);
