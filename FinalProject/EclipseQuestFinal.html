@@ -330,7 +330,7 @@ function createCanvas(level) {
             context.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
         });
 
-               // Draw collectibles
+              // Draw collectibles
         collectibles.forEach(collectible => {
             const image = images[collectible.type];
             context.drawImage(image, collectible.x, collectible.y, collectible.width, collectible.height);
