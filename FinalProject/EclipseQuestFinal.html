@@ -389,10 +389,13 @@ function createCanvas(level) {
                     blueSquare.y < button.y + button.height) {
                     isOnButton = true;
                     buttonPressed = true;
-                    // Move the left grass obstacle in the row upward
-                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
-                    if (leftRowGrass) {
-                        leftRowGrass.y -= tileSize; // Move the grass obstacle up by one tile size
+                    // Replace the grass obstacle in the row that the top button is over with the grass button
+                    const topButton = buttons.find(button => button.y === 0);
+                    if (topButton) {
+                        const grassBelowButtonIndex = obstacles.findIndex(obstacle => obstacle.x === topButton.x && obstacle.y === tileSize);
+                        if (grassBelowButtonIndex !== -1) {
+                            obstacles[grassBelowButtonIndex].type = 'button';
+                        }
                     }
                 }
             });
@@ -472,10 +475,13 @@ function createCanvas(level) {
                     redSquare.y < button.y + button.height) {
                     isOnButtonRed = true;
                     buttonPressed = true;
-                    // Move the left grass obstacle in the row upward
-                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
-                    if (leftRowGrass) {
-                        leftRowGrass.y -= tileSize; // Move the grass obstacle up by one tile size
+                    // Replace the grass obstacle in the row that the top button is over with the grass button
+                    const topButton = buttons.find(button => button.y === 0);
+                    if (topButton) {
+                        const grassBelowButtonIndex = obstacles.findIndex(obstacle => obstacle.x === topButton.x && obstacle.y === tileSize);
+                        if (grassBelowButtonIndex !== -1) {
+                            obstacles[grassBelowButtonIndex].type = 'button';
+                        }
                     }
                 }
             });
