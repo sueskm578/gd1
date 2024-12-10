@@ -100,8 +100,6 @@ const lunagemImageURL = "Lunagem.jpg"; // Replace with the actual URL for Lunage
 const lunaDoorImageURL = "Lunadoor.png"; // Replace with the actual URL for Luna door image
 const solaraDoorImageURL = "Solaradoor.png"; // Replace with the actual URL for Solara door image
 const radioactiveGrassImageURL = "Radioactivegrass.png"; // Replace with the actual URL for Radioactivegrass image
-const buttongrassImageURL = "Buttongrass.png"; // URL for unpressed button
-const buttonpressgrassImageURL = "Buttonpressgrass.png"; // URL for pressed button
 
 const levelBackgroundImages = {
     1: "creepy cave.jpg",
@@ -130,9 +128,7 @@ function preloadImages() {
         { name: 'lunagem', url: lunagemImageURL },
         { name: 'lunaDoor', url: lunaDoorImageURL },
         { name: 'solaraDoor', url: solaraDoorImageURL },
-        { name: 'radioactiveGrass', url: radioactiveGrassImageURL },
-        { name: 'buttongrass', url: buttongrassImageURL },
-        { name: 'buttonpressgrass', url: buttonpressgrassImageURL }
+        { name: 'radioactiveGrass', url: radioactiveGrassImageURL }
     ];
 
     let loadedImagesCount = 0;
@@ -190,9 +186,6 @@ function createCanvas(level) {
     const obstacles = [];
     const collectibles = [];
     const doors = [];
-    let buttonPressed = false;
-    let buttonObstacle = null;
-    let movableObstacle = null;
 
     function createObstacles(level) {
         // Clear existing obstacles
@@ -284,14 +277,6 @@ function createCanvas(level) {
             for (let i = 1; i < canvas.width / tileSize; i++) {
                 obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: 'grass' });
             }
-
-            // Add the button obstacle
-            buttonObstacle = { x: 3 * tileSize, y: canvas.height - 4 * tileSize, width: tileSize, height: tileSize, type: 'buttongrass' };
-            obstacles.push(buttonObstacle);
-
-            // Add the movable grass obstacle
-            movableObstacle = { x: 0, y: canvas.height - 4 * tileSize, width: tileSize, height: tileSize, type: 'grass' };
-            obstacles.push(movableObstacle);
         }
     }
 
@@ -332,6 +317,7 @@ function createCanvas(level) {
             const image = images[door.type];
             context.drawImage(image, door.x, door.y, door.width, door.height);
         });
+
         // Update blue square
         if (blueSquare.visible) {
             blueSquare.speedY += blueSquare.gravity;
@@ -344,7 +330,7 @@ function createCanvas(level) {
                 blueSquare.onGround = true;
             }
 
-            // Check collision with obstacles for blue square
+                       // Check collision with obstacles for blue square
             obstacles.forEach(obstacle => {
                 if (blueSquare.x < obstacle.x + obstacle.width &&
                     blueSquare.x + blueSquare.size > obstacle.x &&
@@ -387,20 +373,6 @@ function createCanvas(level) {
                     lunaReachedDoor = true;
                 }
             });
-
-            // Check collision with button for blue square
-            if (blueSquare.x < buttonObstacle.x + buttonObstacle.width &&
-                blueSquare.x + blueSquare.size > buttonObstacle.x &&
-                blueSquare.y + blueSquare.size > buttonObstacle.y &&
-                blueSquare.y < buttonObstacle.y + buttonObstacle.height) {
-                buttonPressed = true;
-                buttonObstacle.type = 'buttonpressgrass';
-                movableObstacle.y = canvas.height - 5 * tileSize; // Move the obstacle up
-            } else if (buttonPressed) {
-                buttonPressed = false;
-                buttonObstacle.type = 'buttongrass';
-                movableObstacle.y = canvas.height - 4 * tileSize; // Move the obstacle back to its original position
-            }
         }
 
         // Update red square
@@ -458,20 +430,6 @@ function createCanvas(level) {
                     solaraReachedDoor = true;
                 }
             });
-
-            // Check collision with button for red square
-            if (redSquare.x < buttonObstacle.x + buttonObstacle.width &&
-                redSquare.x + redSquare.size > buttonObstacle.x &&
-                redSquare.y + redSquare.size > buttonObstacle.y &&
-                redSquare.y < buttonObstacle.y + buttonObstacle.height) {
-                buttonPressed = true;
-                buttonObstacle.type = 'buttonpressgrass';
-                movableObstacle.y = canvas.height - 5 * tileSize; // Move the obstacle up
-            } else if (buttonPressed) {
-                buttonPressed = false;
-                buttonObstacle.type = 'buttongrass';
-                movableObstacle.y = canvas.height - 4 * tileSize; // Move the obstacle back to its original position
-            }
         }
 
         // Draw Luna image if visible
