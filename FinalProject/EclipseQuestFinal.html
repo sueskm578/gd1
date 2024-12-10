@@ -307,13 +307,11 @@ function createCanvas(level) {
             // Add Lunagem to the right of the space Solara is on
             collectibles.push({ x: tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
 
-                       // Add Lunagem two spaces before the doors on the top row grass obstacle
+                        // Add Lunagem two spaces before the doors on the top row grass obstacle
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 3) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
 
             // Add Solaragem three spaces before the doors on the top row grass obstacle
-            collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 4) * tileSize, y: two
-
-SpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
+            collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 4) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
         }
     }
 
