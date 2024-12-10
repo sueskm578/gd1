@@ -243,7 +243,7 @@ function createCanvas(level) {
 
             // Add Solara door one spot to the right on top of the grass obstacle
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
-        } else   if (level === 2) {
+        } else    if (level === 2) {
         // Level 2 obstacles, collectibles, and doors setup
         const tileSize = 100; // Width and height of each tile
 
@@ -285,7 +285,7 @@ function createCanvas(level) {
         buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button' });
 
         // Add another button above the grass obstacle in the top grass obstacle row
-        const buttonYAbove = fiveSpacesUpY - 2 * tileSize; // Adjusted y-coordinate to be above the grass obstacle
+        const buttonYAbove = fiveSpacesUpY - 3 * tileSize; // Adjusted y-coordinate to be above the grass obstacle
         buttons.push({ x: buttonX, y: buttonYAbove, width: tileSize, height: tileSize, type: 'button' });
 
         // Add another row of grass two spaces down from the top, leaving one space open on the left-hand side
