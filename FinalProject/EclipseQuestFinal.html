@@ -243,7 +243,7 @@ function createCanvas(level) {
 
             // Add Solara door one spot to the right on top of the grass obstacle
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
-        } else if (level === 2) {
+        } else  if (level === 2) {
         const tileSize = 100; // Width and height of each tile
 
         // Add a row of grass obstacles at the bottom of the screen
@@ -289,6 +289,9 @@ function createCanvas(level) {
         const targetIndex = obstacles.findIndex(obstacle => obstacle.x === targetX && obstacle.y === targetY);
         if (targetIndex !== -1) {
             obstacles[targetIndex].type = 'button';
+            console.log(`Replaced grass at (${targetX}, ${targetY}) with button grass.`);
+        } else {
+            console.log(`No grass found at (${targetX}, ${targetY}) to replace.`);
         }
 
         // Add another row of grass two spaces down from the top, leaving one space open on the left-hand side
