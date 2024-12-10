@@ -46,10 +46,10 @@
         height: 100%;
         border: none;
     }
-    #topRightButtons {
+    #topLeftButtons {
         position: absolute;
         top: 10px;
-        right: 10px;
+        left: 10px;
         display: flex;
         flex-direction: column;
         z-index: 10; /* Ensure buttons are on top */
@@ -83,7 +83,7 @@
     <button id="retryLevelButton">Retry Level</button>
     <button id="mainMenuButton">Main Menu</button>
 </div>
-<div id="topRightButtons" style="display: none;">
+<div id="topLeftButtons" style="display: none;">
     <button id="retryButtonTop" class="button">Retry</button>
     <button id="menuButtonTop" class="button">Main Menu</button>
 </div>
@@ -296,28 +296,28 @@ function createCanvas(level) {
             }
 
             // Add Luna door at the top right of the top grass obstacle row
-            doors.push({ x: (Math.floor(canvas.width / tileSize) - 2) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
+            doors.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
 
             // Add Solara door next to Luna door
-            doors.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
+            doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
         }
     }
 
     function endGame(message) {
         document.getElementById("endScreen").style.display = "flex";
-        document.getElementById("topRightButtons").style.display = "none";
+        document.getElementById("topLeftButtons").style.display = "none";
         document.body.removeChild(canvas);
         alert(message);
     }
 
     function levelComplete() {
         document.getElementById("levelCompleteScreen").style.display = "flex";
-        document.getElementById("topRightButtons").style.display = "none";
+        document.getElementById("topLeftButtons").style.display = "none";
         document.body.removeChild(canvas);
         document.getElementById("gemCount").innerText = `Luna Gems: ${lunaGemsCollected} | Solara Gems: ${solaraGemsCollected}`;
     }
 
-      function update() {
+       function update() {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         // Draw game background image
@@ -448,7 +448,9 @@ function createCanvas(level) {
             obstacles.forEach(obstacle => {
                 if (redSquare.x < obstacle.x + obstacle.width &&
                     redSquare.x + redSquare.size > obstacle.x &&
-                    redSquare.y + redSquare.size > obstacle.y &&
+                    redSquare.y + redSquare.size >
+
+ obstacle.y &&
                     redSquare.y < obstacle.y + obstacle.height) {
                     if (redSquare.speedY > 0) { // Ensure the player cannot jump through the obstacles
                         redSquare.y = obstacle.y - redSquare.size;
@@ -600,14 +602,14 @@ document.querySelectorAll(".levelButton").forEach(button => {
     button.addEventListener("click", () => {
         currentLevel = parseInt(button.getAttribute("data-level"));
         document.getElementById("gameMap").style.display = "none";
-        document.getElementById("topRightButtons").style.display = "flex";
+        document.getElementById("topLeftButtons").style.display = "flex";
         createCanvas(currentLevel);
     });
 });
 
 document.getElementById("retryButton").addEventListener("click", () => {
     document.getElementById("endScreen").style.display = "none";
-    document.getElementById("topRightButtons").style.display = "flex";
+    document.getElementById("topLeftButtons").style.display = "flex";
     createCanvas(currentLevel);
 });
 
@@ -617,18 +619,18 @@ document.getElementById("menuButton").addEventListener("click", () => {
 });
 
 document.getElementById("retryButtonTop").addEventListener("click", () => {
-    document.getElementById("topRightButtons").style.display = "flex";
+    document.getElementById("topLeftButtons").style.display = "flex";
     createCanvas(currentLevel);
 });
 
 document.getElementById("menuButtonTop").addEventListener("click", () => {
-    document.getElementById("topRightButtons").style.display = "none";
+    document.getElementById("topLeftButtons").style.display = "none";
     document.getElementById("gameMap").style.display = "flex";
 });
 
 document.getElementById("retryLevelButton").addEventListener("click", () => {
     document.getElementById("levelCompleteScreen").style.display = "none";
-    document.getElementById("topRightButtons").style.display = "flex";
+    document.getElementById("topLeftButtons").style.display = "flex";
     createCanvas(currentLevel);
 });
 
