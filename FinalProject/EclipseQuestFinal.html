@@ -301,8 +301,8 @@ function createCanvas(level) {
             // Add Solara door next to Luna door
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
 
-            // Add Solaragem on the last space at the right side of the bottom row of grass
-            collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
+            // Add Solaragem above the grass obstacle and one space to the right
+            collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
 
             // Add Lunagem to the right of the space Solara is on
             collectibles.push({ x: tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
