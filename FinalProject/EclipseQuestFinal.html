@@ -294,6 +294,12 @@ function createCanvas(level) {
                 const type = (i === Math.floor(canvas.width / tileSize) - 8 || i === Math.floor(canvas.width / tileSize) - 9) ? 'radioactiveGrass' : 'grass'; // Add radioactiveGrass on the top row, 8 spaces from the right, two spaces wide
                 obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: type });
             }
+
+            // Add Luna door at the top right of the top grass obstacle row
+            doors.push({ x: (Math.floor(canvas.width / tileSize) - 2) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
+
+            // Add Solara door next to Luna door
+            doors.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
         }
     }
 
@@ -311,7 +317,7 @@ function createCanvas(level) {
         document.getElementById("gemCount").innerText = `Luna Gems: ${lunaGemsCollected} | Solara Gems: ${solaraGemsCollected}`;
     }
 
-    function update() {
+      function update() {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         // Draw game background image
@@ -329,7 +335,7 @@ function createCanvas(level) {
             context.drawImage(image, collectible.x, collectible.y, collectible.width, collectible.height);
         });
 
-               // Draw doors
+        // Draw doors
         doors.forEach(door => {
             const image = images[door.type];
             context.drawImage(image, door.x, door.y, door.width, door.height);
