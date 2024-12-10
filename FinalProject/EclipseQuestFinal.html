@@ -300,6 +300,20 @@ function createCanvas(level) {
 
             // Add Solara door next to Luna door
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
+
+            // Add Solaragem on the last space at the right side of the bottom row of grass
+            collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
+
+            // Add Lunagem to the right of the space Solara is on
+            collectibles.push({ x: tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
+
+                       // Add Lunagem two spaces before the doors on the top row grass obstacle
+            collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 3) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
+
+            // Add Solaragem three spaces before the doors on the top row grass obstacle
+            collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 4) * tileSize, y: two
+
+SpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
         }
     }
 
@@ -317,7 +331,7 @@ function createCanvas(level) {
         document.getElementById("gemCount").innerText = `Luna Gems: ${lunaGemsCollected} | Solara Gems: ${solaraGemsCollected}`;
     }
 
-       function update() {
+    function update() {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         // Draw game background image
@@ -448,9 +462,7 @@ function createCanvas(level) {
             obstacles.forEach(obstacle => {
                 if (redSquare.x < obstacle.x + obstacle.width &&
                     redSquare.x + redSquare.size > obstacle.x &&
-                    redSquare.y + redSquare.size >
-
- obstacle.y &&
+                    redSquare.y + redSquare.size > obstacle.y &&
                     redSquare.y < obstacle.y + obstacle.height) {
                     if (redSquare.speedY > 0) { // Ensure the player cannot jump through the obstacles
                         redSquare.y = obstacle.y - redSquare.size;
