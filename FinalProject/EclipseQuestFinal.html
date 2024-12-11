@@ -349,14 +349,14 @@ function createCanvas(level) {
             const newRowX = 5 * tileSize;
             const newRowY = canvas.height - 3 * tileSize;
             for (let i = 0; i < 3; i++) {
-                obstacles.push({ x: (newRowX + i - 1) * tileSize, y: newRowY, width: tileSize, height: tileSize, type: 'grass' });
+                obstacles.push({ x: newRowX + i * tileSize, y: newRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
             // Add another row of grass three spaces wide that is 3 spaces to the right of the previous grass row added
             const anotherRowX = newRowX + 3 * tileSize;
             const anotherRowY = newRowY;
             for (let i = 0; i < 3; i++) {
-                obstacles.push({ x: (anotherRowX + i + 1) * tileSize, y: anotherRowY, width: tileSize, height: tileSize, type: 'grass' });
+                obstacles.push({ x: anotherRowX + i * tileSize, y: anotherRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
         }
     }
