@@ -103,9 +103,9 @@ const radioactiveGrassImageURL = "Radioactivegrass.png"; // Replace with the act
 const buttonImageURL = "Button.png"; // Replace with the actual URL for the unpressed button image
 const buttonPressedImageURL = "Buttonpress.png"; // Replace with the actual URL for the pressed button image
 const dirtDoorImageURL = "Dirt Door.png"; // Replace with the actual URL for the Dirt Door image
-const leverUpImageURL = "Leverup.png"; // Replace with the actual URL for the lever up image
-const leverDownImageURL = "Leverdown.png"; // Replace with the actual URL for the lever down image
-
+const leverUpImageURL = "Leverup.png"; // URL for the lever in the 'up' position
+const leverDownImageURL = "Leverdown.png"; // URL for the lever in the 'down' position
+    
 const levelBackgroundImages = {
     1: "creepy cave.jpg",
     2: "creepy cave.jpg",
@@ -138,8 +138,8 @@ function preloadImages() {
         { name: 'button', url: buttonImageURL },
         { name: 'buttonPressed', url: buttonPressedImageURL },
         { name: 'dirtDoor', url: dirtDoorImageURL },
-        { name: 'leverUp', url: leverUpImageURL },
-        { name: 'leverDown', url: leverDownImageURL }
+        { name: 'Leverup', url: leverUpImageURL }, // Add lever up image
+        { name: 'Leverdown', url: leverDownImageURL } // Add lever down image
     ];
 
     let loadedImagesCount = 0;
@@ -160,7 +160,7 @@ function preloadImages() {
         });
     });
 }
-
+    
 function createCanvas(level) {
     const canvas = document.createElement("canvas");
     canvas.width = window.innerWidth;
@@ -310,7 +310,7 @@ function createCanvas(level) {
             // Add Solaragem above the grass obstacle and one space to the right
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
 
-            // Add Lunagem to the right of the space Solara is on
+                        // Add Lunagem to the right of the space Solara is on
             collectibles.push({ x: tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
 
             // Add Lunagem two spaces before the doors on the top row grass obstacle
@@ -355,45 +355,26 @@ function createCanvas(level) {
             for (let i = 0; i < 3; i++) {
                 obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
-
             // Add the second row of grass, shifted 1 space to the right
             const secondRowX = 9 * tileSize; // Moved 1 space right
             const secondRowY = firstRowY;
             for (let i = 0; i < 3; i++) {
                 obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
-            
-            // Add the lever on top of the top grass obstacle row (4th from the left)
-            const leverX = 3 * tileSize; // 4th from the left
-            const leverY = twoSpacesDownY - tileSize; // On top of the grass obstacle
-            obstacles.push({ x: leverX, y: leverY, width: tileSize, height: tileSize, type: 'lever', state: 'up' });
 
+           // Add the lever positioned on top of the top grass obstacle row
+            const leverX = 3 * tileSize; // 4th position from the left (0-indexed)
+            const leverY = twoSpacesDownY - tileSize; // On top of the top grass obstacle
+                buttons.push({ x: leverX, y: leverY, width: tileSize, height: tileSize, type: 'lever', state: 'up' }); // Add lever with initial state 'up'
+            }
+            
             // Set Luna's position on top of the top grass obstacle on the rightmost grass obstacle
             blueSquare.x = canvas.width - 2 * tileSize;
             blueSquare.y = twoSpacesDownY - tileSize;
-
             // Set Solara's position next to Luna
             redSquare.x = blueSquare.x + tileSize;
             redSquare.y = blueSquare.y;
 
-            // Handle spacebar interaction with the lever
-            window.addEventListener("keydown", (event) => {
-                if (event.key === " ") {
-                    const lever = obstacles.find(obstacle => obstacle.type === 'lever' && obstacle.x === leverX && obstacle.y === leverY);
-                    if (lever && (blueSquare.x < lever.x + lever.width && blueSquare.x + blueSquare.size > lever.x && blueSquare.y + blueSquare.size > lever.y && blueSquare.y < lever.y + lever.height) ||
-                        (redSquare.x < lever.x + lever.width && redSquare.x + redSquare.size > lever.x && redSquare.y + redSquare.size > lever.y && redSquare.y < lever.y + lever.height)) {
-                        // Change lever state and image
-                        lever.state = lever.state === 'up' ? 'down' : 'up';
-                        lever.type = lever.state === 'down' ? 'leverDown' : 'lever'; // Change type for image rendering
-
-                        // Toggle the dirt door visibility
-                        const dirtDoor = doors.find(door => door.type === 'dirtDoor');
-                        if (dirtDoor) {
-                            dirtDoor.visible = !dirtDoor.visible;
-                        }
-                    }
-                }
-            });
         }
     }
 
@@ -434,8 +415,8 @@ function createCanvas(level) {
             if (door.visible) { // Only draw if the door is visible
                 const image = images[door.type];
                 context.drawImage(image, door.x, door.y, door.width, door.height);
-            }
-        });
+        }
+    });
 
         // Draw buttons
         buttons.forEach(button => {
@@ -520,7 +501,7 @@ function createCanvas(level) {
                     blueSquare.x + blueSquare.size > door.x &&
                     blueSquare.y + blueSquare.size > door.y &&
                     blueSquare.y < door.y + door.height &&
-                    door.character === 'luna' && door.visible) { // Check if door is visible
+                    door.character === 'luna') {
                     blueSquare.visible = false;
                     lunaReachedDoor = true;
                 }
@@ -604,7 +585,7 @@ function createCanvas(level) {
                     redSquare.x + redSquare.size > door.x &&
                     redSquare.y + redSquare.size > door.y &&
                     redSquare.y < door.y + door.height &&
-                    door.character === 'solara' && door.visible) { // Check if door is visible
+                    door.character === 'solara') {
                     redSquare.visible = false;
                     solaraReachedDoor = true;
                 }
@@ -655,8 +636,37 @@ function createCanvas(level) {
                     redSquare.onGround = false;
                 }
                 break;
-        }
+            case " ":
+            // Check if Luna or Solara is on the lever
+            buttons.forEach(button => {
+                if (button.type === 'lever' && 
+                    ((blueSquare.x < button.x + button.width &&
+                      blueSquare.x + blueSquare.size > button.x &&
+                      blueSquare.y + blueSquare.size > button.y &&
+                      blueSquare.y < button.y + button.height) ||
+                     (redSquare.x < button.x + button.width &&
+                      redSquare.x + redSquare.size > button.x &&
+                      redSquare.y + redSquare.size > button.y &&
+                      redSquare.y < button.y + button.height))) {
+                    // Change lever state
+                    if (button.state === 'up') {
+                        button.state = 'down'; // Change to down state
+                        // Change lever image
+                        button.image = 'Leverdown.png'; // Update image
+                        // Make the dirt door disappear
+                        const dirtDoor = doors.find(door => door.type === 'dirtDoor');
+                        if (dirtDoor) {
+                            dirtDoor.visible = false; // Hide the dirt door
+                        }
+                    } else {
+                        button.state = 'up'; // Change back to up state
+                        button.image = 'Leverup.png'; // Update image
+                    }
+                }
+            });
+            break;
     }
+} 
 
     function handleKeyUp(event) {
         switch (event.key) {
