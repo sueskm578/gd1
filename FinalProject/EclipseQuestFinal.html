@@ -358,14 +358,14 @@ const firstRowY = canvas.height - 3 * tileSize;
 for (let i = 0; i < 3; i++) {
     // Check if it's the middle obstacle
     if (i === 1) {
-        // Add the Solara grass in the middle
+        // Add the Solaragrass in the middle
         obstacles.push({ 
             x: firstRowX + i * tileSize, 
             y: firstRowY, 
             width: tileSize, 
             height: tileSize, 
-            type: 'solara', 
-            image: 'Solaragrass.png' // Add the URL for the first-row Solara grass image
+            type: 'grass', 
+            image: 'Solaragrass.png' // Correct URL for the first-row middle grass
         });
     } else {
         // Add regular grass obstacles for the rest
@@ -385,14 +385,14 @@ const secondRowY = firstRowY;
 for (let i = 0; i < 3; i++) {
     // Check if it's the middle obstacle
     if (i === 1) {
-        // Add the Solara grass in the middle
+        // Add the Lunagrass in the middle
         obstacles.push({ 
             x: secondRowX + i * tileSize, 
             y: secondRowY, 
             width: tileSize, 
             height: tileSize, 
-            type: 'solara', 
-            image: 'Lunagrass.png' // Add the URL for the second-row Solara grass image
+            type: 'grass', 
+            image: 'Lunagrass.png' // Correct URL for the second-row middle grass
         });
     } else {
         // Add regular grass obstacles for the rest
