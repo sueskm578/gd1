@@ -288,11 +288,11 @@ function createCanvas(level) {
             // Add a button on the new grass row, 4 spaces from the left
             const buttonX = 4 * tileSize;
             const buttonY = fiveSpacesUpY - tileSize;
-            levers.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'leverUp' });
+            obstacles.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button' });
 
             // Add another button above the grass obstacle in the top grass obstacle row
             const buttonYAbove = fiveSpacesUpY - 3 * tileSize; // Adjusted y-coordinate to be above the grass obstacle
-            levers.push({ x: buttonX, y: buttonYAbove, width: tileSize, height: tileSize, type: 'leverUp' });
+            obstacles.push({ x: buttonX, y: buttonYAbove, width: tileSize, height: tileSize, type: 'button' });
 
             // Add another row of grass two spaces down from the top, leaving one space open on the left-hand side
             const twoSpacesDownY = 1 * tileSize;
@@ -308,9 +308,9 @@ function createCanvas(level) {
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
 
             // Add Solaragem above the grass obstacle and one space to the right
-            collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
+                        collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
 
-                       // Add Lunagem to the right of the space Solara is on
+            // Add Lunagem to the right of the space Solara is on
             collectibles.push({ x: tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
 
             // Add Lunagem two spaces before the doors on the top row grass obstacle
@@ -371,8 +371,8 @@ function createCanvas(level) {
             redSquare.x = blueSquare.x + tileSize;
             redSquare.y = blueSquare.y;
 
-            // Add a lever that controls the dirt door
-            levers.push({ x: canvas.width - 3 * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'leverUp' });
+            // Add a lever that controls the dirt door, 4 spaces from the left side of the top grass obstacle row
+            levers.push({ x: 4 * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'leverUp' });
         }
     }
 
