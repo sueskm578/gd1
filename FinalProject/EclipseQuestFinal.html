@@ -94,7 +94,9 @@ const grassImageURL = "Grass.png"; // Replace with your grass image URL
 const lunaImageURL = "luna.png"; // Replace with the actual URL for Luna's image
 const solaraImageURL = "solara.png"; // Replace with the actual URL for Solara's image
 const solaraGrassImageURL = "Solaragrass.png"; // Replace with the actual URL for Solara grass image
-const lunaGrassImageURL = "Lunagrass.png"; // Replace with the actual URL for Luna grass image
+const
+
+ lunaGrassImageURL = "Lunagrass.png"; // Replace with the actual URL for Luna grass image
 const solaragemImageURL = "Solaragem.png"; // Replace with the actual URL for Solaragem image
 const lunagemImageURL = "Lunagem.jpg"; // Replace with the actual URL for Lunagem image
 const lunaDoorImageURL = "Lunadoor.png"; // Replace with the actual URL for Luna door image
@@ -120,6 +122,7 @@ let solaraGemsCollected = 0;
 let lunaReachedDoor = false;
 let solaraReachedDoor = false;
 let leverActivated = false;
+let dirtDoorVisible = true;
 
 const images = {};
 
@@ -132,7 +135,9 @@ function preloadImages() {
         { name: 'lunaGrass', url: lunaGrassImageURL },
         { name: 'solaragem', url: solaragemImageURL },
         { name: 'lunagem', url: lunagemImageURL },
-        { name: 'lunaDoor', url: lunaDoorImageURL },
+        { name: 'lunaDoor', url: lunaDoorImageURL
+
+ },
         { name: 'solaraDoor', url: solaraDoorImageURL },
         { name: 'radioactiveGrass', url: radioactiveGrassImageURL },
         { name: 'button', url: buttonImageURL },
@@ -308,7 +313,7 @@ function createCanvas(level) {
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
 
             // Add Solaragem above the grass obstacle and one space to the right
-                        collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
+            collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
 
             // Add Lunagem to the right of the space Solara is on
             collectibles.push({ x: tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
@@ -349,7 +354,7 @@ function createCanvas(level) {
             // Add Luna door at the bottom right on top of the grass obstacle, moved one space to the right
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
 
-            // Add the first row of grass, shifted 1 space to the left
+           // Add the first row of grass, shifted 1 space to the left
 const firstRowX = 4 * tileSize; // Moved 1 space left
 const firstRowY = canvas.height - 3 * tileSize;
 for (let i = 0; i < 3; i++) {
@@ -357,11 +362,12 @@ for (let i = 0; i < 3; i++) {
 }
 
 // Add the second row of grass, shifted 1 space to the right
-const secondRowX = 8 * tileSize; // Moved 1 space right
+const secondRowX = 9 * tileSize; // Moved 2 space right
 const secondRowY = firstRowY;
 for (let i = 0; i < 3; i++) {
     obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
 }
+
             // Set Luna's position on top of the top grass obstacle on the rightmost grass obstacle
             blueSquare.x = canvas.width - 2 * tileSize;
             blueSquare.y = twoSpacesDownY - tileSize;
@@ -612,8 +618,10 @@ for (let i = 0; i < 3; i++) {
             case " ":
                 if (leverActivated) {
                     leverActivated = false;
+                    dirtDoorVisible = true;
                 } else {
                     leverActivated = true;
+                    dirtDoorVisible = false;
                 }
                 break;
         }
