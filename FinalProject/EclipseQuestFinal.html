@@ -52,10 +52,10 @@
         left: 10px;
         display: flex;
         flex-direction: column;
-        z-index: 10; /* Ensure buttons are on top */
+        z-index: 10;
     }
     .button {
-        z-index: 10; /* Ensure buttons are on top */
+        z-index: 10;
     }
 </style>
 </head>
@@ -88,24 +88,24 @@
     <button id="menuButtonTop" class="button">Main Menu</button>
 </div>
 <script>
-const backgroundImageURL = "SunMoon-Background.webp"; // Replace with your background image URL for the title screen
-const gameMapBackgroundImageURL = "SunMoon-Background.webp"; // Replace with your background image URL for the game map screen
-const grassImageURL = "Grass.png"; // Replace with your grass image URL
-const lunaImageURL = "luna.png"; // Replace with the actual URL for Luna's image
-const solaraImageURL = "solara.png"; // Replace with the actual URL for Solara's image
-const solaraGrassImageURL = "Solaragrass.png"; // Replace with the actual URL for Solara grass image
-const lunaGrassImageURL = "Lunagrass.png"; // Replace with the actual URL for Luna grass image
-const solaragemImageURL = "Solaragem.png"; // Replace with the actual URL for Solaragem image
-const lunagemImageURL = "Lunagem.jpg"; // Replace with the actual URL for Lunagem image
-const lunaDoorImageURL = "Lunadoor.png"; // Replace with the actual URL for Luna door image
-const solaraDoorImageURL = "Solaradoor.png"; // Replace with the actual URL for Solara door image
-const radioactiveGrassImageURL = "Radioactivegrass.png"; // Replace with the actual URL for Radioactivegrass image
-const buttonImageURL = "Button.png"; // Replace with the actual URL for the unpressed button image
-const buttonPressedImageURL = "Buttonpress.png"; // Replace with the actual URL for the pressed button image
-const dirtDoorImageURL = "Dirt Door.png"; // Replace with the actual URL for the Dirt Door image
-const leverUpImageURL = "Leverup.png"; // URL for the lever in the 'up' position
-const leverDownImageURL = "Leverdown.png"; // URL for the lever in the 'down' position
-    
+const backgroundImageURL = "SunMoon-Background.webp";
+const gameMapBackgroundImageURL = "SunMoon-Background.webp";
+const grassImageURL = "Grass.png";
+const lunaImageURL = "luna.png";
+const solaraImageURL = "solara.png";
+const solaraGrassImageURL = "Solaragrass.png";
+const lunaGrassImageURL = "Lunagrass.png";
+const solaragemImageURL = "Solaragem.png";
+const lunagemImageURL = "Lunagem.jpg";
+const lunaDoorImageURL = "Lunadoor.png";
+const solaraDoorImageURL = "Solaradoor.png";
+const radioactiveGrassImageURL = "Radioactivegrass.png";
+const buttonImageURL = "Button.png";
+const buttonPressedImageURL = "Buttonpress.png";
+const dirtDoorImageURL = "Dirt Door.png";
+const leverUpImageURL = "Leverup.png";
+const leverDownImageURL = "Leverdown.png";
+
 const levelBackgroundImages = {
     1: "creepy cave.jpg",
     2: "creepy cave.jpg",
@@ -138,8 +138,8 @@ function preloadImages() {
         { name: 'button', url: buttonImageURL },
         { name: 'buttonPressed', url: buttonPressedImageURL },
         { name: 'dirtDoor', url: dirtDoorImageURL },
-        { name: 'Leverup', url: leverUpImageURL }, // Add lever up image
-        { name: 'Leverdown', url: leverDownImageURL } // Add lever down image
+        { name: 'Leverup', url: leverUpImageURL },
+        { name: 'Leverdown', url: leverDownImageURL }
     ];
 
     let loadedImagesCount = 0;
@@ -160,7 +160,7 @@ function preloadImages() {
         });
     });
 }
-    
+
 function createCanvas(level) {
     const canvas = document.createElement("canvas");
     canvas.width = window.innerWidth;
@@ -168,28 +168,28 @@ function createCanvas(level) {
     document.body.appendChild(canvas);
     const context = canvas.getContext("2d");
 
-    const tileSize = 100; // Width and height of each tile
+    const tileSize = 100;
 
     const blueSquare = {
-        x: 0, // Adjusted spawn point for Luna
-        y: canvas.height - 4 * tileSize, // Adjusted spawn point for Luna (three spaces up from the bottom)
-        size: 50, // Increased size for Luna
+        x: 0,
+        y: canvas.height - 4 * tileSize,
+        size: 50,
         speedX: 0,
         speedY: 0,
         gravity: 0.5,
-        jumpPower: -15, // Increased jump power
+        jumpPower: -15,
         onGround: true,
         visible: true
     };
 
     const redSquare = {
-        x: 0, // Adjusted spawn point for Solara
-        y: canvas.height - tileSize, // Adjusted spawn point for Solara on top of the bottom grass obstacles
-        size: 50, // Increased size for Solara
+        x: 0,
+        y: canvas.height - tileSize,
+        size: 50,
         speedX: 0,
         speedY: 0,
         gravity: 0.5,
-        jumpPower: -15, // Increased jump power
+        jumpPower: -15,
         onGround: true,
         visible: true
     };
@@ -200,16 +200,14 @@ function createCanvas(level) {
     const buttons = [];
 
     function createObstacles(level) {
-        // Clear existing obstacles
         obstacles.length = 0;
         collectibles.length = 0;
         doors.length = 0;
         buttons.length = 0;
 
         if (level === 1) {
-            // Level 1 obstacles, collectibles, and doors setup
-            const rowY = canvas.height - 300; // Adjust the y position as needed
-            const tileSize = 100; // Width and height of each tile
+            const rowY = canvas.height - 300;
+            const tileSize = 100;
 
             obstacles.push({ x: 0, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
@@ -220,9 +218,8 @@ function createCanvas(level) {
             obstacles.push({ x: 6 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: 7 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
 
-            // Create an ascending row of grass on the right side
-            const startX = canvas.width - 200; // Adjust the starting x position as needed
-            const startY = canvas.height - 600; // Starting y position for the highest obstacle
+            const startX = canvas.width - 200;
+            const startY = canvas.height - 600;
 
             obstacles.push({ x: startX, y: startY, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: startX - tileSize, y: startY, width: tileSize, height: tileSize, type: 'grass' });
@@ -232,149 +229,104 @@ function createCanvas(level) {
             obstacles.push({ x: startX - 5 * tileSize, y: startY + 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: startX + tileSize, y: startY, width: tileSize, height: tileSize, type: 'grass' });
 
-            // Add a row of grass obstacles at the bottom of the screen
             for (let i = 0; i < canvas.width / tileSize; i++) {
                 const type = (i === Math.floor(canvas.width / tileSize) - 3) ? 'lunaGrass' : 'grass';
                 obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
             }
 
-            // Add Solaragem positioned over the grass obstacle 2 from the right at the bottom of the screen
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 2) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
-
-            // Add Lunagem positioned on top of the left-hand grass obstacle that is 5 from the right
             collectibles.push({ x: 3 * tileSize, y: rowY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
-
-            // Add Luna door at the top of the right-hand grass obstacles on the last grass to the right
             doors.push({ x: startX + tileSize, y: startY - tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
-
-            // Add Solara door one spot to the right on top of the grass obstacle
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
         } else if (level === 2) {
-            // Level 2 obstacles, collectibles, and doors setup
-            const tileSize = 100; // Width and height of each tile
+            const tileSize = 100;
 
-            // Add a row of grass obstacles at the bottom of the screen
             for (let i = 0; i < canvas.width / tileSize; i++) {
-                const type = (i === Math.floor(canvas.width / tileSize) - 7 || i === Math.floor(canvas.width / tileSize) - 6) ? 'radioactiveGrass' : 'grass'; // Make radioactiveGrass two spaces wide
+                const type = (i === Math.floor(canvas.width / tileSize) - 7 || i === Math.floor(canvas.width / tileSize) - 6) ? 'radioactiveGrass' : 'grass';
                 obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
             }
 
-            // Create an ascending row of grass starting from the rightmost position, but remove the top row
-            const startX = canvas.width - tileSize * 4; // Adjust the starting x position to the rightmost position
+            const startX = canvas.width - tileSize * 4;
             for (let i = 1; i <= 2; i++) {
                 obstacles.push({ x: startX + i * tileSize, y: canvas.height - (i + 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
             }
 
-            // Add one more grass obstacle next to the top one
             obstacles.push({ x: startX + 3 * tileSize, y: canvas.height - 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
 
-            // Add a row of grass three spaces up and three grass obstacles long on the left-hand side of the screen
-            const leftRowY = canvas.height - 3 * tileSize; // Three spaces up from the bottom
+            const leftRowY = canvas.height - 3 * tileSize;
             for (let i = 0; i < 3; i++) {
                 obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
-            // Add another row of grass starting from the left side, 5 spaces up, and extending 12 grass spaces across
             const fiveSpacesUpY = canvas.height - 5 * tileSize;
             for (let i = 0; i < 12; i++) {
-                const type = 'grass'; // Make all grass obstacles regular grass
-                obstacles.push({ x: i * tileSize, y: fiveSpacesUpY, width: tileSize, height: tileSize, type: type });
+                obstacles.push({ x: i * tileSize, y: fiveSpacesUpY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
-            // Add an ascending grass obstacle down on the right side of the new grass row
-            const startXNewRow = 11 * tileSize; // Rightmost position of the new grass row
+            const startXNewRow = 11 * tileSize;
             obstacles.push({ x: startXNewRow + tileSize, y: fiveSpacesUpY + tileSize, width: tileSize, height: tileSize, type: 'grass' });
 
-            // Add a button on the new grass row, 4 spaces from the left
             const buttonX = 4 * tileSize;
             const buttonY = fiveSpacesUpY - tileSize;
             buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button' });
 
-            // Add another button above the grass obstacle in the top grass obstacle row
-            const buttonYAbove = fiveSpacesUpY - 3 * tileSize; // Adjusted y-coordinate to be above the grass obstacle
+            const buttonYAbove = fiveSpacesUpY - 3 * tileSize;
             buttons.push({ x: buttonX, y: buttonYAbove, width: tileSize, height: tileSize, type: 'button' });
 
-            // Add another row of grass two spaces down from the top, leaving one space open on the left-hand side
             const twoSpacesDownY = 1 * tileSize;
             for (let i = 1; i < canvas.width / tileSize; i++) {
-                const type = (i === Math.floor(canvas.width / tileSize) - 8 || i === Math.floor(canvas.width / tileSize) - 9) ? 'radioactiveGrass' : 'grass'; // Add radioactiveGrass on the top row, 8 spaces from the right, two spaces wide
+                const type = (i === Math.floor(canvas.width / tileSize) - 8 || i === Math.floor(canvas.width / tileSize) - 9) ? 'radioactiveGrass' : 'grass';
                 obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: type });
             }
 
-            // Add Luna door at the top right of the top grass obstacle row
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
-
-            // Add Solara door next to Luna door
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
 
-            // Add Solaragem above the grass obstacle and one space to the right
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
-
-                        // Add Lunagem to the right of the space Solara is on
             collectibles.push({ x: tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
-
-            // Add Lunagem two spaces before the doors on the top row grass obstacle
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 3) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
-
-            // Add Solaragem three spaces before the doors on the top row grass obstacle
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 4) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
         } else if (level === 3) {
-            // Level 3 obstacles, collectibles, and doors setup
-            const tileSize = 100; // Width and height of each tile
+            const tileSize = 100;
 
-            // Add a row of grass obstacles at the bottom of the screen
             for (let i = 0; i < canvas.width / tileSize; i++) {
                 const type = (i < 2 || i >= Math.floor(canvas.width / tileSize) - 2) ? 'grass' : 'radioactiveGrass';
                 obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
             }
 
-            // Add a row of grass five spaces up and three grass obstacles long on the left-hand side of the screen
-            const leftRowY = canvas.height - 5 * tileSize; // Move up by two spaces (five spaces up from the bottom)
+            const leftRowY = canvas.height - 5 * tileSize;
             for (let i = 0; i < 3; i++) {
                 obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
-            // Add another row of grass two spaces down from the top, leaving one space open on the left-hand side
             const twoSpacesDownY = 1 * tileSize;
             for (let i = 1; i < canvas.width / tileSize; i++) {
                 obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
-            // Add Dirt Door at the top left of the top grass obstacle row
             doors.push({ x: tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
-
-            // Add Solara door at the bottom left on top of the grass obstacle
             doors.push({ x: 0, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
-
-            // Add Luna door at the bottom right on top of the grass obstacle, moved one space to the right
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
 
-            // Add the first row of grass, shifted 1 space to the left
-            const firstRowX = 4 * tileSize; // Moved 1 space left
+            const firstRowX = 4 * tileSize;
             const firstRowY = canvas.height - 3 * tileSize;
             for (let i = 0; i < 3; i++) {
                 obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
-            // Add the second row of grass, shifted 1 space to the right
-            const secondRowX = 9 * tileSize; // Moved 1 space right
+            const secondRowX = 9 * tileSize;
             const secondRowY = firstRowY;
             for (let i = 0; i < 3; i++) {
                 obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
-           // Add the lever positioned on top of the top grass obstacle row
-            const leverX = 3 * tileSize; // 4th position from the left (0-indexed)
-            const leverY = twoSpacesDownY - tileSize; // On top of the top grass obstacle
-                buttons.push({ x: leverX, y: leverY, width: tileSize, height: tileSize, type: 'lever', state: 'up' }); // Add lever with initial state 'up'
-            }
-            
-            // Set Luna's position on top of the top grass obstacle on the rightmost grass obstacle
+            const leverX = 3 * tileSize;
+            const leverY = twoSpacesDownY - tileSize;
+            buttons.push({ x: leverX, y: leverY, width: tileSize, height: tileSize, type: 'lever', state: 'up' });
+
             blueSquare.x = canvas.width - 2 * tileSize;
             blueSquare.y = twoSpacesDownY - tileSize;
-            // Set Solara's position next to Luna
             redSquare.x = blueSquare.x + tileSize;
             redSquare.y = blueSquare.y;
-
         }
     }
 
@@ -393,286 +345,237 @@ function createCanvas(level) {
     }
 
     function update() {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw game background image
-    context.drawImage(levelBackgroundImage, 0, 0, canvas.width, canvas.height);
-
-    // Draw obstacles
-    obstacles.forEach(obstacle => {
-        const image = images[obstacle.type];
-        context.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-    });
-
-    // Draw collectibles
-    collectibles.forEach(collectible => {
-        const image = images[collectible.type];
-        context.drawImage(image, collectible.x, collectible.y, collectible.width, collectible.height);
-    });
-
-    // Draw doors
-    doors.forEach(door => {
-        if (door.visible) { // Only draw if the door is visible
-            const image = images[door.type];
-            context.drawImage(image, door.x, door.y, door.width, door.height);
-        }
-    });
-
-    // Draw buttons
-    buttons.forEach(button => {
-        const image = button.state === 'down' ? images['Leverdown'] : images['Leverup'];
-        context.drawImage(image, button.x, button.y, button.width, button.height);
-    });
-
-    // Update blue square
-    if (blueSquare.visible) {
-        blueSquare.speedY += blueSquare.gravity;
-        blueSquare.x += blueSquare.speedX;
-        blueSquare.y += blueSquare.speedY;
-
-        if (blueSquare.y + blueSquare.size > canvas.height) {
-            blueSquare.y = canvas.height - blueSquare.size;
-            blueSquare.speedY = 0;
-            blueSquare.onGround = true;
-        }
-
-        // Check collision with obstacles for blue square
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(levelBackgroundImage, 0, 0, canvas.width, canvas.height);
         obstacles.forEach(obstacle => {
-            if (blueSquare.x < obstacle.x + obstacle.width &&
-                blueSquare.x + blueSquare.size > obstacle.x &&
-                blueSquare.y + blueSquare.size > obstacle.y &&
-                blueSquare.y < obstacle.y + obstacle.height) {
-                if (blueSquare.speedY > 0) { // Ensure the player cannot jump through the obstacles
-                    blueSquare.y = obstacle.y - blueSquare.size;
-                    blueSquare.speedY = 0;
-                    blueSquare.onGround = true;
-                } else if (blueSquare.speedY < 0) { // Prevent the player from going through the bottom of the obstacle
-                    blueSquare.y = obstacle.y + obstacle.height;
-                    blueSquare.speedY = 0;
-                }
-                if (obstacle.type === 'solaraGrass') {
-                    endGame("Luna hit the SolaraGrass! Game Over.");
-                } else if (obstacle.type === 'radioactiveGrass') {
-                    endGame("Luna hit the RadioactiveGrass! Game Over.");
-                }
-            }
+            const image = images[obstacle.type];
+            context.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
         });
-
-        // Check collision with buttons for blue square
-        let isOnButton = false;
-        buttons.forEach(button => {
-            if (blueSquare.x < button.x + button.width &&
-                blueSquare.x + blueSquare.size > button.x &&
-                blueSquare.y + blueSquare.size > button.y &&
-                blueSquare.y < button.y + button.height) {
-                isOnButton = true;
-                buttonPressed = true;
-                // Move the left grass obstacle in the row upward
-                const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
-                if (leftRowGrass) {
-                    leftRowGrass.y -= tileSize; // Move the grass obstacle up by one tile size
-                }
-            }
+        collectibles.forEach(collectible => {
+            const image = images[collectible.type];
+            context.drawImage(image, collectible.x, collectible.y, collectible.width, collectible.height);
         });
-
-        if (!isOnButton) {
-            buttonPressed = false;
-            // Move the left grass obstacle in the row downward
-            const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize - tileSize);
-            if (leftRowGrass) {
-                leftRowGrass.y += tileSize; // Move the grass obstacle down by one tile size
-            }
-        }
-
-        // Check collision with collectibles for blue square
-        collectibles.forEach((collectible, index) => {
-            if (blueSquare.x < collectible.x + collectible.width &&
-                blueSquare.x + blueSquare.size > collectible.x &&
-                blueSquare.y + blueSquare.size > collectible.y &&
-                blueSquare.y < collectible.y + collectible.height &&
-                collectible.collectedBy === 'luna') {
-                collectibles.splice(index, 1); // Remove the collectible
-                lunaGemsCollected++;
-            }
-        });
-
-        // Check collision with doors for blue square
         doors.forEach(door => {
-            if (blueSquare.x < door.x + door.width &&
-                blueSquare.x + blueSquare.size > door.x &&
-                blueSquare.y + blueSquare.size > door.y &&
-                blueSquare.y < door.y + door.height &&
-                door.character === 'luna') {
-                blueSquare.visible = false;
-                lunaReachedDoor = true;
+            if (door.visible) {
+                const image = images[door.type];
+                context.drawImage(image, door.x, door.y, door.width, door.height);
             }
         });
-    }
-
-    // Update red square
-    if (redSquare.visible) {
-        redSquare.speedY += redSquare.gravity;
-        redSquare.x += redSquare.speedX;
-        redSquare.y += redSquare.speedY;
-
-        if (redSquare.y + redSquare.size > canvas.height) {
-            redSquare.y = canvas.height - redSquare.size;
-            redSquare.speedY = 0;
-            redSquare.onGround = true;
-        }
-
-        // Check collision with obstacles for red square
-        obstacles.forEach(obstacle => {
-            if (redSquare.x < obstacle.x + obstacle.width &&
-                redSquare.x + redSquare.size > obstacle.x &&
-                redSquare.y + redSquare.size > obstacle.y &&
-                redSquare.y < obstacle.y + obstacle.height) {
-                if (redSquare.speedY > 0) { // Ensure the player cannot jump through the obstacles
-                    redSquare.y = obstacle.y - redSquare.size;
-                    redSquare.speedY = 0;
-                    redSquare.onGround = true;
-                } else if (redSquare.speedY < 0) { // Prevent the player from going through the bottom of the obstacle
-                    redSquare.y = obstacle.y + obstacle.height;
-                    redSquare.speedY = 0;
-                }
-                if (obstacle.type === 'lunaGrass') {
-                    endGame("Solara hit the LunaGrass! Game Over.");
-                } else if (obstacle.type === 'radioactiveGrass') {
-                    endGame("Solara hit the RadioactiveGrass! Game Over.");
-                }
-            }
-        });
-
-        // Check collision with buttons for red square
-        let isOnButtonRed = false;
         buttons.forEach(button => {
-            if (redSquare.x < button.x + button.width &&
-                redSquare.x + redSquare.size > button.x &&
-                redSquare.y + redSquare.size > button.y &&
-                redSquare.y < button.y + button.height) {
-                isOnButtonRed = true;
-                buttonPressed = true;
-                // Move the left grass obstacle in the row upward
-                const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
-                if (leftRowGrass) {
-                    leftRowGrass.y -= tileSize; // Move the grass obstacle up by one tile size
-                }
-            }
+            const image = button.state === 'down' ? images['Leverdown'] : images['Leverup'];
+            context.drawImage(image, button.x, button.y, button.width, button.height);
         });
-
-        if (!isOnButtonRed) {
-            buttonPressed = false;
-            // Move the left grass obstacle in the row downward
-            const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize - tileSize);
-            if (leftRowGrass) {
-                leftRowGrass.y += tileSize; // Move the grass obstacle down by one tile size
+        if (blueSquare.visible) {
+            blueSquare.speedY += blueSquare.gravity;
+            blueSquare.x += blueSquare.speedX;
+            blueSquare.y += blueSquare.speedY;
+            if (blueSquare.y + blueSquare.size > canvas.height) {
+                blueSquare.y = canvas.height - blueSquare.size;
+                blueSquare.speedY = 0;
+                blueSquare.onGround = true;
             }
-        }
-
-        // Check collision with collectibles for red square
-        collectibles.forEach((collectible, index) => {
-            if (redSquare.x < collectible.x + collectible.width &&
-                redSquare.x + redSquare.size > collectible.x &&
-                redSquare.y + redSquare.size > collectible.y &&
-                redSquare.y < collectible.y + collectible.height &&
-                collectible.collectedBy === 'solara') {
-                collectibles.splice(index, 1); // Remove the collectible
-                solaraGemsCollected++;
-            }
-        });
-
-        // Check collision with doors for red square
-        doors.forEach(door => {
-            if (redSquare.x < door.x + door.width &&
-                redSquare.x + redSquare.size > door.x &&
-                redSquare.y + redSquare.size > door.y &&
-                redSquare.y < door.y + door.height &&
-                door.character === 'solara') {
-                redSquare.visible = false;
-                solaraReachedDoor = true;
-            }
-        });
-    }
-
-    // Draw Luna image if visible
-    if (blueSquare.visible) {
-        context.drawImage(images.luna, blueSquare.x, blueSquare.y, blueSquare.size, blueSquare.size);
-    }
-
-    // Draw Solara image if visible
-    if (redSquare.visible) {
-        context.drawImage(images.solara, redSquare.x, redSquare.y, redSquare.size, redSquare.size);
-    }
-
-    // Check if both characters have reached their doors
-    if (lunaReachedDoor && solaraReachedDoor) {
-        levelComplete();
-    }
-
-    requestAnimationFrame(update);
-}
-
-function handleKeyDown(event) {
-    switch (event.key) {
-        case "a":
-            blueSquare.speedX = -5;
-            break;
-        case "d":
-            blueSquare.speedX = 5;
-            break;
-        case "w":
-            if (blueSquare.onGround) {
-                blueSquare.speedY = blueSquare.jumpPower;
-                blueSquare.onGround = false;
-            }
-            break;
-        case "ArrowLeft":
-            redSquare.speedX = -5;
-            break;
-        case "ArrowRight":
-            redSquare.speedX = 5;
-            break;
-        case "ArrowUp":
-            if (redSquare.onGround) {
-                redSquare.speedY = redSquare.jumpPower;
-                redSquare.onGround = false;
-            }
-            break;
-        case " ":
-            // Check if Luna or Solara is on the lever
-            buttons.forEach(button => {
-                if (button.type === 'lever' && 
-                    ((blueSquare.x < button.x + button.width &&
-                      blueSquare.x + blueSquare.size > button.x &&
-                      blueSquare.y + blueSquare.size > button.y &&
-                      blueSquare.y < button.y + button.height) ||
-                     (redSquare.x < button.x + button.width &&
-                      redSquare.x + redSquare.size > button.x &&
-                      redSquare.y + redSquare.size > button.y &&
-                      redSquare.y < button.y + button.height))) {
-                    // Change lever state
-                    if (button.state === 'up') {
-                        button.state = 'down'; // Change to down state
-                        button.image = images['Leverdown']; // Update image
-                        // Make the dirt door disappear
-                        const dirtDoor = doors.find(door => door.type === 'dirtDoor');
-                        if (dirtDoor) {
-                            dirtDoor.visible = false; // Hide the dirt door
-                        }
-                    } else {
-                        button.state = 'up'; // Change back to up state
-                        button.image = images['Leverup']; // Update image
-                        // Make the dirt door reappear
-                        const dirtDoor = doors.find(door => door.type === 'dirtDoor');
-                        if (dirtDoor) {
-                            dirtDoor.visible = true; // Show the dirt door
-                        }
+            obstacles.forEach(obstacle => {
+                if (blueSquare.x < obstacle.x + obstacle.width &&
+                    blueSquare.x + blueSquare.size > obstacle.x &&
+                    blueSquare.y + blueSquare.size > obstacle.y &&
+                    blueSquare.y < obstacle.y + obstacle.height) {
+                    if (blueSquare.speedY > 0) {
+                        blueSquare.y = obstacle.y - blueSquare.size;
+                        blueSquare.speedY = 0;
+                        blueSquare.onGround = true;
+                    } else if (blueSquare.speedY < 0) {
+                        blueSquare.y = obstacle.y + obstacle.height;
+                        blueSquare.speedY = 0;
+                    }
+                    if (obstacle.type === 'solaraGrass') {
+                        endGame("Luna hit the SolaraGrass! Game Over.");
+                    } else if (obstacle.type === 'radioactiveGrass') {
+                        endGame("Luna hit the RadioactiveGrass! Game Over.");
                     }
                 }
             });
-            break;
+            let isOnButton = false;
+            buttons.forEach(button => {
+                if (blueSquare.x < button.x + button.width &&
+                    blueSquare.x + blueSquare.size > button.x &&
+                    blueSquare.y + blueSquare.size > button.y &&
+                    blueSquare.y < button.y + button.height) {
+                    isOnButton = true;
+                    buttonPressed = true;
+                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                    if (leftRowGrass) {
+                        leftRowGrass.y -= tileSize;
+                    }
+                }
+            });
+            if (!isOnButton) {
+                buttonPressed = false;
+                const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize - tileSize);
+                if (leftRowGrass) {
+                    leftRowGrass.y += tileSize;
+                }
+            }
+            collectibles.forEach((collectible, index) => {
+                if (blueSquare.x < collectible.x + collectible.width &&
+                    blueSquare.x + blueSquare.size > collectible.x &&
+                    blueSquare.y + blueSquare.size > collectible.y &&
+                    blueSquare.y < collectible.y + collectible.height &&
+                    collectible.collectedBy === 'luna') {
+                    collectibles.splice(index, 1);
+                    lunaGemsCollected++;
+                }
+            });
+            doors.forEach(door => {
+                if (blueSquare.x < door.x + door.width &&
+                    blueSquare.x + blueSquare.size > door.x &&
+                    blueSquare.y + blueSquare.size > door.y &&
+                    blueSquare.y < door.y + door.height &&
+                    door.character === 'luna') {
+                    blueSquare.visible = false;
+                    lunaReachedDoor = true;
+                }
+            });
+        }
+        if (redSquare.visible) {
+            redSquare.speedY += redSquare.gravity;
+            redSquare.x += redSquare.speedX;
+            redSquare.y += redSquare.speedY;
+            if (redSquare.y + redSquare.size > canvas.height) {
+                redSquare.y = canvas.height - redSquare.size;
+                redSquare.speedY = 0;
+                redSquare.onGround = true;
+            }
+            obstacles.forEach(obstacle => {
+                if (redSquare.x < obstacle.x + obstacle.width &&
+                    redSquare.x + redSquare.size > obstacle.x &&
+                    redSquare.y + redSquare.size > obstacle.y &&
+                    redSquare.y < obstacle.y + obstacle.height) {
+                    if (redSquare.speedY > 0) {
+                        redSquare.y = obstacle.y - redSquare.size;
+                        redSquare.speedY = 0;
+                        redSquare.onGround = true;
+                    } else if (redSquare.speedY < 0) {
+                        redSquare.y = obstacle.y + obstacle.height;
+                        redSquare.speedY = 0;
+                    }
+                    if (obstacle.type === 'lunaGrass') {
+                        endGame("Solara hit the LunaGrass! Game Over.");
+                    } else if (obstacle.type === 'radioactiveGrass') {
+                        endGame("Solara hit the RadioactiveGrass! Game Over.");
+                    }
+                }
+            });
+            let isOnButtonRed = false;
+            buttons.forEach(button => {
+                if (redSquare.x < button.x + button.width &&
+                    redSquare.x + redSquare.size > button.x &&
+                    redSquare.y + redSquare.size > button.y &&
+                    redSquare.y < button.y + button.height) {
+                    isOnButtonRed = true;
+                    buttonPressed = true;
+                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                    if (leftRowGrass) {
+                        leftRowGrass.y -= tileSize;
+                    }
+                }
+            });
+            if (!isOnButtonRed) {
+                buttonPressed = false;
+                const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize - tileSize);
+                if (leftRowGrass) {
+                    leftRowGrass.y += tileSize;
+                }
+            }
+            collectibles.forEach((collectible, index) => {
+                if (redSquare.x < collectible.x + collectible.width &&
+                    redSquare.x + redSquare.size > collectible.x &&
+                    redSquare.y + redSquare.size > collectible.y &&
+                    redSquare.y < collectible.y + collectible.height &&
+                    collectible.collectedBy === 'solara') {
+                    collectibles.splice(index, 1);
+                    solaraGemsCollected++;
+                }
+            });
+            doors.forEach(door => {
+                if (redSquare.x < door.x + door.width &&
+                    redSquare.x + redSquare.size > door.x &&
+                    redSquare.y + redSquare.size > door.y &&
+                    redSquare.y < door.y + door.height &&
+                    door.character === 'solara') {
+                    redSquare.visible = false;
+                    solaraReachedDoor = true;
+                }
+            });
+        }
+        if (blueSquare.visible) {
+            context.drawImage(images.luna, blueSquare.x, blueSquare.y, blueSquare.size, blueSquare.size);
+        }
+        if (redSquare.visible) {
+            context.drawImage(images.solara, redSquare.x, redSquare.y, redSquare.size, redSquare.size);
+        }
+        if (lunaReachedDoor && solaraReachedDoor) {
+            levelComplete();
+        }
+        requestAnimationFrame(update);
     }
-}
+
+    function handleKeyDown(event) {
+        switch (event.key) {
+            case "a":
+                blueSquare.speedX = -5;
+                break;
+            case "d":
+                blueSquare.speedX = 5;
+                break;
+            case "w":
+                if (blueSquare.onGround) {
+                    blueSquare.speedY = blueSquare.jumpPower;
+                    blueSquare.onGround = false;
+                }
+                break;
+            case "ArrowLeft":
+                redSquare.speedX = -5;
+                break;
+            case "ArrowRight":
+                redSquare.speedX = 5;
+                break;
+            case "ArrowUp":
+                if (redSquare.onGround) {
+                    redSquare.speedY = redSquare.jumpPower;
+                    redSquare.onGround = false;
+                }
+                break;
+            case " ":
+                buttons.forEach(button => {
+                    if (button.type === 'lever' && 
+                        ((blueSquare.x < button.x + button.width &&
+                          blueSquare.x + blueSquare.size > button.x &&
+                          blueSquare.y + blueSquare.size > button.y &&
+                          blueSquare.y < button.y + button.height) ||
+                         (redSquare.x < button.x + button.width &&
+                          redSquare.x + redSquare.size > button.x &&
+                          redSquare.y + redSquare.size > button.y &&
+                          redSquare.y < button.y + button.height))) {
+                        if (button.state === 'up') {
+                            button.state = 'down';
+                            button.image = images['Leverdown'];
+                            const dirtDoor = doors.find(door => door.type === 'dirtDoor');
+                            if (dirtDoor) {
+                                dirtDoor.visible = false;
+                            }
+                        } else {
+                            button.state = 'up';
+                            button.image = images['Leverup'];
+                            const dirtDoor = doors.find(door => door.type === 'dirtDoor');
+                            if (dirtDoor) {
+                                dirtDoor.visible = true;
+                            }
+                        }
+                    }
+                });
+                break;
+        }
+    }
 
     function handleKeyUp(event) {
         switch (event.key) {
@@ -692,7 +595,6 @@ function handleKeyDown(event) {
 
     createObstacles(level);
 
-    // Set the background image for the current level
     const levelBackgroundImage = new Image();
     levelBackgroundImage.src = levelBackgroundImages[level];
     levelBackgroundImage.onload = () => {
