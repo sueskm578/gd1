@@ -215,7 +215,9 @@ function createCanvas(level) {
             obstacles.push({ x: 0, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: 2 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'solaraGrass' });
-            obstacles.push({ x: 3 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+            obstacles.push({ x: 3 * tileSize, y: rowY, width: tileSize
+
+, height: tileSize, type: 'grass' });
             obstacles.push({ x: 4 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: 5 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'lunaGrass' });
             obstacles.push({ x: 6 * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
@@ -308,7 +310,7 @@ function createCanvas(level) {
             // Add Solara door next to Luna door
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 2) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
 
-                      // Add Solaragem above the grass obstacle and one space to the right
+                       // Add Solaragem above the grass obstacle and one space to the right
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
 
             // Add Lunagem to the right of the space Solara is on
