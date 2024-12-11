@@ -103,13 +103,11 @@ const radioactiveGrassImageURL = "Radioactivegrass.png"; // Replace with the act
 const buttonImageURL = "Button.png"; // Replace with the actual URL for the unpressed button image
 const buttonPressedImageURL = "Buttonpress.png"; // Replace with the actual URL for the pressed button image
 const dirtDoorImageURL = "Dirt Door.png"; // Replace with the actual URL for the Dirt Door image
-const leverUpImageURL = "Leverup.png"; // Replace with the actual URL for the lever up image
-const leverDownImageURL = "Leverdown.png"; // Replace with the actual URL for the lever down image
 
 const levelBackgroundImages = {
     1: "creepy cave.jpg",
     2: "creepy cave.jpg",
-    3: "creepy cave 2.jpg",
+    3: "creepy cave.jpg",
     4: "creepy cave 2.jpg",
     5: "creepy cave 5.jpg"
 };
@@ -119,7 +117,7 @@ let lunaGemsCollected = 0;
 let solaraGemsCollected = 0;
 let lunaReachedDoor = false;
 let solaraReachedDoor = false;
-let leverActivated = false;
+let buttonPressed = false;
 
 const images = {};
 
@@ -137,9 +135,7 @@ function preloadImages() {
         { name: 'radioactiveGrass', url: radioactiveGrassImageURL },
         { name: 'button', url: buttonImageURL },
         { name: 'buttonPressed', url: buttonPressedImageURL },
-        { name: 'dirtDoor', url: dirtDoorImageURL },
-        { name: 'leverUp', url: leverUpImageURL },
-        { name: 'leverDown', url: leverDownImageURL }
+        { name: 'dirtDoor', url: dirtDoorImageURL }
     ];
 
     let loadedImagesCount = 0;
@@ -171,8 +167,8 @@ function createCanvas(level) {
     const tileSize = 100; // Width and height of each tile
 
     const blueSquare = {
-        x: 0,
-        y: 0,
+        x: 0, // Adjusted spawn point for Luna
+        y: canvas.height - 4 * tileSize, // Adjusted spawn point for Luna (three spaces up from the bottom)
         size: 50, // Increased size for Luna
         speedX: 0,
         speedY: 0,
@@ -183,8 +179,8 @@ function createCanvas(level) {
     };
 
     const redSquare = {
-        x: 0,
-        y: 0,
+        x: 0, // Adjusted spawn point for Solara
+        y: canvas.height - tileSize, // Adjusted spawn point for Solara on top of the bottom grass obstacles
         size: 50, // Increased size for Solara
         speedX: 0,
         speedY: 0,
@@ -197,25 +193,19 @@ function createCanvas(level) {
     const obstacles = [];
     const collectibles = [];
     const doors = [];
-    const levers = [];
+    const buttons = [];
 
     function createObstacles(level) {
         // Clear existing obstacles
         obstacles.length = 0;
         collectibles.length = 0;
         doors.length = 0;
-        levers.length = 0;
+        buttons.length = 0;
 
         if (level === 1) {
             // Level 1 obstacles, collectibles, and doors setup
             const rowY = canvas.height - 300; // Adjust the y position as needed
             const tileSize = 100; // Width and height of each tile
-
-            // Set spawn points for Luna and Solara
-            blueSquare.x = 5 * tileSize;
-            blueSquare.y = rowY - tileSize; // Above Solara
-            redSquare.x = 5 * tileSize;
-            redSquare.y = rowY; // Bottom left on top of grass obstacle
 
             obstacles.push({ x: 0, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
@@ -258,12 +248,6 @@ function createCanvas(level) {
         } else if (level === 2) {
             // Level 2 obstacles, collectibles, and doors setup
             const tileSize = 100; // Width and height of each tile
-
-            // Set spawn points for Luna and Solara
-            blueSquare.x = tileSize;
-            blueSquare.y = canvas.height - 2 * tileSize; // Above Solara
-            redSquare.x = tileSize;
-            redSquare.y = canvas.height - tileSize; // Bottom left on top of grass obstacle
 
             // Add a row of grass obstacles at the bottom of the screen
             for (let i = 0; i < canvas.width / tileSize; i++) {
@@ -316,7 +300,7 @@ function createCanvas(level) {
             // Add Luna door at the top right of the top grass obstacle row
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
 
-                        // Add Solara door next to Luna door
+            // Add Solara door next to Luna door
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
 
             // Add Solaragem above the grass obstacle and one space to the right
@@ -325,7 +309,7 @@ function createCanvas(level) {
             // Add Lunagem to the right of the space Solara is on
             collectibles.push({ x: tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
 
-            // Add Lunagem two spaces before the doors on the top row grass obstacle
+                       // Add Lunagem two spaces before the doors on the top row grass obstacle
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 3) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
 
             // Add Solaragem three spaces before the doors on the top row grass obstacle
@@ -333,42 +317,34 @@ function createCanvas(level) {
         } else if (level === 3) {
             // Level 3 obstacles, collectibles, and doors setup
             const tileSize = 100; // Width and height of each tile
-
-            // Set spawn points for Luna and Solara
-            blueSquare.x = (Math.floor(canvas.width / tileSize) - 1) * tileSize;
-            blueSquare.y = tileSize; // Top right of the screen on top of the grass obstacle
-            redSquare.x = (Math.floor(canvas.width / tileSize) - 2) * tileSize;
-            redSquare.y = tileSize; // Next to Luna
-
             // Add a row of grass obstacles at the bottom of the screen
             for (let i = 0; i < canvas.width / tileSize; i++) {
                 const type = (i < 2 || i >= Math.floor(canvas.width / tileSize) - 2) ? 'grass' : 'radioactiveGrass';
                 obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
             }
-
+            // Create an ascending row of grass starting from the rightmost position, but remove the top row
+            const startX = canvas.width - tileSize * 4; // Adjust the starting x position to the rightmost position
+            for (let i = 1; i <= 2; i++) {
+                obstacles.push({ x: startX + i * tileSize, y: canvas.height - (i + 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+            }
+            // Add one more grass obstacle next to the top one
+            obstacles.push({ x: startX + 3 * tileSize, y: canvas.height - 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
             // Add a row of grass three spaces up and three grass obstacles long on the left-hand side of the screen
             const leftRowY = canvas.height - 3 * tileSize; // Three spaces up from the bottom
             for (let i = 0; i < 3; i++) {
                 obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
-
             // Add another row of grass two spaces down from the top, leaving one space open on the left-hand side
             const twoSpacesDownY = 1 * tileSize;
             for (let i = 1; i < canvas.width / tileSize; i++) {
                 obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: 'grass' });
             }
-
             // Add Dirt Door at the top left of the top grass obstacle row
             doors.push({ x: tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt' });
-
             // Add Solara door at the bottom left on top of the grass obstacle
             doors.push({ x: 0, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
-
             // Add Luna door at the bottom right on top of the grass obstacle
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
-
-            // Add Lever on top of the top grass obstacle 3 spaces to the right of the dirt door
-            levers.push({ x: 4 * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'leverUp' });
         }
     }
 
@@ -410,10 +386,10 @@ function createCanvas(level) {
             context.drawImage(image, door.x, door.y, door.width, door.height);
         });
 
-        // Draw levers
-        levers.forEach(lever => {
-            const image = images[leverActivated ? 'leverDown' : 'leverUp'];
-            context.drawImage(image, lever.x, lever.y, lever.width, lever.height);
+        // Draw buttons
+        buttons.forEach(button => {
+            const image = images[buttonPressed ? 'buttonPressed' : 'button'];
+            context.drawImage(image, button.x, button.y, button.width, button.height);
         });
 
         // Update blue square
@@ -450,21 +426,31 @@ function createCanvas(level) {
                 }
             });
 
-            // Check collision with levers for blue square
-            levers.forEach(lever => {
-                if (blueSquare.x < lever.x + lever.width &&
-                    blueSquare.x + blueSquare.size > lever.x &&
-                    blueSquare.y + blueSquare.size > lever.y &&
-                    blueSquare.y < lever.y + lever.height) {
-                    leverActivated = true;
-                    // Remove the dirt door
-                    const dirtDoorIndex = doors.findIndex(door => door.type === 'dirtDoor');
-                    if (dirtDoorIndex !== -1) {
-                        doors.splice(dirtDoorIndex, 1);
+            // Check collision with buttons for blue square
+            let isOnButton = false;
+            buttons.forEach(button => {
+                if (blueSquare.x < button.x + button.width &&
+                    blueSquare.x + blueSquare.size > button.x &&
+                    blueSquare.y + blueSquare.size > button.y &&
+                    blueSquare.y < button.y + button.height) {
+                    isOnButton = true;
+                    buttonPressed = true;
+                    // Move the left grass obstacle in the row upward
+                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                    if (leftRowGrass) {
+                        leftRowGrass.y -= tileSize; // Move the grass obstacle up by one tile size
                     }
                 }
             });
 
+            if (!isOnButton) {
+                buttonPressed = false;
+                // Move the left grass obstacle in the row downward
+                const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize - tileSize);
+                if (leftRowGrass) {
+                    leftRowGrass.y += tileSize; // Move the grass obstacle down by one tile size
+                }
+            }
             // Check collision with collectibles for blue square
             collectibles.forEach((collectible, index) => {
                 if (blueSquare.x < collectible.x + collectible.width &&
@@ -484,12 +470,8 @@ function createCanvas(level) {
                     blueSquare.y + blueSquare.size > door.y &&
                     blueSquare.y < door.y + door.height &&
                     door.character === 'luna') {
-                    if (door.type === 'dirtDoor' && !leverActivated) {
-                        endGame("Luna cannot pass through the dirt door until the lever is activated!");
-                    } else {
-                        blueSquare.visible = false;
-                        lunaReachedDoor = true;
-                    }
+                    blueSquare.visible = false;
+                    lunaReachedDoor = true;
                 }
             });
         }
@@ -528,21 +510,31 @@ function createCanvas(level) {
                 }
             });
 
-            // Check collision with levers for red square
-            levers.forEach(lever => {
-                if (redSquare.x < lever.x + lever.width &&
-                    redSquare.x + redSquare.size > lever.x &&
-                    redSquare.y + redSquare.size > lever.y &&
-                    redSquare.y < lever.y + lever.height) {
-                    leverActivated = true;
-                    // Remove the dirt door
-                    const dirtDoorIndex = doors.findIndex(door => door.type === 'dirtDoor');
-                    if (dirtDoorIndex !== -1) {
-                        doors.splice(dirtDoorIndex, 1);
+            // Check collision with buttons for red square
+            let isOnButtonRed = false;
+            buttons.forEach(button => {
+                if (redSquare.x < button.x + button.width &&
+                    redSquare.x + redSquare.size > button.x &&
+                    redSquare.y + redSquare.size > button.y &&
+                    redSquare.y < button.y + button.height) {
+                    isOnButtonRed = true;
+                    buttonPressed = true;
+                    // Move the left grass obstacle in the row upward
+                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                    if (leftRowGrass) {
+                        leftRowGrass.y -= tileSize; // Move the grass obstacle up by one tile size
                     }
                 }
             });
 
+            if (!isOnButtonRed) {
+                buttonPressed = false;
+                // Move the left grass obstacle in the row downward
+                const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize - tileSize);
+                if (leftRowGrass) {
+                    leftRowGrass.y += tileSize; // Move the grass obstacle down by one tile size
+                }
+            }
             // Check collision with collectibles for red square
             collectibles.forEach((collectible, index) => {
                 if (redSquare.x < collectible.x + collectible.width &&
@@ -562,12 +554,8 @@ function createCanvas(level) {
                     redSquare.y + redSquare.size > door.y &&
                     redSquare.y < door.y + door.height &&
                     door.character === 'solara') {
-                    if (door.type === 'dirtDoor' && !leverActivated) {
-                        endGame("Solara cannot pass through the dirt door until the lever is activated!");
-                    } else {
-                        redSquare.visible = false;
-                        solaraReachedDoor = true;
-                    }
+                    redSquare.visible = false;
+                    solaraReachedDoor = true;
                 }
             });
         }
@@ -615,26 +603,6 @@ function createCanvas(level) {
                     redSquare.speedY = redSquare.jumpPower;
                     redSquare.onGround = false;
                 }
-                break;
-            case " ":
-                // Check if either character is on a lever
-                levers.forEach(lever => {
-                    if ((blueSquare.x < lever.x + lever.width &&
-                        blueSquare.x + blueSquare.size > lever.x &&
-                        blueSquare.y + blueSquare.size > lever.y &&
-                        blueSquare.y < lever.y + lever.height) ||
-                        (redSquare.x < lever.x + lever.width &&
-                        redSquare.x + redSquare.size > lever.x &&
-                        redSquare.y + redSquare.size > lever.y &&
-                        redSquare.y < lever.y + lever.height)) {
-                        leverActivated = true;
-                        // Remove the dirt door
-                        const dirtDoorIndex = doors.findIndex(door => door.type === 'dirtDoor');
-                        if (dirtDoorIndex !== -1) {
-                            doors.splice(dirtDoorIndex, 1);
-                        }
-                    }
-                });
                 break;
         }
     }
