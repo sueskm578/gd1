@@ -103,6 +103,8 @@ const radioactiveGrassImageURL = "Radioactivegrass.png"; // Replace with the act
 const buttonImageURL = "Button.png"; // Replace with the actual URL for the unpressed button image
 const buttonPressedImageURL = "Buttonpress.png"; // Replace with the actual URL for the pressed button image
 const dirtDoorImageURL = "Dirt Door.png"; // Replace with the actual URL for the Dirt Door image
+const leverUpGrassImageURL = "Leverupgrass.png"; // Replace with the actual URL for the lever up grass image
+const leverDownGrassImageURL = "Leverdowngrass.png"; // Replace with the actual URL for the lever down grass image
 
 const levelBackgroundImages = {
     1: "creepy cave.jpg",
@@ -118,6 +120,7 @@ let solaraGemsCollected = 0;
 let lunaReachedDoor = false;
 let solaraReachedDoor = false;
 let buttonPressed = false;
+let leverPressed = false;
 
 const images = {};
 
@@ -135,7 +138,9 @@ function preloadImages() {
         { name: 'radioactiveGrass', url: radioactiveGrassImageURL },
         { name: 'button', url: buttonImageURL },
         { name: 'buttonPressed', url: buttonPressedImageURL },
-        { name: 'dirtDoor', url: dirtDoorImageURL }
+        { name: 'dirtDoor', url: dirtDoorImageURL },
+        { name: 'leverUpGrass', url: leverUpGrassImageURL },
+        { name: 'leverDownGrass', url: leverDownGrassImageURL }
     ];
 
     let loadedImagesCount = 0;
@@ -167,8 +172,8 @@ function createCanvas(level) {
     const tileSize = 100; // Width and height of each tile
 
     const blueSquare = {
-        x: 0, // Adjusted spawn point for Luna
-        y: canvas.height - 4 * tileSize, // Adjusted spawn point for Luna (three spaces up from the bottom)
+        x: canvas.width - tileSize, // Adjusted spawn point for Luna
+        y: tileSize, // Adjusted spawn point for Luna at the top right of the screen
         size: 50, // Increased size for Luna
         speedX: 0,
         speedY: 0,
@@ -179,8 +184,8 @@ function createCanvas(level) {
     };
 
     const redSquare = {
-        x: 0, // Adjusted spawn point for Solara
-        y: canvas.height - tileSize, // Adjusted spawn point for Solara on top of the bottom grass obstacles
+        x: canvas.width - 2 * tileSize, // Adjusted spawn point for Solara next to Luna
+        y: tileSize, // Adjusted spawn point for Solara at the top right of the screen
         size: 50, // Increased size for Solara
         speedX: 0,
         speedY: 0,
@@ -303,13 +308,13 @@ function createCanvas(level) {
             // Add Solara door next to Luna door
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
 
-            // Add Solaragem above the grass obstacle and one space to the right
+                       // Add Solaragem above the grass obstacle and one space to the right
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
 
             // Add Lunagem to the right of the space Solara is on
             collectibles.push({ x: tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
 
-                       // Add Lunagem two spaces before the doors on the top row grass obstacle
+            // Add Lunagem two spaces before the doors on the top row grass obstacle
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 3) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
 
             // Add Solaragem three spaces before the doors on the top row grass obstacle
@@ -345,8 +350,12 @@ function createCanvas(level) {
                 obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
+            // Add Leverupgrass in the top row 4 spaces from the left side of the row
+            obstacles.push({ x: 4 * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: 'leverUpGrass' });
+
             // Add Dirt Door at the top left of the top grass obstacle row
-            doors.push({ x: tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt' });
+            const dirtDoor = { x: tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt' };
+            doors.push(dirtDoor);
 
             // Add Solara door at the bottom left on top of the grass obstacle
             doors.push({ x: 0, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
@@ -612,6 +621,19 @@ function createCanvas(level) {
                 if (redSquare.onGround) {
                     redSquare.speedY = redSquare.jumpPower;
                     redSquare.onGround = false;
+                }
+                break;
+            case " ":
+                if (!leverPressed) {
+                    const lever = obstacles.find(obstacle => obstacle.type === 'leverUpGrass');
+                    if (lever && blueSquare.x < lever.x + lever.width &&
+                        blueSquare.x + blueSquare.size > lever.x &&
+                        blueSquare.y + blueSquare.size > lever.y &&
+                        blueSquare.y < lever.y + lever.height) {
+                        lever.type = 'leverDownGrass';
+                        leverPressed = true;
+                        dirtDoor.y -= tileSize; // Move the dirt door up by one tile size
+                    }
                 }
                 break;
         }
