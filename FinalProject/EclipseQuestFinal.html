@@ -337,7 +337,7 @@ function createCanvas(level) {
             // Add Solara door at the bottom left on top of the grass obstacle
             doors.push({ x: 0, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
             // Add Luna door at the bottom right on top of the grass obstacle, moved one space to the right
-            doors.push({ x: (Math.floor(canvas.width / tileSize) - 2) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
+            doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
         }
     }
 
