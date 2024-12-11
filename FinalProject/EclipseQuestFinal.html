@@ -309,7 +309,7 @@ function createCanvas(level) {
             // Add Solara door next to Luna door
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
 
-            // Add Solaragem above the grass obstacle and one space to the right
+                       // Add Solaragem above the grass obstacle and one space to the right
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
 
             // Add Lunagem to the right of the space Solara is on
@@ -351,59 +351,19 @@ function createCanvas(level) {
             // Add Luna door at the bottom right on top of the grass obstacle, moved one space to the right
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
 
-            
+            // Add another row of grass 5 spaces from the left and 3 spaces up from the bottom, extending 2 grass obstacles to the right
+            const newRowX = 5 * tileSize;
+            const newRowY = canvas.height - 3 * tileSize;
+            for (let i = 0; i < 3; i++) {
+                obstacles.push({ x: newRowX + i * tileSize, y: newRowY, width: tileSize, height: tileSize, type: 'grass' });
+            }
 
-// Add the first row of grass, shifted 1 space to the left
-const firstRowX = 4 * tileSize; // Moved 1 space left
-const firstRowY = canvas.height - 3 * tileSize;
-for (let i = 0; i < 3; i++) {
-    if (i === 1) {
-        // Add the custom Solaragrass image in the middle of the first row
-        obstacles.push({ 
-            x: firstRowX + i * tileSize, 
-            y: firstRowY, 
-            width: tileSize, 
-            height: tileSize, 
-            type: 'grass', 
-            image: 'Solaragrass.png' // URL for the middle obstacle
-        });
-    } else {
-        // Add regular grass obstacles
-        obstacles.push({ 
-            x: firstRowX + i * tileSize, 
-            y: firstRowY, 
-            width: tileSize, 
-            height: tileSize, 
-            type: 'grass' 
-        });
-    }
-}
-
-// Add the second row of grass, shifted 2 spaces to the right
-const secondRowX = 9 * tileSize; // Moved 2 spaces right
-const secondRowY = firstRowY;
-for (let i = 0; i < 3; i++) {
-    if (i === 1) {
-        // Add the custom Lunagrass image in the middle of the second row
-        obstacles.push({ 
-            x: secondRowX + i * tileSize, 
-            y: secondRowY, 
-            width: tileSize, 
-            height: tileSize, 
-            type: 'grass', 
-            image: 'Lunagrass.png' // URL for the middle obstacle
-        });
-    } else {
-        // Add regular grass obstacles
-        obstacles.push({ 
-            x: secondRowX + i * tileSize, 
-            y: secondRowY, 
-            width: tileSize, 
-            height: tileSize, 
-            type: 'grass' 
-        });
-    }
-}
+            // Add another row of grass three spaces wide that is 3 spaces to the right of the previous grass row added
+            const anotherRowX = newRowX + 3 * tileSize;
+            const anotherRowY = newRowY;
+            for (let i = 0; i < 3; i++) {
+                obstacles.push({ x: anotherRowX + i * tileSize, y: anotherRowY, width: tileSize, height: tileSize, type: 'grass' });
+            }
 
             // Set Luna's position on top of the top grass obstacle on the rightmost grass obstacle
             blueSquare.x = canvas.width - 2 * tileSize;
@@ -461,6 +421,14 @@ for (let i = 0; i < 3; i++) {
             const image = images[leverActivated ? 'leverDown' : 'leverUp'];
             context.drawImage(image, lever.x, lever.y, lever.width, lever.height);
         });
+
+        // Draw dirt door if visible
+        if (dirtDoorVisible) {
+            const dirtDoor = doors.find(door => door.type === 'dirtDoor');
+            if (dirtDoor) {
+                context.drawImage(images.dirtDoor, dirtDoor.x, dirtDoor.y, dirtDoor.width, dirtDoor.height);
+            }
+        }
 
         // Update blue square
         if (blueSquare.visible) {
@@ -756,10 +724,11 @@ document.getElementById("endScreen").style.backgroundImage = `url(${backgroundIm
 document.getElementById("levelCompleteScreen").style.backgroundImage = `url(${backgroundImageURL})`;
 
 preloadImages().then(() => {
-    console.log("All images preloaded");
+    console.log("All images loaded successfully.");
 }).catch(error => {
-    console.error("Error preloading images:", error);
+    console.error("Error loading images:", error);
 });
+
 </script>
 </body>
 </html>
