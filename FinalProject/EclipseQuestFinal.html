@@ -171,8 +171,8 @@ function createCanvas(level) {
     const tileSize = 100; // Width and height of each tile
 
     const blueSquare = {
-        x: canvas.width - 2 * tileSize, // Adjusted spawn point for Luna
-        y: canvas.height - 4 * tileSize, // Adjusted spawn point for Luna (top right grass obstacle space)
+        x: 0,
+        y: 0,
         size: 50, // Increased size for Luna
         speedX: 0,
         speedY: 0,
@@ -183,8 +183,8 @@ function createCanvas(level) {
     };
 
     const redSquare = {
-        x: canvas.width - 3 * tileSize, // Adjusted spawn point for Solara next to Luna
-        y: canvas.height - 4 * tileSize, // Adjusted spawn point for Solara next to Luna
+        x: 0,
+        y: 0,
         size: 50, // Increased size for Solara
         speedX: 0,
         speedY: 0,
@@ -210,6 +210,12 @@ function createCanvas(level) {
             // Level 1 obstacles, collectibles, and doors setup
             const rowY = canvas.height - 300; // Adjust the y position as needed
             const tileSize = 100; // Width and height of each tile
+
+            // Set spawn points for Luna and Solara
+            blueSquare.x = 5 * tileSize;
+            blueSquare.y = rowY - tileSize; // Above Solara
+            redSquare.x = 5 * tileSize;
+            redSquare.y = rowY; // Bottom left on top of grass obstacle
 
             obstacles.push({ x: 0, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
             obstacles.push({ x: tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
@@ -252,6 +258,12 @@ function createCanvas(level) {
         } else if (level === 2) {
             // Level 2 obstacles, collectibles, and doors setup
             const tileSize = 100; // Width and height of each tile
+
+            // Set spawn points for Luna and Solara
+            blueSquare.x = tileSize;
+            blueSquare.y = canvas.height - 2 * tileSize; // Above Solara
+            redSquare.x = tileSize;
+            redSquare.y = canvas.height - tileSize; // Bottom left on top of grass obstacle
 
             // Add a row of grass obstacles at the bottom of the screen
             for (let i = 0; i < canvas.width / tileSize; i++) {
@@ -304,13 +316,13 @@ function createCanvas(level) {
             // Add Luna door at the top right of the top grass obstacle row
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
 
-            // Add Solara door next to Luna door
+                       // Add Solara door next to Luna door
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
 
             // Add Solaragem above the grass obstacle and one space to the right
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
 
-                        // Add Lunagem to the right of the space Solara is on
+            // Add Lunagem to the right of the space Solara is on
             collectibles.push({ x: tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
 
             // Add Lunagem two spaces before the doors on the top row grass obstacle
@@ -321,6 +333,12 @@ function createCanvas(level) {
         } else if (level === 3) {
             // Level 3 obstacles, collectibles, and doors setup
             const tileSize = 100; // Width and height of each tile
+
+            // Set spawn points for Luna and Solara
+            blueSquare.x = (Math.floor(canvas.width / tileSize) - 1) * tileSize;
+            blueSquare.y = tileSize; // Top right of the screen on top of the grass obstacle
+            redSquare.x = (Math.floor(canvas.width / tileSize) - 2) * tileSize;
+            redSquare.y = tileSize; // Next to Luna
 
             // Add a row of grass obstacles at the bottom of the screen
             for (let i = 0; i < canvas.width / tileSize; i++) {
