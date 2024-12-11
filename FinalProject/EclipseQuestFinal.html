@@ -352,23 +352,23 @@ function createCanvas(level) {
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
 
             
+
 // Add the first row of grass, shifted 1 space to the left
 const firstRowX = 4 * tileSize; // Moved 1 space left
 const firstRowY = canvas.height - 3 * tileSize;
 for (let i = 0; i < 3; i++) {
-    // Check if it's the middle obstacle
     if (i === 1) {
-        // Add the Solaragrass in the middle
+        // Add the custom Solaragrass image in the middle of the first row
         obstacles.push({ 
             x: firstRowX + i * tileSize, 
             y: firstRowY, 
             width: tileSize, 
             height: tileSize, 
             type: 'grass', 
-            image: 'Solaragrass.png' // Correct URL for the first-row middle grass
+            image: 'Solaragrass.png' // URL for the middle obstacle
         });
     } else {
-        // Add regular grass obstacles for the rest
+        // Add regular grass obstacles
         obstacles.push({ 
             x: firstRowX + i * tileSize, 
             y: firstRowY, 
@@ -383,19 +383,18 @@ for (let i = 0; i < 3; i++) {
 const secondRowX = 9 * tileSize; // Moved 2 spaces right
 const secondRowY = firstRowY;
 for (let i = 0; i < 3; i++) {
-    // Check if it's the middle obstacle
     if (i === 1) {
-        // Add the Lunagrass in the middle
+        // Add the custom Lunagrass image in the middle of the second row
         obstacles.push({ 
             x: secondRowX + i * tileSize, 
             y: secondRowY, 
             width: tileSize, 
             height: tileSize, 
             type: 'grass', 
-            image: 'Lunagrass.png' // Correct URL for the second-row middle grass
+            image: 'Lunagrass.png' // URL for the middle obstacle
         });
     } else {
-        // Add regular grass obstacles for the rest
+        // Add regular grass obstacles
         obstacles.push({ 
             x: secondRowX + i * tileSize, 
             y: secondRowY, 
