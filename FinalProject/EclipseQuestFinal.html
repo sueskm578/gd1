@@ -200,6 +200,7 @@ function createCanvas(level) {
     const collectibles = [];
     const doors = [];
     const levers = [];
+    const buttons = [];
 
     function createObstacles(level) {
         // Clear existing obstacles
@@ -207,6 +208,7 @@ function createCanvas(level) {
         collectibles.length = 0;
         doors.length = 0;
         levers.length = 0;
+        buttons.length = 0;
 
         if (level === 1) {
             // Level 1 obstacles, collectibles, and doors setup
@@ -290,8 +292,12 @@ function createCanvas(level) {
         // Add a button on the new grass row, 4 spaces from the left
         const buttonX = 4 * tileSize;
         const buttonY = fiveSpacesUpY - tileSize;
-        obstacles.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button' });
+        buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button' });
 
+        // Add another button above the grass obstacle in the top grass obstacle row
+        const buttonYAbove = fiveSpacesUpY - 3 * tileSize; // Adjusted y-coordinate to be above the grass obstacle
+        buttons.push({ x: buttonX, y: buttonYAbove, width: tileSize, height: tileSize, type: 'button' });
+            
         // Add another row of grass two spaces down from the top, leaving one space open on the left-hand side
         const twoSpacesDownY = 1 * tileSize;
         for (let i = 1; i < canvas.width / tileSize; i++) {
@@ -417,7 +423,13 @@ function createCanvas(level) {
         const image = images[leverActivated ? 'leverDown' : 'leverUp'];
         context.drawImage(image, lever.x, lever.y, lever.width, lever.height);
     });
-
+        
+    // Draw buttons
+    buttons.forEach(button => {
+        const image = images[buttonPressed ? 'buttonPressed' : 'button'];
+        context.drawImage(image, button.x, button.y, button.width, button.height);
+    });
+   
     // Draw dirt door if visible
     if (dirtDoorVisible) {
         const dirtDoor = doors.find(door => door.type === 'dirtDoor');
@@ -460,15 +472,45 @@ function createCanvas(level) {
             }
         });
 
+         // Check collision with levers for blue square
+            levers.forEach(lever => {
+                if (blueSquare.x < lever.x + lever.width &&
+                    blueSquare.x + blueSquare.size > lever.x &&
+                    blueSquare.y + blueSquare.size > lever.y &&
+                    blueSquare.y < lever.y + lever.height) {
+                    if (leverActivated) {
+                        leverActivated = false;
+                    } else {
+                        leverActivated = true;
+                    }
+                }
+            });
+
         // Check collision with buttons for blue square
-        obstacles.forEach(obstacle => {
-            if (obstacle.type === 'button' && blueSquare.x < obstacle.x + obstacle.width &&
-                blueSquare.x + blueSquare.size > obstacle.x &&
-                blueSquare.y + blueSquare.size > obstacle.y &&
-                blueSquare.y < obstacle.y + obstacle.height) {
-                buttonPressed = true;
+            let isOnButton = false;
+            buttons.forEach(button => {
+                if (blueSquare.x < button.x + button.width &&
+                    blueSquare.x + blueSquare.size > button.x &&
+                    blueSquare.y + blueSquare.size > button.y &&
+                    blueSquare.y < button.y + button.height) {
+                    isOnButton = true;
+                    buttonPressed = true;
+                    // Move the left grass obstacle in the row upward
+                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                    if (leftRowGrass) {
+                        leftRowGrass.y -= tileSize; // Move the grass obstacle up by one tile size
+                    }
+                }
+            });
+
+            if (!isOnButton) {
+                buttonPressed = false;
+                // Move the left grass obstacle in the row downward
+                const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize - tileSize);
+                if (leftRowGrass) {
+                    leftRowGrass.y += tileSize; // Move the grass obstacle down by one tile size
+                }
             }
-        });
 
         // Check collision with collectibles for blue square
         collectibles.forEach((collectible, index) => {
@@ -483,17 +525,17 @@ function createCanvas(level) {
         });
 
         // Check collision with doors for blue square
-        doors.forEach(door => {
-            if (blueSquare.x < door.x + door.width &&
-                blueSquare.x + blueSquare.size > door.x &&
-                blueSquare.y + blueSquare.size > door.y &&
-                blueSquare.y < door.y + door.height &&
-                door.character === 'luna') {
-                blueSquare.visible = false;
-                lunaReachedDoor = true;
-            }
-        });
-    }
+            doors.forEach(door => {
+                if (blueSquare.x < door.x + door.width &&
+                    blueSquare.x + blueSquare.size > door.x &&
+                    blueSquare.y + blueSquare.size > door.y &&
+                    blueSquare.y < door.y + door.height &&
+                    door.character === 'luna') {
+                    blueSquare.visible = false;
+                    lunaReachedDoor = true;
+                }
+            });
+        }
 
     // Update red square
     if (redSquare.visible) {
@@ -529,15 +571,45 @@ function createCanvas(level) {
             }
         });
 
+        // Check collision with levers for red square
+            levers.forEach(lever => {
+                if (redSquare.x < lever.x + lever.width &&
+                    redSquare.x + redSquare.size > lever.x &&
+                    redSquare.y + redSquare.size > lever.y &&
+                    redSquare.y < lever.y + lever.height) {
+                    if (leverActivated) {
+                        leverActivated = false;
+                    } else {
+                        leverActivated = true;
+                    }
+                }
+            });
+
         // Check collision with buttons for red square
-        obstacles.forEach(obstacle => {
-            if (obstacle.type === 'button' && redSquare.x < obstacle.x + obstacle.width &&
-                redSquare.x + redSquare.size > obstacle.x &&
-                redSquare.y + redSquare.size > obstacle.y &&
-                redSquare.y < obstacle.y + obstacle.height) {
-                buttonPressed = true;
+            let isOnButtonRed = false;
+            buttons.forEach(button => {
+                if (redSquare.x < button.x + button.width &&
+                    redSquare.x + redSquare.size > button.x &&
+                    redSquare.y + redSquare.size > button.y &&
+                    redSquare.y < button.y + button.height) {
+                    isOnButtonRed = true;
+                    buttonPressed = true;
+                    // Move the left grass obstacle in the row upward
+                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                    if (leftRowGrass) {
+                        leftRowGrass.y -= tileSize; // Move the grass obstacle up by one tile size
+                    }
+                }
+            });
+
+            if (!isOnButtonRed) {
+                buttonPressed = false;
+                // Move the left grass obstacle in the row downward
+                const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize - tileSize);
+                if (leftRowGrass) {
+                    leftRowGrass.y += tileSize; // Move the grass obstacle down by one tile size
+                }
             }
-        });
 
         // Check collision with collectibles for red square
         collectibles.forEach((collectible, index) => {
