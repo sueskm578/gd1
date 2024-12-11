@@ -94,9 +94,7 @@ const grassImageURL = "Grass.png"; // Replace with your grass image URL
 const lunaImageURL = "luna.png"; // Replace with the actual URL for Luna's image
 const solaraImageURL = "solara.png"; // Replace with the actual URL for Solara's image
 const solaraGrassImageURL = "Solaragrass.png"; // Replace with the actual URL for Solara grass image
-const
-
- lunaGrassImageURL = "Lunagrass.png"; // Replace with the actual URL for Luna grass image
+const lunaGrassImageURL = "Lunagrass.png"; // Replace with the actual URL for Luna grass image
 const solaragemImageURL = "Solaragem.png"; // Replace with the actual URL for Solaragem image
 const lunagemImageURL = "Lunagem.jpg"; // Replace with the actual URL for Lunagem image
 const lunaDoorImageURL = "Lunadoor.png"; // Replace with the actual URL for Luna door image
@@ -123,6 +121,7 @@ let lunaReachedDoor = false;
 let solaraReachedDoor = false;
 let leverActivated = false;
 let dirtDoorVisible = true;
+let buttonPressed = false;
 
 const images = {};
 
@@ -135,9 +134,7 @@ function preloadImages() {
         { name: 'lunaGrass', url: lunaGrassImageURL },
         { name: 'solaragem', url: solaragemImageURL },
         { name: 'lunagem', url: lunagemImageURL },
-        { name: 'lunaDoor', url: lunaDoorImageURL
-
- },
+        { name: 'lunaDoor', url: lunaDoorImageURL },
         { name: 'solaraDoor', url: solaraDoorImageURL },
         { name: 'radioactiveGrass', url: radioactiveGrassImageURL },
         { name: 'button', url: buttonImageURL },
@@ -354,19 +351,19 @@ function createCanvas(level) {
             // Add Luna door at the bottom right on top of the grass obstacle, moved one space to the right
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
 
-           // Add the first row of grass, shifted 1 space to the left
-const firstRowX = 4 * tileSize; // Moved 1 space left
-const firstRowY = canvas.height - 3 * tileSize;
-for (let i = 0; i < 3; i++) {
-    obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'grass' });
-}
+            // Add another row of grass 5 spaces from the left and 3 spaces up from the bottom, extending 2 grass obstacles to the right
+            const newRowX = 5 * tileSize;
+            const newRowY = canvas.height - 3 * tileSize;
+            for (let i = 0; i < 3; i++) {
+                obstacles.push({ x: newRowX + i * tileSize, y: newRowY, width: tileSize, height: tileSize, type: 'grass' });
+            }
 
-// Add the second row of grass, shifted 1 space to the right
-const secondRowX = 9 * tileSize; // Moved 2 space right
-const secondRowY = firstRowY;
-for (let i = 0; i < 3; i++) {
-    obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
-}
+            // Add another row of grass three spaces wide that is 3 spaces to the right of the previous grass row added
+            const anotherRowX = newRowX + 3 * tileSize;
+            const anotherRowY = newRowY;
+            for (let i = 0; i < 3; i++) {
+                obstacles.push({ x: anotherRowX + i * tileSize, y: anotherRowY, width: tileSize, height: tileSize, type: 'grass' });
+            }
 
             // Set Luna's position on top of the top grass obstacle on the rightmost grass obstacle
             blueSquare.x = canvas.width - 2 * tileSize;
@@ -459,17 +456,13 @@ for (let i = 0; i < 3; i++) {
                 }
             });
 
-            // Check collision with levers for blue square
-            levers.forEach(lever => {
-                if (blueSquare.x < lever.x + lever.width &&
-                    blueSquare.x + blueSquare.size > lever.x &&
-                    blueSquare.y + blueSquare.size > lever.y &&
-                    blueSquare.y < lever.y + lever.height) {
-                    if (leverActivated) {
-                        leverActivated = false;
-                    } else {
-                        leverActivated = true;
-                    }
+            // Check collision with buttons for blue square
+            obstacles.forEach(obstacle => {
+                if (obstacle.type === 'button' && blueSquare.x < obstacle.x + obstacle.width &&
+                    blueSquare.x + blueSquare.size > obstacle.x &&
+                    blueSquare.y + blueSquare.size > obstacle.y &&
+                    blueSquare.y < obstacle.y + obstacle.height) {
+                    buttonPressed = true;
                 }
             });
 
@@ -532,17 +525,13 @@ for (let i = 0; i < 3; i++) {
                 }
             });
 
-            // Check collision with levers for red square
-            levers.forEach(lever => {
-                if (redSquare.x < lever.x + lever.width &&
-                    redSquare.x + redSquare.size > lever.x &&
-                    redSquare.y + redSquare.size > lever.y &&
-                    redSquare.y < lever.y + lever.height) {
-                    if (leverActivated) {
-                        leverActivated = false;
-                    } else {
-                        leverActivated = true;
-                    }
+            // Check collision with buttons for red square
+            obstacles.forEach(obstacle => {
+                if (obstacle.type === 'button' && redSquare.x < obstacle.x + obstacle.width &&
+                    redSquare.x + redSquare.size > obstacle.x &&
+                    redSquare.y + redSquare.size > obstacle.y &&
+                    redSquare.y < obstacle.y + obstacle.height) {
+                    buttonPressed = true;
                 }
             });
 
@@ -567,6 +556,27 @@ for (let i = 0; i < 3; i++) {
                     door.character === 'solara') {
                     redSquare.visible = false;
                     solaraReachedDoor = true;
+                }
+            });
+        }
+
+        // Handle button press logic
+        if (buttonPressed) {
+            obstacles.forEach(obstacle => {
+                if (obstacle.type === 'button') {
+                    obstacle.type = 'buttonPressed';
+                }
+                if (obstacle.type === 'grass' && obstacle.y === canvas.height - 5 * tileSize) {
+                    obstacle.y -= tileSize;
+                }
+            });
+        } else {
+            obstacles.forEach(obstacle => {
+                if (obstacle.type === 'buttonPressed') {
+                    obstacle.type = 'button';
+                }
+                if (obstacle.type === 'grass' && obstacle.y === canvas.height - 6 * tileSize) {
+                    obstacle.y += tileSize;
                 }
             });
         }
