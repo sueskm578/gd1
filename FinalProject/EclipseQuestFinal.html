@@ -306,10 +306,10 @@ function createCanvas(level) {
             // Add Solaragem above the grass obstacle and one space to the right
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
 
-                        // Add Lunagem to the right of the space Solara is on
+            // Add Lunagem to the right of the space Solara is on
             collectibles.push({ x: tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
 
-            // Add Lunagem two spaces before the doors on the top row grass obstacle
+                       // Add Lunagem two spaces before the doors on the top row grass obstacle
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 3) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
 
             // Add Solaragem three spaces before the doors on the top row grass obstacle
@@ -320,7 +320,8 @@ function createCanvas(level) {
 
             // Add a row of grass obstacles at the bottom of the screen
             for (let i = 0; i < canvas.width / tileSize; i++) {
-                obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: 'grass' });
+                const type = (i < 2 || i >= Math.floor(canvas.width / tileSize) - 2) ? 'grass' : 'radioactiveGrass';
+                obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
             }
 
             // Create an ascending row of grass starting from the rightmost position, but remove the top row
@@ -338,16 +339,6 @@ function createCanvas(level) {
                 obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
-            // Add another row of grass starting from the left side, 5 spaces up, and extending 12 grass spaces across
-            const fiveSpacesUpY = canvas.height - 5 * tileSize;
-            for (let i = 0; i < 12; i++) {
-                obstacles.push({ x: i * tileSize, y: fiveSpacesUpY, width: tileSize, height: tileSize, type: 'grass' });
-            }
-
-            // Add an ascending grass obstacle down on the right side of the new grass row
-            const startXNewRow = 11 * tileSize; // Rightmost position of the new grass row
-            obstacles.push({ x: startXNewRow + tileSize, y: fiveSpacesUpY + tileSize, width: tileSize, height: tileSize, type: 'grass' });
-
             // Add another row of grass two spaces down from the top, leaving one space open on the left-hand side
             const twoSpacesDownY = 1 * tileSize;
             for (let i = 1; i < canvas.width / tileSize; i++) {
@@ -356,6 +347,12 @@ function createCanvas(level) {
 
             // Add Dirt Door at the top left of the top grass obstacle row
             doors.push({ x: tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt' });
+
+            // Add Solara door at the bottom left on top of the grass obstacle
+            doors.push({ x: 0, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
+
+            // Add Luna door at the bottom right on top of the grass obstacle
+            doors.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
         }
     }
 
