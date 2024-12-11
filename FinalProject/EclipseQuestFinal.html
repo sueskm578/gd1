@@ -346,18 +346,27 @@ function createCanvas(level) {
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
 
             // Add the first row of grass, shifted 1 space to the left
-const firstRowX = 4 * tileSize; // Moved 1 space left
-const firstRowY = canvas.height - 3 * tileSize;
-for (let i = 0; i < 3; i++) {
-    obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'grass' });
-}
+            const firstRowX = 4 * tileSize; // Moved 1 space left
+            const firstRowY = canvas.height - 3 * tileSize;
+            for (let i = 0; i < 3; i++) {
+                obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'grass' });
+            }
 
-// Add the second row of grass, shifted 1 space to the right
-const secondRowX = 9 * tileSize; // Moved 1 space right
-const secondRowY = firstRowY;
-for (let i = 0; i < 3; i++) {
-    obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
-}
+            // Add the second row of grass, shifted 1 space to the right
+            const secondRowX = 9 * tileSize; // Moved 1 space right
+            const secondRowY = firstRowY;
+            for (let i = 0; i < 3; i++) {
+                obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
+            }
+            
+            // Set Luna's position on top of the top grass obstacle on the rightmost grass obstacle
+            blueSquare.x = canvas.width - 2 * tileSize;
+            blueSquare.y = twoSpacesDownY - tileSize;
+
+            // Set Solara's position next to Luna
+            redSquare.x = blueSquare.x + tileSize;
+            redSquare.y = blueSquare.y;
+
         }
     }
 
