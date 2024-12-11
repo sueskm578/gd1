@@ -323,7 +323,7 @@ function createCanvas(level) {
                 obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
             }
             // Add a row of grass three spaces up and three grass obstacles long on the left-hand side of the screen
-            const leftRowY = canvas.height - 3 * tileSize; // Three spaces up from the bottom
+            const leftRowY = canvas.height - 5 * tileSize; // five spaces up from the bottom
             for (let i = 0; i < 3; i++) {
                 obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
