@@ -302,13 +302,13 @@ function createCanvas(level) {
                 obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: type });
             }
 
-                        // Add Luna door at the top right of the top grass obstacle row
+            // Add Luna door at the top right of the top grass obstacle row
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
 
             // Add Solara door next to Luna door
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 2) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
 
-            // Add Solaragem above the grass obstacle and one space to the right
+                       // Add Solaragem above the grass obstacle and one space to the right
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
 
             // Add Lunagem to the right of the space Solara is on
@@ -617,17 +617,21 @@ function createCanvas(level) {
             case " ":
                 if (!leverPressed) {
                     const lever = obstacles.find(obstacle => obstacle.type === 'leverUp');
-                    if (lever && (blueSquare.x < lever.x + lever.width &&
+                    if (lever && ((blueSquare.x < lever.x + lever.width &&
                         blueSquare.x + blueSquare.size > lever.x &&
                         blueSquare.y + blueSquare.size > lever.y &&
                         blueSquare.y < lever.y + lever.height) ||
                         (redSquare.x < lever.x + lever.width &&
                         redSquare.x + redSquare.size > lever.x &&
                         redSquare.y + redSquare.size > lever.y &&
-                        redSquare.y < lever.y + lever.height)) {
+                        redSquare.y < lever.y + lever.height))) {
                         lever.type = 'leverDown';
                         leverPressed = true;
-                        dirtDoor.y -= tileSize; // Move the dirt door up by one tile size
+                        // Remove the dirt door
+                        const dirtDoorIndex = doors.findIndex(door => door.type === 'dirtDoor');
+                        if (dirtDoorIndex !== -1) {
+                            doors.splice(dirtDoorIndex, 1);
+                        }
                     }
                 }
                 break;
