@@ -103,8 +103,8 @@ const radioactiveGrassImageURL = "Radioactivegrass.png"; // Replace with the act
 const buttonImageURL = "Button.png"; // Replace with the actual URL for the unpressed button image
 const buttonPressedImageURL = "Buttonpress.png"; // Replace with the actual URL for the pressed button image
 const dirtDoorImageURL = "Dirt Door.png"; // Replace with the actual URL for the Dirt Door image
-const leverUpGrassImageURL = "Leverupgrass.png"; // Replace with the actual URL for the lever up grass image
-const leverDownGrassImageURL = "Leverdowngrass.png"; // Replace with the actual URL for the lever down grass image
+const leverUpImageURL = "Leverup.png"; // Replace with the actual URL for the lever up image
+const leverDownImageURL = "Leverdowngrass.png"; // Replace with the actual URL for the lever down image
 
 const levelBackgroundImages = {
     1: "creepy cave.jpg",
@@ -139,8 +139,8 @@ function preloadImages() {
         { name: 'button', url: buttonImageURL },
         { name: 'buttonPressed', url: buttonPressedImageURL },
         { name: 'dirtDoor', url: dirtDoorImageURL },
-        { name: 'leverUpGrass', url: leverUpGrassImageURL },
-        { name: 'leverDownGrass', url: leverDownGrassImageURL }
+        { name: 'leverUp', url: leverUpImageURL },
+        { name: 'leverDown', url: leverDownImageURL }
     ];
 
     let loadedImagesCount = 0;
@@ -329,15 +329,6 @@ function createCanvas(level) {
                 obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
             }
 
-            // Create an ascending row of grass starting from the rightmost position, but remove the top row
-            const startX = canvas.width - tileSize * 4; // Adjust the starting x position to the rightmost position
-            for (let i = 1; i <= 2; i++) {
-                obstacles.push({ x: startX + i * tileSize, y: canvas.height - (i + 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
-            }
-
-            // Add one more grass obstacle next to the top one
-            obstacles.push({ x: startX + 3 * tileSize, y: canvas.height - 3 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
-
             // Add a row of grass three spaces up and three grass obstacles long on the left-hand side of the screen
             const leftRowY = canvas.height - 3 * tileSize; // Three spaces up from the bottom
             for (let i = 0; i < 3; i++) {
@@ -350,8 +341,8 @@ function createCanvas(level) {
                 obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
-            // Add Leverupgrass in the top row 4 spaces from the left side of the row
-            obstacles.push({ x: 4 * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: 'leverUpGrass' });
+            // Add Leverup.png in the top row 4 spaces from the left side of the row
+            obstacles.push({ x: 4 * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: 'leverUp' });
 
             // Add Dirt Door at the top left of the top grass obstacle row
             const dirtDoor = { x: tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt' };
@@ -625,12 +616,16 @@ function createCanvas(level) {
                 break;
             case " ":
                 if (!leverPressed) {
-                    const lever = obstacles.find(obstacle => obstacle.type === 'leverUpGrass');
-                    if (lever && blueSquare.x < lever.x + lever.width &&
+                    const lever = obstacles.find(obstacle => obstacle.type === 'leverUp');
+                    if (lever && (blueSquare.x < lever.x + lever.width &&
                         blueSquare.x + blueSquare.size > lever.x &&
                         blueSquare.y + blueSquare.size > lever.y &&
-                        blueSquare.y < lever.y + lever.height) {
-                        lever.type = 'leverDownGrass';
+                        blueSquare.y < lever.y + lever.height) ||
+                        (redSquare.x < lever.x + lever.width &&
+                        redSquare.x + redSquare.size > lever.x &&
+                        redSquare.y + redSquare.size > lever.y &&
+                        redSquare.y < lever.y + lever.height)) {
+                        lever.type = 'leverDown';
                         leverPressed = true;
                         dirtDoor.y -= tileSize; // Move the dirt door up by one tile size
                     }
