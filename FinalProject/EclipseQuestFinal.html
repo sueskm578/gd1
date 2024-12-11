@@ -351,18 +351,18 @@ function createCanvas(level) {
             // Add Luna door at the bottom right on top of the grass obstacle, moved one space to the right
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
 
-            // Add another row of grass 5 spaces from the left and 3 spaces up from the bottom, extending 2 grass obstacles to the right
-            const newRowX = 5 * tileSize;
-            const newRowY = canvas.height - 3 * tileSize;
+            // Add the first row of grass, shifted 1 space to the left
+            const firstRowX = 4 * tileSize; // Moved 1 space left
+            const firstRowY = canvas.height - 3 * tileSize;
             for (let i = 0; i < 3; i++) {
-                obstacles.push({ x: newRowX + i * tileSize, y: newRowY, width: tileSize, height: tileSize, type: 'grass' });
+                obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
-            // Add another row of grass three spaces wide that is 3 spaces to the right of the previous grass row added
-            const anotherRowX = newRowX + 3 * tileSize;
-            const anotherRowY = newRowY;
+            // Add the second row of grass, shifted 1 space to the right
+            const secondRowX = 8 * tileSize; // Moved 1 space right
+            const secondRowY = firstRowY;
             for (let i = 0; i < 3; i++) {
-                obstacles.push({ x: anotherRowX + i * tileSize, y: anotherRowY, width: tileSize, height: tileSize, type: 'grass' });
+                 obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
             // Set Luna's position on top of the top grass obstacle on the rightmost grass obstacle
