@@ -357,12 +357,11 @@ for (let i = 0; i < 3; i++) {
 }
 
 // Add the second row of grass, shifted 1 space to the right
-const secondRowX = 6 * tileSize; // Moved 1 space right
+const secondRowX = 8 * tileSize; // Moved 1 space right
 const secondRowY = firstRowY;
 for (let i = 0; i < 3; i++) {
     obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
 }
-
             // Set Luna's position on top of the top grass obstacle on the rightmost grass obstacle
             blueSquare.x = canvas.width - 2 * tileSize;
             blueSquare.y = twoSpacesDownY - tileSize;
