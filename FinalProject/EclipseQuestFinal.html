@@ -402,9 +402,11 @@ function createCanvas(level) {
                     blueSquare.y < button.y + button.height) {
                     isOnButton = true;
                     buttonPressed = true;
-                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
-                    if (leftRowGrass) {
-                        leftRowGrass.y -= tileSize;
+                    if (currentLevel === 2) {
+                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                        if (leftRowGrass) {
+                            leftRowGrass.y -= tileSize;
+                        }
                     }
                 }
             });
@@ -473,9 +475,11 @@ function createCanvas(level) {
                     redSquare.y < button.y + button.height) {
                     isOnButtonRed = true;
                     buttonPressed = true;
-                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
-                    if (leftRowGrass) {
-                        leftRowGrass.y -= tileSize;
+                    if (currentLevel === 2) {
+                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                        if (leftRowGrass) {
+                            leftRowGrass.y -= tileSize;
+                        }
                     }
                 }
             });
