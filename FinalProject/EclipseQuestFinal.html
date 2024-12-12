@@ -98,7 +98,7 @@ const lunaGrassImageURL = "Lunagrass.png";
 const solaragemImageURL = "Solaragem.png";
 const lunagemImageURL = "Lunagem.jpg";
 const lunaDoorImageURL = "Lunadoor.png";
-const solaraDoorImageURL = "SolaraDoor.png";
+const solaraDoorImageURL = "Solaradoor.png";
 const radioactiveGrassImageURL = "Radioactivegrass.png";
 const buttonImageURL = "Button.png";
 const buttonPressedImageURL = "Buttonpress.png";
@@ -367,7 +367,7 @@ function createCanvas(level) {
         } else if (level === 4) {
             const tileSize = 100;
 
-            const topRowY = 1 * tileSize;
+            const topRowY = 2 * tileSize;
             for (let i = 0; i < 12; i++) {
                 obstacles.push({ x: i * tileSize, y: topRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
