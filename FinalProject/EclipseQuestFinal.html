@@ -328,7 +328,31 @@ function createCanvas(level) {
             blueSquare.y = twoSpacesDownY - tileSize;
             redSquare.x = blueSquare.x + tileSize;
             redSquare.y = blueSquare.y;
-        }
+        else if (level === 4) {
+    const tileSize = 100;
+
+    // Create the bottom row of grass obstacles
+    const bottomRowY = canvas.height - tileSize; // Position for the bottom row
+    for (let i = 0; i < canvas.width / tileSize; i++) {
+        obstacles.push({ x: i * tileSize, y: bottomRowY, width: tileSize, height: tileSize, type: 'grass' });
+    }
+
+    // Position Solara and Luna on the left side of the bottom row
+    blueSquare.x = 0; // Luna's starting position
+    blueSquare.y = bottomRowY - blueSquare.size; // On top of the grass
+
+    redSquare.x = tileSize; // Solara's starting position
+    redSquare.y = bottomRowY - redSquare.size; // On top of the grass
+
+    // Create another row of grass obstacles three spaces up
+    const upperRowY = bottomRowY - 3 * tileSize; // Position for the upper row
+    for (let i = 0; i < 13; i++) {
+        obstacles.push({ x: i * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
+    }
+
+    // Add one grass obstacle on the right side of the screen at the same height
+    obstacles.push({ x: (canvas.width / tileSize - 1) * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
+}
     }
 
     function endGame(message) {
