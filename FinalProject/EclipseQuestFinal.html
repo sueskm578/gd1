@@ -446,12 +446,14 @@ function update() {
         blueSquare.speedY += blueSquare.gravity;
         blueSquare.x += blueSquare.speedX;
         blueSquare.y += blueSquare.speedY;
+        context.drawImage(images['luna'], blueSquare.x, blueSquare.y, blueSquare.size, blueSquare.size);
     }
 
     if (redSquare.visible) {
         redSquare.speedY += redSquare.gravity;
         redSquare.x += redSquare.speedX;
         redSquare.y += redSquare.speedY;
+        context.drawImage(images['solara'], redSquare.x, redSquare.y, redSquare.size, redSquare.size);
     }
 
     if (lunaReachedDoor && solaraReachedDoor) {
