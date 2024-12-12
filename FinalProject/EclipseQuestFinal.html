@@ -633,54 +633,55 @@ for (let i = 1; i <= 3; i++) {
             character.onGround = true;
         }
 
-       obstacles.forEach(obstacle => {
-    // Check for collision with obstacles
-    if (character.x < obstacle.x + obstacle.width &&
-        character.x + character.size > obstacle.x &&
-        character.y + character.size > obstacle.y &&
-        character.y < obstacle.y + obstacle.height) {
+        obstacles.forEach(obstacle => {
+            // Check for collision with obstacles
+            if (character.x < obstacle.x + obstacle.width &&
+                character.x + character.size > obstacle.x &&
+                character.y + character.size > obstacle.y &&
+                character.y < obstacle.y + obstacle.height) {
 
-        // Handle vertical collision
-        if (character.speedY > 0) {
-            character.y = obstacle.y - character.size;
-            character.speedY = 0;
-            character.onGround = true;
-        } else if (character.speedY < 0) {
-            character.y = obstacle.y + obstacle.height;
-            character.speedY = 0;
-        }
+                // Handle vertical collision
+                if (character.speedY > 0) {
+                    character.y = obstacle.y - character.size;
+                    character.speedY = 0;
+                    character.onGround = true;
+                } else if (character.speedY < 0) {
+                    character.y = obstacle.y + obstacle.height;
+                    character.speedY = 0;
+                }
 
-        // Handle specific obstacle types
-        if (obstacle.type === 'solaraGrass' && character === blueSquare) {
-            endGame("Luna hit the SolaraGrass! Game Over.");
-        } else if (obstacle.type === 'lunaGrass' && character === redSquare) {
-            endGame("Solara hit the LunaGrass! Game Over.");
-        } else if (obstacle.type === 'radioactiveGrass') {
-            endGame(`${character === blueSquare ? 'Luna' : 'Solara'} hit the RadioactiveGrass! Game Over.`);
-        } else if (obstacle.type === 'box') {
-            if (character.speedX !== 0) {
-                obstacle.x += character.speedX;
+                // Handle specific obstacle types
+                if (obstacle.type === 'solaraGrass' && character === blueSquare) {
+                    endGame("Luna hit the SolaraGrass! Game Over.");
+                } else if (obstacle.type === 'lunaGrass' && character === redSquare) {
+                    endGame("Solara hit the LunaGrass! Game Over.");
+                } else if (obstacle.type === 'radioactiveGrass') {
+                    endGame(`${character === blueSquare ? 'Luna' : 'Solara'} hit the RadioactiveGrass! Game Over.`);
+                } else if (obstacle.type === 'box') {
+                    if (character.speedX !== 0) {
+                        obstacle.x += character.speedX;
+                    }
+                }
+
+                // Check for portal collision
+                if (obstacle.type === 'solaraPortal' && character === redSquare) {
+                    // Teleport Solara to in front of Luna portal
+                    character.x = lunaPortalX; // Position in front of Luna portal
+                    character.y = lunaPortalY - character.size; // Adjust Y to be above the portal
+                    console.log("Solara teleported to:", character.x, character.y); // Debugging output
+                } else if (obstacle.type === 'lunaPortal' && character === blueSquare) {
+                    // Teleport Luna to in front of Solara portal
+                    character.x = solaraPortalX; // Position in front of Solara portal
+                    character.y = solaraPortalY - character.size; // Adjust Y to be above the portal
+                    console.log("Luna teleported to:", character.x, character.y); // Debugging output
+                }
             }
-        }
+        });
 
-        // Check for portal collision
-        if (obstacle.type === 'solaraPortal' && character === redSquare) {
-            // Teleport Solara to in front of Luna portal
-            character.x = lunaPortalX; // Position in front of Luna portal
-            character.y = lunaPortalY - character.size; // Adjust Y to be above the portal
-            console.log("Solara teleported to:", character.x, character.y); // Debugging output
-        } else if (obstacle.type === 'lunaPortal' && character === blueSquare) {
-            // Teleport Luna to in front of Solara portal
-            character.x = solaraPortalX; // Position in front of Solara portal
-            character.y = solaraPortalY - character.size; // Adjust Y to be above the portal
-            console.log("Luna teleported to:", character.x, character.y); // Debugging output
-        }
-    }
-});
         // Add visibility checks after the teleportation logic
-console.log("Solara visible:", redSquare.visible);
-console.log("Luna visible:", blueSquare.visible);
-        
+        console.log("Solara visible:", redSquare.visible);
+        console.log("Luna visible:", blueSquare.visible);
+
         // Button interaction logic
         let isOnButton = false;
         buttons.forEach(button => {
@@ -691,7 +692,7 @@ console.log("Luna visible:", blueSquare.visible);
                 isOnButton = true;
                 button.state = 'down';
                 if (currentLevel === 2) {
-                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.y === canvas.height - 5 * tileSize);
+                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 4 * tileSize);
                     if (leftRowGrass) {
                         leftRowGrass.y -= tileSize; // Move the grass obstacle up
                     }
@@ -715,7 +716,7 @@ console.log("Luna visible:", blueSquare.visible);
         collectibles.forEach((collectible, index) => {
             if (character.x < collectible.x + collectible.width &&
                 character.x + character.size > collectible.x &&
-                character.y + character.size > collectible.y &&
+                character.y + collectible.size > collectible.y &&
                 character.y < collectible.y + collectible.height &&
                 collectible.collectedBy === (character === blueSquare ? 'luna' : 'solara')) {
                 collectibles.splice(index, 1);
@@ -727,39 +728,38 @@ console.log("Luna visible:", blueSquare.visible);
             }
         });
 
-       // Door interaction logic
-doors.forEach(door => {
-    // Check for collision between the character and the door
-    if (character.x < door.x + door.width &&
-        character.x + character.size > door.x &&
-        character.y + character.size > door.y &&
-        character.y < door.y + door.height &&
-        door.character === (character === blueSquare ? 'luna' : 'solara')) {
-        
-        // Prevent passing through the dirt door
-        if (door.type === 'dirtDoor') {
-            // Determine the direction of movement
-            if (character.velocityX > 0) { // Moving right
-                character.x = door.x - character.size; // Move character to the left of the door
-            } else if (character.velocityX < 0) { // Moving left
-                character.x = door.x + door.width; // Move character to the right of the door
-            }
-            // Optionally, you can also check for vertical movement if needed
-            return; // Exit the function to prevent further processing
-        }
+        // Door interaction logic
+        doors.forEach(door => {
+            // Check for collision between the character and the door
+            if (character.x < door.x + door.width &&
+                character.x + character.size > door.x &&
+                character.y + character.size > door.y &&
+                character.y < door.y + door.height &&
+                door.character === (character === blueSquare ? 'luna' : 'solara')) {
 
-        // Handle other door types (e.g., Luna and Solara doors)
-        character.visible = false;
-        if (character === blueSquare) {
-            lunaReachedDoor = true;
-        } else {
-            solaraReachedDoor = true;
-        }
-    }
-});
+                // Prevent passing through the dirt door
+                if (door.type === 'dirtDoor') {
+                    // Determine the direction of movement
+                    if (character.velocityX > 0) { // Moving right
+                        character.x = door.x - character.size; // Move character to the left of the door
+                    } else if (character.velocityX < 0) { // Moving left
+                        character.x = door.x + door.width; // Move character to the right of the door
+                    }
+                    // Optionally, you can also check for vertical movement if needed
+                    return; // Exit the function to prevent further processing
+                }
+
+                // Handle other door types (e.g., Luna and Solara doors)
+                character.visible = false;
+                if (character === blueSquare) {
+                    lunaReachedDoor = true;
+                } else {
+                    solaraReachedDoor = true;
+                }
+            }
+        });
     }
 }
-
 // Call the handleCharacter function for both characters
 handleCharacter(blueSquare);
 handleCharacter(redSquare);
