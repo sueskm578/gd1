@@ -458,11 +458,23 @@ function createCanvas(level) {
                     blueSquare.y < button.y + button.height) {
                     isOnButton = true;
                     button.state = 'down';
+                    if (currentLevel === 2) {
+                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.y === canvas.height - 5 * tileSize);
+                        if (leftRowGrass) {
+                            leftRowGrass.y -= tileSize; // Move the grass obstacle up
+                        }
+                    }
                 }
             });
             if (!isOnButton) {
                 buttons.forEach(button => {
                     button.state = 'up';
+                    if (currentLevel === 2) {
+                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.y === canvas.height - 4 * tileSize);
+                        if (leftRowGrass) {
+                            leftRowGrass.y += tileSize; // Move the grass obstacle back down
+                        }
+                    }
                 });
             }
             collectibles.forEach((collectible, index) => {
@@ -629,9 +641,9 @@ function createCanvas(level) {
                               redSquare.y + redSquare.size > button.y &&
                               redSquare.y < button.y + button.height))) {
                             button.state = 'down';
-                            const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                            const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.y === canvas.height - 5 * tileSize);
                             if (leftRowGrass) {
-                                leftRowGrass.y -= tileSize;
+                                leftRowGrass.y -= tileSize; // Move the grass obstacle up
                             }
                         }
                     });
