@@ -513,67 +513,164 @@ function createCanvas(level) {
         collectibles.push({ x: (canvas.width / tileSize - 8) * tileSize, y: bottomRowY - 5 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
         collectibles.push({ x: newObstacleX + tileSize, y: newObstacleY - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
    } else if (level === 5) {
-        const tileSize = 100;
-        const canvasWidthInTiles = canvas.width / tileSize;
-        const canvasHeightInTiles = canvas.height / tileSize;
+    const tileSize = 100;
+    const canvasWidthInTiles = canvas.width / tileSize;
+    const canvasHeightInTiles = canvas.height / tileSize;
 
-        // Place a row of grass obstacles at the bottom of the screen
-        for (let i = 0; i < canvasWidthInTiles; i++) {
-            obstacles.push({ x: i * tileSize, y: (canvasHeightInTiles - 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
-        }
+    // Place a row of grass obstacles at the bottom of the screen
+    for (let i = 0; i < canvasWidthInTiles; i++) {
+        obstacles.push({ x: i * tileSize, y: (canvasHeightInTiles - 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+    }
 
-        // Create a stack of dirt doors at the 9th spot from the left
-        const dirtDoorX = 8 * tileSize;
-        for (let i = 0; i < canvasHeightInTiles; i++) {
-            doors.push({ x: dirtDoorX, y: i * tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
-        }
+    // Create a stack of dirt doors at the 9th spot from the left
+    const dirtDoorX = 8 * tileSize;
+    for (let i = 0; i < canvasHeightInTiles; i++) {
+        doors.push({ x: dirtDoorX, y: i * tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
+    }
 
-        // Create a row of three grass obstacles at 6, 7, and 8 spaces from the left and 2 spaces up
-        const rowY = (canvasHeightInTiles - 3) * tileSize;
-        for (let i = 5; i <= 7; i++) {
-            obstacles.push({ x: i * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
-        }
+    // Create a row of three grass obstacles at 6, 7, and 8 spaces from the left and 2 spaces up
+    const rowY = (canvasHeightInTiles - 3) * tileSize;
+    for (let i = 5; i <= 7; i++) {
+        obstacles.push({ x: i * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+    }
 
-        // Create a row of three grass obstacles at 7, 6, and 5 spaces from the right and 2 spaces up
-        const rowYRight = (canvasHeightInTiles - 3) * tileSize;
-        for (let i = canvasWidthInTiles - 8; i <= canvasWidthInTiles - 6; i++) {
-            obstacles.push({ x: i * tileSize, y: rowYRight, width: tileSize, height: tileSize, type: 'grass' });
-        }
+    // Create a row of three grass obstacles at 7, 6, and 5 spaces from the right and 2 spaces up
+    const rowYRight = (canvasHeightInTiles - 3) * tileSize;
+    for (let i = canvasWidthInTiles - 8; i <= canvasWidthInTiles - 6; i++) {
+        obstacles.push({ x: i * tileSize, y: rowYRight, width: tileSize, height: tileSize, type: 'grass' });
+    }
 
-        // Create a row of grass obstacles 2, 3, and 4 spaces from the left 4 spaces up
-const rowYLeft4Up = (canvasHeightInTiles - 5) * tileSize;
-for (let i = 1; i <= 3; i++) {
-    obstacles.push({ x: i * tileSize, y: rowYLeft4Up, width: tileSize, height: tileSize, type: 'grass' });
+    // Create a row of grass obstacles 2, 3, and 4 spaces from the left 4 spaces up
+    const rowYLeft4Up = (canvasHeightInTiles - 5) * tileSize;
+    for (let i = 1; i <= 3; i++) {
+        obstacles.push({ x: i * tileSize, y: rowYLeft4Up, width: tileSize, height: tileSize, type: 'grass' });
+    }
+
+    // Create a row of grass obstacles 1, 2, and 3 spaces from the right 4 spaces up
+    const rowYRight4Up = (canvasHeightInTiles - 5) * tileSize;
+    for (let i = canvasWidthInTiles - 4; i <= canvasWidthInTiles - 2; i++) {
+        obstacles.push({ x: i * tileSize, y: rowYRight4Up, width: tileSize, height: tileSize, type: 'grass' });
+    }
+
+    // Add two grass obstacles that are positioned 7 and 8 spaces from the right and 5 spaces up
+    const rowYRight5Up = (canvasHeightInTiles - 6) * tileSize;
+    for (let i = canvasWidthInTiles - 8; i <= canvasWidthInTiles - 7; i++) {
+        obstacles.push({ x: i * tileSize, y: rowYRight5Up, width: tileSize, height: tileSize, type: 'grass' });
+    }
+
+    // Add two grass obstacles that are positioned 7 and 8 spaces from the left and 5 spaces up
+    const rowYLeft5Up = (canvasHeightInTiles - 6) * tileSize;
+    for (let i = 6; i <= 7; i++) {
+        obstacles.push({ x: i * tileSize, y: rowYLeft5Up, width: tileSize, height: tileSize, type: 'grass' });
+    }
+
+    // Add Solara portal on top of the grass obstacle (8 spaces from the right, 5 spaces up)
+    const solaraPortalX = (canvasWidthInTiles - 8) * tileSize;
+    const solaraPortalY = (canvasHeightInTiles - 7) * tileSize; // 5 spaces up
+    obstacles.push({ x: solaraPortalX, y: solaraPortalY, width: tileSize, height: tileSize, type: 'solaraPortal' });
+
+    // Add Luna portal on top of the grass obstacle (8 spaces from the left, 5 spaces up)
+    const lunaPortalX = 7 * tileSize; // 8 spaces from the left
+    const lunaPortalY = (canvasHeightInTiles - 7) * tileSize; // 5 spaces up
+    obstacles.push({ x: lunaPortalX, y: lunaPortalY, width: tileSize, height: tileSize, type: 'lunaPortal' });
+
+    // Add Solara Door positioned on the bottom grass row 8 from the left
+    doors.push({
+        type: 'solaraDoor',
+        character: 'solara',
+        x: tileSize * 8,
+        y: canvas.height - tileSize,
+        width: tileSize,
+        height: tileSize
+    });
+
+    // Add Luna Door positioned on the bottom grass row 8 from the right
+    doors.push({
+        type: 'lunaDoor',
+        character: 'luna',
+        x: canvas.width - tileSize * 8,
+        y: canvas.height - tileSize,
+        width: tileSize,
+        height: tileSize
+    });
+
+    // Add radioactive grass 7 from the right and two up in place of grass
+    obstacles.push({
+        type: 'radioactiveGrass',
+        x: canvas.width - tileSize * 7,
+        y: canvas.height - tileSize * 3,
+        width: tileSize,
+        height: tileSize
+    });
+
+    // Add radioactive grass 7 from the left and two up in place of grass
+    obstacles.push({
+        type: 'radioactiveGrass',
+        x: tileSize * 7,
+        y: canvas.height - tileSize * 3,
+        width: tileSize,
+        height: tileSize
+    });
+
+    // Add LunaGrass 1 and 2 spaces from the left in the bottom row replacing the grass
+    obstacles.push({
+        type: 'lunaGrass',
+        x: tileSize,
+        y: canvas.height - tileSize,
+        width: tileSize,
+        height: tileSize
+    });
+    obstacles.push({
+        type: 'lunaGrass',
+        x: tileSize * 2,
+        y: canvas.height - tileSize,
+        width: tileSize,
+        height: tileSize
+    });
+
+    // Add LunaGem in space 1
+    collectibles.push({
+        type: 'gem',
+        collectedBy: 'luna',
+        x: tileSize,
+        y: canvas.height - tileSize * 2,
+        width: tileSize,
+        height: tileSize
+    });
+
+    // Add SolaraGrass 1 and 2 spaces from the right in the bottom row replacing the grass
+    obstacles.push({
+        type: 'solaraGrass',
+        x: canvas.width - tileSize,
+        y: canvas.height - tileSize,
+        width: tileSize,
+        height: tileSize
+    });
+    obstacles.push({
+        type: 'solaraGrass',
+        x: canvas.width - tileSize * 2,
+        y: canvas.height - tileSize,
+        width: tileSize,
+        height: tileSize
+    });
+
+    // Add SolaraGem in space 1
+    collectibles.push({
+        type: 'gem',
+        collectedBy: 'solara',
+        x: canvas.width - tileSize,
+        y: canvas.height - tileSize * 2,
+        width: tileSize,
+        height: tileSize
+    });
+
+    // Log the setup for debugging
+    console.log("Level 5 setup complete:");
+    console.log("Doors:", doors);
+    console.log("Obstacles:", obstacles);
+    console.log("Collectibles:", collectibles);
 }
-
-        // Create a row of grass obstacles 1, 2, and 3 spaces from the right 4 spaces up
-        const rowYRight4Up = (canvasHeightInTiles - 5) * tileSize;
-        for (let i = canvasWidthInTiles - 4; i <= canvasWidthInTiles - 2; i++) {
-            obstacles.push({ x: i * tileSize, y: rowYRight4Up, width: tileSize, height: tileSize, type: 'grass' });
-        }
-
-        // Add two grass obstacles that are positioned 7 and 8 spaces from the right and 5 spaces up
-        const rowYRight5Up = (canvasHeightInTiles - 6) * tileSize;
-        for (let i = canvasWidthInTiles - 8; i <= canvasWidthInTiles - 7; i++) {
-            obstacles.push({ x: i * tileSize, y: rowYRight5Up, width: tileSize, height: tileSize, type: 'grass' });
-        }
-
-        // Add two grass obstacles that are positioned 7 and 8 spaces from the left and 5 spaces up
-        const rowYLeft5Up = (canvasHeightInTiles - 6) * tileSize;
-        for (let i = 6; i <= 7; i++) {
-            obstacles.push({ x: i * tileSize, y: rowYLeft5Up, width: tileSize, height: tileSize, type: 'grass' });
-        }
-            // Add Solara portal on top of the grass obstacle (8 spaces from the right, 5 spaces up)
-        const solaraPortalX = (canvasWidthInTiles - 8) * tileSize;
-        const solaraPortalY = (canvasHeightInTiles - 7) * tileSize; // 5 spaces up
-        obstacles.push({ x: solaraPortalX, y: solaraPortalY, width: tileSize, height: tileSize, type: 'solaraPortal' });
-
-        // Add Luna portal on top of the grass obstacle (8 spaces from the left, 5 spaces up)
-        const lunaPortalX = 7 * tileSize; // 8 spaces from the left
-        const lunaPortalY = (canvasHeightInTiles - 7) * tileSize; // 5 spaces up
-        obstacles.push({ x: lunaPortalX, y: lunaPortalY, width: tileSize, height: tileSize, type: 'lunaPortal' });
-        }
- }
+    }
     function endGame(message) {
         document.getElementById("endScreen").style.display = "flex";
         document.getElementById("topLeftButtons").style.display = "none";
