@@ -229,7 +229,9 @@ function preloadImages() {
         { name: 'leverDown', url: leverDownImageURL },
         { name: 'Leverdown', url: 'Leverdown.png' },
         { name: 'Leverup', url: 'Leverup.png' },
-        { name: 'box', url: boxImageURL }
+        { name: 'box', url: boxImageURL },
+        { name: 'solaraPortal', url: 'Solaraportal.jpg' },
+        { name: 'lunaPortal', url: 'Lunaportal.jpg' }
     ];
 
     let loadedImagesCount = 0;
@@ -530,21 +532,21 @@ function createCanvas(level) {
             obstacles.push({ x: i * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
         }
 
-        // Create a row of three grass obstacles at 6, 7, and 8 spaces from the right and 2 spaces up
+        // Create a row of three grass obstacles at 7, 6, and 5 spaces from the right and 2 spaces up
         const rowYRight = (canvasHeightInTiles - 3) * tileSize;
-        for (let i = canvasWidthInTiles - 7; i <= canvasWidthInTiles - 5; i++) {
+        for (let i = canvasWidthInTiles - 8; i <= canvasWidthInTiles - 6; i++) {
             obstacles.push({ x: i * tileSize, y: rowYRight, width: tileSize, height: tileSize, type: 'grass' });
         }
             
-        // Create a row of grass obstacles 1, 2, and 3 spaces from the left 4 spaces up
-        const rowYLeft4Up = (canvasHeightInTiles - 5) * tileSize;
-        for (let i = 0; i <= 2; i++) {
-            obstacles.push({ x: i * tileSize, y: rowYLeft4Up, width: tileSize, height: tileSize, type: 'grass' });
-        }
+        // Create a row of grass obstacles 2, 3, and 4 spaces from the left 4 spaces up
+const rowYLeft4Up = (canvasHeightInTiles - 5) * tileSize;
+for (let i = 1; i <= 3; i++) {
+    obstacles.push({ x: i * tileSize, y: rowYLeft4Up, width: tileSize, height: tileSize, type: 'grass' });
+}
 
         // Create a row of grass obstacles 1, 2, and 3 spaces from the right 4 spaces up
         const rowYRight4Up = (canvasHeightInTiles - 5) * tileSize;
-        for (let i = canvasWidthInTiles - 3; i <= canvasWidthInTiles - 1; i++) {
+        for (let i = canvasWidthInTiles - 4; i <= canvasWidthInTiles - 2; i++) {
             obstacles.push({ x: i * tileSize, y: rowYRight4Up, width: tileSize, height: tileSize, type: 'grass' });
         }
 
@@ -559,7 +561,16 @@ function createCanvas(level) {
         for (let i = 6; i <= 7; i++) {
             obstacles.push({ x: i * tileSize, y: rowYLeft5Up, width: tileSize, height: tileSize, type: 'grass' });
         }
-    }
+            // Add Solara portal on top of the grass obstacle (8 spaces from the right, 5 spaces up)
+        const solaraPortalX = (canvasWidthInTiles - 8) * tileSize;
+        const solaraPortalY = (canvasHeightInTiles - 6) * tileSize; // 5 spaces up
+        obstacles.push({ x: solaraPortalX, y: solaraPortalY, width: tileSize, height: tileSize, type: 'solaraPortal' });
+        
+        // Add Luna portal on top of the grass obstacle (8 spaces from the left, 5 spaces up)
+        const lunaPortalX = 8 * tileSize; // 8 spaces from the left
+        const lunaPortalY = (canvasHeightInTiles - 6) * tileSize; // 5 spaces up
+        obstacles.push({ x: lunaPortalX, y: lunaPortalY, width: tileSize, height: tileSize, type: 'lunaPortal' });
+        }
  }
     function endGame(message) {
         document.getElementById("endScreen").style.display = "flex";
@@ -595,6 +606,11 @@ function createCanvas(level) {
     buttons.forEach(button => {
         const image = button.state === 'down' ? images['buttonPressed'] : images['button'];
         context.drawImage(image, button.x, button.y, button.width, button.height);
+    });
+        
+    obstacles.forEach(obstacle => {
+        const image = images[obstacle.type];
+        context.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     });
     levers.forEach(lever => {
         const image = lever.state === 'down' ? images['leverDown'] : images['leverUp'];
@@ -692,6 +708,13 @@ function createCanvas(level) {
                     }
                 }
             });
+            if (obstacle.type === 'solaraPortal' && character === redSquare) {
+                redSquare.x = lunaPortalX;
+                redSquare.y = lunaPortalY;
+            } else if (obstacle.type === 'lunaPortal' && character === blueSquare) {
+                blueSquare.x = solaraPortalX;
+                blueSquare.y = solaraPortalY;
+            }
         }
     }
 
