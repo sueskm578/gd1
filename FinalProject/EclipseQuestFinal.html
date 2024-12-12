@@ -443,11 +443,21 @@ function createCanvas(level) {
                 obstacles.push({ x: i * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
-            // Place Luna door one space down from the top of the screen
-            doors.push({ x: 0, y: tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna', visible: true });
+            // Place Luna door at the top of the screen
+    doors.push({ x: 0, y: 0, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna', visible: true });
 
-            // Place Solara door next to Luna door
-            doors.push({ x: tileSize, y: tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara', visible: true });
+    // Place Solara door next to Luna door
+    doors.push({ x: tileSize, y: 0, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara', visible: true });
+
+    // Place another lever 9 spaces from the right and one space down from the top
+    const leverX = (canvas.width / tileSize - 9) * tileSize; // 9 spaces from the right
+    const leverY = tileSize; // 1 space down from the top
+    levers.push({ x: leverX, y: leverY, width: tileSize, height: tileSize, type: 'lever', state: 'up', controls: 'dirtDoor2' });
+
+    // Place another dirt door 5 spaces from the right and one space down from the top
+    const dirtDoorX = (canvas.width / tileSize - 5) * tileSize; // 5 spaces from the right
+    const dirtDoorY = tileSize; // 1 space down from the top
+    doors.push({ x: dirtDoorX, y: dirtDoorY, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true, id: 'dirtDoor2' });
 
             obstacles.push({ x: (canvas.width / tileSize - 1) * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
 
@@ -742,31 +752,33 @@ function createCanvas(level) {
                     });
                 } else if (currentLevel === 4) {
                     levers.forEach(lever => {
-                        if (lever.x < blueSquare.x + blueSquare.size &&
-                            lever.x + lever.width > blueSquare.x &&
-                            lever.y < blueSquare.y + blueSquare.size &&
-                            lever.y + lever.height > blueSquare.y) {
-                            lever.state = 'down';
-                            lever.image = images['Leverdown'];
-                            const dirtDoor = doors.find(door => door.type === 'dirtDoor');
-                            if (dirtDoor) {
-                                dirtDoor.visible = false;
-                            }
+                if (lever.x < blueSquare.x + blueSquare.size &&
+                    lever.x + lever.width > blueSquare.x &&
+                    lever.y < blueSquare.y + blueSquare.size &&
+                    lever.y + lever.height > blueSquare.y) {
+                    lever.state = (lever.state === 'up') ? 'down' : 'up';
+                    if (lever.state === 'down') {
+                        const dirtDoor = doors.find(door => door.type === 'dirtDoor' && door.character === 'dirt' && !door.id);
+                        if (dirtDoor) {
+                            dirtDoor.visible = false; // Control the first dirt door
                         }
-                        if (lever.x < redSquare.x + redSquare.size &&
-                            lever.x + lever.width > redSquare.x &&
-                            lever.y < redSquare.y + redSquare.size &&
-                            lever.y + lever.height > redSquare.y) {
-                            lever.state = 'down';
-                            lever.image = images['Leverdown'];
-                            const dirtDoor = doors.find(door => door.type === 'dirtDoor');
-                            if (dirtDoor) {
-                                dirtDoor.visible = false;
-                            }
-                        }
-                    });
+                    }
                 }
-                break;
+                // Check for the second lever (controls the second dirt door)
+                if (lever.x < redSquare.x + redSquare.size &&
+                    lever.x + lever.width > redSquare.x &&
+                    lever.y < redSquare.y + redSquare.size &&
+                    lever.y + lever.height > redSquare.y) {
+                    lever.state = (lever.state === 'up') ? 'down' : 'up';
+                    if (lever.state === 'down') {
+                        const dirtDoor2 = doors.find(door => door.id === 'dirtDoor2');
+                        if (dirtDoor2) {
+                            dirtDoor2.visible = false; // Control the second dirt door
+                        }
+                    }
+                }
+            });
+            break;
         }
     }
 
