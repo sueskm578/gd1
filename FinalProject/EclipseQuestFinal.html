@@ -140,12 +140,33 @@
             }
         }
 
+         // Update the event listener for the "Start Game" button
+    document.getElementById("startButton").addEventListener("click", () => {
+        document.getElementById("titleScreen").style.display = "none";
+        document.getElementById("gameMap").style.display = "flex";
+        playStartScreenMusic(); // Play start screen music
+    });
+
+    // Update the event listener for level buttons
+    document.querySelectorAll(".levelButton").forEach(button => {
+        button.addEventListener("click", () => {
+            currentLevel = parseInt(button.getAttribute("data-level"));
+            document.getElementById("gameMap").style.display = "none";
+            document.getElementById("topLeftButtons").style.display = "flex";
+            stopAllMusic(); // Stop the start screen music
+            playLevelMusic(currentLevel); // Play the music for the selected level
+            createCanvas(currentLevel);
+        });
+    });
+
         function playLevelCompleteMusic() {
             stopAllMusic();
             levelCompleteMusic.play();
         }
 
-        playStartScreenMusic();
+        function playStartScreenMusic() {
+            startScreenMusic.play();
+        }
 
         // Declare arrays for game elements
         const obstacles = [];
