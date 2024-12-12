@@ -377,9 +377,10 @@ function createCanvas(level) {
             doors.push({ x: dirtDoorX, y: dirtDoorY, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
 
             const boxX = (canvas.width / tileSize - 12) * tileSize;
-    const boxY = bottomRowY - tileSize; // Change this line to place the box on the bottom grass row
-    obstacles.push({ x: boxX, y: boxY, width: tileSize, height: tileSize, type: 'box' }); // Keep box at original size
-    }
+            const boxY = bottomRowY; // Change this line to place the box on the bottom grass row
+            obstacles.push({ x: boxX, y: boxY, width: tileSize, height: tileSize, type: 'box' }); // Keep box at original size
+        }
+    )
 
     function endGame(message) {
         document.getElementById("endScreen").style.display = "flex";
