@@ -287,28 +287,38 @@ function createCanvas(level) {
             collectibles.push({ x: tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 3) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 4) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
-        } else if (level === 3) {
+        else if (level === 3) {
             const tileSize = 100;
-
+        
+            // Create the bottom row of grass obstacles
             for (let i = 0; i < canvas.width / tileSize; i++) {
                 const type = (i < 2 || i >= Math.floor(canvas.width / tileSize) - 2) ? 'grass' : 'radioactiveGrass';
                 obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
             }
-
+        
+            // Create the left row of grass obstacles
             const leftRowY = canvas.height - 5 * tileSize;
             for (let i = 0; i < 3; i++) {
                 obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
-
+        
+            // Add lunagem collectible to the left row
+            collectibles.push({ x: 0 * tileSize, y: leftRowY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
+        
+            // Create the right row of grass obstacles
             const twoSpacesDownY = 1 * tileSize;
             for (let i = 1; i < canvas.width / tileSize; i++) {
                 obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: 'grass' });
             }
-
+        
+            // Add solaragem collectible to the right row
+            collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
+        
+            // Add doors and levers as before
             doors.push({ x: tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
             doors.push({ x: 0, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara', visible: true });
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna', visible: true });
-
+        
             const firstRowX = 4 * tileSize;
             const firstRowY = canvas.height - 3 * tileSize;
             for (let i = 0; i < 3; i++) {
@@ -319,11 +329,12 @@ function createCanvas(level) {
             for (let i = 0; i < 3; i++) {
                 obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
-
+        
+            // Add the lever as before
             const leverX = 3 * tileSize;
             const leverY = twoSpacesDownY - tileSize;
             levers.push({ x: leverX, y: leverY, width: tileSize, height: tileSize, type: 'lever', state: 'up' });
-
+        
             blueSquare.x = canvas.width - 2 * tileSize;
             blueSquare.y = twoSpacesDownY - tileSize;
             redSquare.x = blueSquare.x + tileSize;
