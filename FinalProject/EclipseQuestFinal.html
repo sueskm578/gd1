@@ -208,21 +208,6 @@ function createCanvas(level) {
         type: 'box',
         pushedBy: null
     };
-    const button = {
-        x: 9 * tileSize,
-        y: canvas.height - 300,
-        width: tileSize,
-        height: tileSize,
-        type: 'button',
-        state: 'up'
-    };
-    const rightGrassObstacle = {
-        x: canvas.width - 2 * tileSize,
-        y: canvas.height - 400,
-        width: tileSize * 2,
-        height: tileSize,
-        type: 'grass'
-    };
 
     function createObstacles(level) {
         obstacles.length = 0;
@@ -356,7 +341,7 @@ function createCanvas(level) {
         } else if (level === 4) {
             const tileSize = 100;
 
-            const topRowY = 1 * tileSize;
+            const topRowY = 2 * tileSize;
             for (let i = 0; i < 12; i++) {
                 obstacles.push({ x: i * tileSize, y: topRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
@@ -379,12 +364,12 @@ function createCanvas(level) {
 
             obstacles.push({ x: (canvas.width / tileSize - 1) * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
 
-            obstacles.push({ x: 4 * tileSize, y: bottomRowY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor' });
+            const buttonX = 5 * tileSize;
+            const buttonY = bottomRowY - 2 * tileSize;
+            buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button', state: 'up' });
+
             obstacles.push({ x: 3 * tileSize, y: bottomRowY - 200, width: tileSize, height: tileSize * 2, type: 'box' });
             obstacles.push({ x: 4 * tileSize, y: bottomRowY - 400, width: canvas.width - 8 * tileSize, height: tileSize, type: 'grass' });
-            obstacles.push({ x: canvas.width - 2 * tileSize, y: bottomRowY - 400, width: tileSize * 2, height: tileSize, type: 'grass' });
-            button.y = upperRowY - 5 * tileSize; // Position the button on the floating grass obstacle
-            buttons.push(button);
         }
     }
 
@@ -410,7 +395,6 @@ function createCanvas(level) {
             context.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
         });
         context.drawImage(images.box, box.x, box.y, box.width, box.height);
-        context.drawImage(button.state === 'down' ? images.buttonPressed : images.button, button.x, button.y, button.width, button.height);
         collectibles.forEach(collectible => {
             const image = images[collectible.type];
             context.drawImage(image, collectible.x, collectible.y, collectible.width, collectible.height);
@@ -464,13 +448,6 @@ function createCanvas(level) {
                 blueSquare.y < box.y + box.height) {
                 box.pushedBy = 'luna';
                 box.x += blueSquare.speedX;
-            }
-            if (blueSquare.x < button.x + button.width &&
-                blueSquare.x + blueSquare.size > button.x &&
-                blueSquare.y + blueSquare.size > button.y &&
-                blueSquare.y < button.y + button.height) {
-                button.state = 'down';
-                rightGrassObstacle.y -= 2 * tileSize;
             }
             let isOnButton = false;
             buttons.forEach(button => {
@@ -549,13 +526,6 @@ function createCanvas(level) {
                 redSquare.y < box.y + box.height) {
                 box.pushedBy = 'solara';
                 box.x += redSquare.speedX;
-            }
-            if (redSquare.x < button.x + button.width &&
-                redSquare.x + redSquare.size > button.x &&
-                redSquare.y + redSquare.size > button.y &&
-                redSquare.y < button.y + button.height) {
-                button.state = 'down';
-                rightGrassObstacle.y -= 2 * tileSize;
             }
             let isOnButtonRed = false;
             buttons.forEach(button => {
