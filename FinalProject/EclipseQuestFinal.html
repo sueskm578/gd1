@@ -383,8 +383,6 @@ function createCanvas(level) {
     const fourSpacesUpY = canvas.height - 4 * tileSize;
     for (let i = 0; i < canvas.width / tileSize; i++) {
         obstacles.push({ x: i * tileSize, y: fourSpacesUpY, width: tileSize, height: tileSize, type: 'grass' });
-    }
-}
         } else if (level === 3) {
     const tileSize = 100;
 
