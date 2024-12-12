@@ -140,6 +140,8 @@ function preloadImages() {
         { name: 'dirtDoor', url: dirtDoorImageURL },
         { name: 'leverUp', url: leverUpImageURL },
         { name: 'leverDown', url: leverDownImageURL },
+        { name: 'Leverdown', url: 'Leverdown.png' },
+        { name: 'Leverup', url: 'Leverup.png' },
         { name: 'box', url: boxImageURL }
     ];
 
@@ -200,6 +202,7 @@ function createCanvas(level) {
     const doors = [];
     const buttons = [];
     const levers = [];
+
     function createObstacles(level) {
         obstacles.length = 0;
         collectibles.length = 0;
@@ -347,6 +350,7 @@ function createCanvas(level) {
 
             redSquare.x = tileSize;
             redSquare.y = bottomRowY - redSquare.size;
+
             const upperRowY = bottomRowY - 2 * tileSize;
             for (let i = 0; i < 13; i++) {
                 obstacles.push({ x: i * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
@@ -354,22 +358,20 @@ function createCanvas(level) {
 
             obstacles.push({ x: (canvas.width / tileSize - 1) * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
 
-            const newObstacleX = canvas.width - 2 * tileSize; // 2 spaces wide
-            const newObstacleY = bottomRowY - 5 * tileSize; // 5 spaces up from the bottom
+            const newObstacleX = canvas.width - 2 * tileSize;
+            const newObstacleY = bottomRowY - 5 * tileSize;
             obstacles.push({ x: newObstacleX, y: newObstacleY, width: 2 * tileSize, height: tileSize, type: 'grass' });
+
+            const leverX = canvas.width - 6 * tileSize;
+            const leverY = bottomRowY - 3 * tileSize;
+            levers.push({ x: leverX, y: leverY, width: tileSize, height: tileSize, type: 'lever', state: 'up' });
 
             const buttonX = (canvas.width / tileSize - 6) * tileSize;
             const buttonY = upperRowY - (3 * tileSize);
             buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button', state: 'up' });
 
-            obstacles.push({ x: 4 * tileSize, y: bottomRowY - 400, width: canvas.width - 8 * tileSize, height: tileSize, type: 'grass' });
-            const dirtDoorX = (canvas.width / tileSize - 10) * tileSize;
-            const dirtDoorY = upperRowY - 1 * tileSize;
-            doors.push({ x: dirtDoorX, y: dirtDoorY, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
-
-            const boxX = (canvas.width / tileSize - 12) * tileSize;
-            const boxY = bottomRowY - tileSize * 2;
-            obstacles.push({ x: boxX, y: boxY, width: tileSize, height: tileSize * 2, type: 'box' });
+            obstacles.push({ x: 4 * tileSize, y: bottomRowY - 100, width: tileSize, height: tileSize, type: 'box' }); // Place the box on top of the bottom grass row
+            doors.push({ x: (canvas.width / tileSize - 10) * tileSize, y: upperRowY - 1 * tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
         }
     }
 
@@ -449,11 +451,23 @@ function createCanvas(level) {
                     blueSquare.y < button.y + button.height) {
                     isOnButton = true;
                     button.state = 'down';
+                    if (currentLevel === 2) {
+                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                        if (leftRowGrass) {
+                            leftRowGrass.y -= tileSize; // Move the leftmost grass obstacle up
+                        }
+                    }
                 }
             });
             if (!isOnButton) {
                 buttons.forEach(button => {
                     button.state = 'up';
+                    if (currentLevel === 2) {
+                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 4 * tileSize);
+                        if (leftRowGrass) {
+                            leftRowGrass.y += tileSize; // Move the leftmost grass obstacle back down
+                        }
+                    }
                 });
             }
             collectibles.forEach((collectible, index) => {
@@ -608,10 +622,7 @@ function createCanvas(level) {
                             }
                         }
                     });
-                }
-                break;
-            case " ":
-                if (currentLevel === 2) {
+                } else if (currentLevel === 2) {
                     buttons.forEach(button => {
                         if (button.type === 'button' && 
                             ((blueSquare.x < button.x + button.width &&
@@ -625,23 +636,33 @@ function createCanvas(level) {
                             button.state = 'down';
                             const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
                             if (leftRowGrass) {
-                                leftRowGrass.y -= tileSize;
+                                leftRowGrass.y -= tileSize; // Move the leftmost grass obstacle up
                             }
                         }
                     });
-                } else if (currentLevel === 3) {
+                } else if (currentLevel === 4) {
                     levers.forEach(lever => {
                         if (lever.x < blueSquare.x + blueSquare.size &&
                             lever.x + lever.width > blueSquare.x &&
                             lever.y < blueSquare.y + blueSquare.size &&
                             lever.y + lever.height > blueSquare.y) {
-                            lever.state = (lever.state === 'up') ? 'down' : 'up';
+                            lever.state = 'down';
+                            lever.image = images['Leverdown'];
+                            const dirtDoor = doors.find(door => door.type === 'dirtDoor');
+                            if (dirtDoor) {
+                                dirtDoor.visible = false;
+                            }
                         }
                         if (lever.x < redSquare.x + redSquare.size &&
                             lever.x + lever.width > redSquare.x &&
                             lever.y < redSquare.y + redSquare.size &&
                             lever.y + lever.height > redSquare.y) {
-                            lever.state = (lever.state === 'up') ? 'down' : 'up';
+                            lever.state = 'down';
+                            lever.image = images['Leverdown'];
+                            const dirtDoor = doors.find(door => door.type === 'dirtDoor');
+                            if (dirtDoor) {
+                                dirtDoor.visible = false;
+                            }
                         }
                     });
                 }
