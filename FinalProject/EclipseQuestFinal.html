@@ -458,13 +458,13 @@ function createCanvas(level) {
             levers.push({ x: leverX, y: leverY, width: tileSize, height: tileSize, type: 'lever', state: 'up' });
 
             const buttonX = (canvas.width / tileSize - 7) * tileSize;
-            const buttonY = upperRowY + tileSize;
+            const buttonY =  bottomRowY - tileSize * 7;
             buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button', state: 'up' });
 
             obstacles.push({ x: 4 * tileSize, y: bottomRowY - 400, width: canvas.width - 8 * tileSize, height: tileSize, type: 'grass' });
 
             const dirtDoorX = (canvas.width / tileSize - 13) * tileSize;
-            const dirtDoorY = upperRowY + tileSize;
+            const dirtDoorY = bottomRowY - tileSize * 7;
             doors.push({ x: dirtDoorX, y: dirtDoorY, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
 
             const boxX = (canvas.width / tileSize - 12) * tileSize;
