@@ -377,7 +377,7 @@ function createCanvas(level) {
             doors.push({ x: dirtDoorX, y: dirtDoorY, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
 
             const boxX = (canvas.width / tileSize - 12) * tileSize;
-            const boxY = bottomRowY - tileSize * 2;
+            const boxY = bottomRowY - tileSize * 1;
             obstacles.push({ x: boxX, y: boxY, width: tileSize, height: tileSize, type: 'box' }); // Keep box at original size
         }
     }
@@ -641,7 +641,7 @@ function createCanvas(level) {
                               redSquare.y + redSquare.size > button.y &&
                               redSquare.y < button.y + button.height))) {
                             button.state = 'down';
-                            const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                            const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 3 * tileSize);
                             if (leftRowGrass) {
                                 leftRowGrass.y -= tileSize; // Move the leftmost grass obstacle up
                             }
