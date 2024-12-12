@@ -679,109 +679,109 @@ function createCanvas(level) {
     }
 
     function handleKeyDown(event) {
-        switch (event.key) {
-            case "a":
-                blueSquare.speedX = -5;
-                break;
-            case "d":
-                blueSquare.speedX = 5;
-                break;
-            case "w":
-                if (blueSquare.onGround) {
-                    blueSquare.speedY = blueSquare.jumpPower;
-                    blueSquare.onGround = false;
-                }
-                break;
-            case "ArrowLeft":
-                redSquare.speedX = -5;
-                break;
-            case "ArrowRight":
-                redSquare.speedX = 5;
-                break;
-            case "ArrowUp":
-                if (redSquare.onGround) {
-                    redSquare.speedY = redSquare.jumpPower;
-                    redSquare.onGround = false;
-                }
-                break;
-            case " ":
-                if (currentLevel === 3) {
-                    levers.forEach(lever => {
-                        if (lever.x < blueSquare.x + blueSquare.size &&
-                            lever.x + lever.width > blueSquare.x &&
-                            lever.y < blueSquare.y + blueSquare.size &&
-                            lever.y + lever.height > blueSquare.y) {
-                            lever.state = (lever.state === 'up') ? 'down' : 'up';
-                            if (lever.state === 'down') {
-                                const dirtDoor = doors.find(door => door.type === 'dirtDoor');
-                                if (dirtDoor) {
-                                    dirtDoor.visible = false;
-                                }
-                            }
-                        }
-                        if (lever.x < redSquare.x + redSquare.size &&
-                            lever.x + lever.width > redSquare.x &&
-                            lever.y < redSquare.y + redSquare.size &&
-                            lever.y + lever.height > redSquare.y) {
-                            lever.state = (lever.state === 'up') ? 'down' : 'up';
-                            if (lever.state === 'down') {
-                                const dirtDoor = doors.find(door => door.type === 'dirtDoor');
-                                if (dirtDoor) {
-                                    dirtDoor.visible = false;
-                                }
-                            }
-                        }
-                    });
-                } else if (currentLevel === 2) {
-                    buttons.forEach(button => {
-                        if (button.type === 'button' && 
-                            ((blueSquare.x < button.x + button.width &&
-                              blueSquare.x + blueSquare.size > button.x &&
-                              blueSquare.y + blueSquare.size > button.y &&
-                              blueSquare.y < button.y + button.height) ||
-                             (redSquare.x < button.x + button.width &&
-                              redSquare.x + redSquare.size > button.x &&
-                              redSquare.y + redSquare.size > button.y &&
-                              redSquare.y < button.y + button.height))) {
-                            button.state = 'down';
-                            const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 3 * tileSize);
-                            if (leftRowGrass) {
-                                leftRowGrass.y -= tileSize; // Move the leftmost grass obstacle up
-                            }
-                        }
-                    });
-                } else if (currentLevel === 4) {
-                    levers.forEach(lever => {
-                if (lever.x < blueSquare.x + blueSquare.size &&
-                    lever.x + lever.width > blueSquare.x &&
-                    lever.y < blueSquare.y + blueSquare.size &&
-                    lever.y + lever.height > blueSquare.y) {
-                    lever.state = (lever.state === 'up') ? 'down' : 'up';
-                    if (lever.state === 'down') {
-                        const dirtDoor = doors.find(door => door.type === 'dirtDoor' && door.character === 'dirt' && !door.id);
-                        if (dirtDoor) {
-                            dirtDoor.visible = false; // Control the first dirt door
-                        }
-                    }
-                }
-                // Check for the second lever (controls the second dirt door)
-                if (lever.x < redSquare.x + redSquare.size &&
-                    lever.x + lever.width > redSquare.x &&
-                    lever.y < redSquare.y + redSquare.size &&
-                    lever.y + lever.height > redSquare.y) {
-                    lever.state = (lever.state === 'up') ? 'down' : 'up';
-                    if (lever.state === 'down') {
-                        const dirtDoor2 = doors.find(door => door.id === 'dirtDoor2');
-                        if (dirtDoor2) {
-                            dirtDoor2.visible = false; // Control the second dirt door
-                        }
-                    }
-                }
-            });
+    switch (event.key) {
+        case "a":
+            blueSquare.speedX = -5;
             break;
-        }
+        case "d":
+            blueSquare.speedX = 5;
+            break;
+        case "w":
+            if (blueSquare.onGround) {
+                blueSquare.speedY = blueSquare.jumpPower;
+                blueSquare.onGround = false;
+            }
+            break;
+        case "ArrowLeft":
+            redSquare.speedX = -5;
+            break;
+        case "ArrowRight":
+            redSquare.speedX = 5;
+            break;
+        case "ArrowUp":
+            if (redSquare.onGround) {
+                redSquare.speedY = redSquare.jumpPower;
+                redSquare.onGround = false;
+            }
+            break;
+        case " ":
+            if (currentLevel === 3) {
+                levers.forEach(lever => {
+                    if (lever.x < blueSquare.x + blueSquare.size &&
+                        lever.x + lever.width > blueSquare.x &&
+                        lever.y < blueSquare.y + blueSquare.size &&
+                        lever.y + lever.height > blueSquare.y) {
+                        lever.state = (lever.state === 'up') ? 'down' : 'up';
+                        if (lever.state === 'down') {
+                            const dirtDoor = doors.find(door => door.type === 'dirtDoor');
+                            if (dirtDoor) {
+                                dirtDoor.visible = false;
+                            }
+                        }
+                    }
+                    if (lever.x < redSquare.x + redSquare.size &&
+                        lever.x + lever.width > redSquare.x &&
+                        lever.y < redSquare.y + redSquare.size &&
+                        lever.y + lever.height > redSquare.y) {
+                        lever.state = (lever.state === 'up') ? 'down' : 'up';
+                        if (lever.state === 'down') {
+                            const dirtDoor = doors.find(door => door.type === 'dirtDoor');
+                            if (dirtDoor) {
+                                dirtDoor.visible = false;
+                            }
+                        }
+                    }
+                });
+            } else if (currentLevel === 2) {
+                buttons.forEach(button => {
+                    if (button.type === 'button' && 
+                        ((blueSquare.x < button.x + button.width &&
+                          blueSquare.x + blueSquare.size > button.x &&
+                          blueSquare.y + blueSquare.size > button.y &&
+                          blueSquare.y < button.y + button.height) ||
+                         (redSquare.x < button.x + button.width &&
+                          redSquare.x + redSquare.size > button.x &&
+                          redSquare.y + redSquare.size > button.y &&
+                          redSquare.y < button.y + button.height))) {
+                        button.state = 'down';
+                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 3 * tileSize);
+                        if (leftRowGrass) {
+                            leftRowGrass.y -= tileSize; // Move the leftmost grass obstacle up
+                        }
+                    }
+                });
+            } else if (currentLevel === 4) {
+                levers.forEach(lever => {
+                    if (lever.x < blueSquare.x + blueSquare.size &&
+                        lever.x + lever.width > blueSquare.x &&
+                        lever.y < blueSquare.y + blueSquare.size &&
+                        lever.y + lever.height > blueSquare.y) {
+                        lever.state = (lever.state === 'up') ? 'down' : 'up';
+                        if (lever.state === 'down') {
+                            const dirtDoor = doors.find(door => door.type === 'dirtDoor' && door.character === 'dirt' && !door.id);
+                            if (dirtDoor) {
+                                dirtDoor.visible = false; // Control the first dirt door
+                            }
+                        }
+                    }
+                    // Check for the second lever (controls the second dirt door)
+                    if (lever.x < redSquare.x + redSquare.size &&
+                        lever.x + lever.width > redSquare.x &&
+                        lever.y < redSquare.y + redSquare.size &&
+                        lever.y + lever.height > redSquare.y) {
+                        lever.state = (lever.state === 'up') ? 'down' : 'up';
+                        if (lever.state === 'down') {
+                            const dirtDoor2 = doors.find(door => door.id === 'dirtDoor2');
+                            if (dirtDoor2) {
+                                dirtDoor2.visible = false; // Control the second dirt door
+                            }
+                        }
+                    }
+                });
+            }
+            break;
     }
-
+}
     function handleKeyUp(event) {
         switch (event.key) {
             case "a":
