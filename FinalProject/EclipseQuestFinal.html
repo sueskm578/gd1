@@ -356,6 +356,10 @@ function createCanvas(level) {
 
             obstacles.push({ x: (canvas.width / tileSize - 1) * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
 
+            const newObstacleX = canvas.width - 2 * tileSize; // 2 spaces wide
+            const newObstacleY = bottomRowY - 5 * tileSize; // 5 spaces up from the bottom
+            obstacles.push({ x: newObstacleX, y: newObstacleY, width: 2 * tileSize, height: tileSize, type: 'grass' });
+            
             const buttonX = (canvas.width / tileSize - 6) * tileSize;
             const buttonY = upperRowY - (3 * tileSize);
             buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button', state: 'up' });
