@@ -344,14 +344,14 @@ function createCanvas(level) {
             redSquare.x = tileSize;
             redSquare.y = bottomRowY - redSquare.size;
 
-            const upperRowY = bottomRowY - 3 * tileSize;
+            const upperRowY = bottomRowY - 2 * tileSize;
             for (let i = 0; i < 13; i++) {
                 obstacles.push({ x: i * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
             obstacles.push({ x: (canvas.width / tileSize - 1) * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
 
-            obstacles.push({ x: 4 * tileSize, y: bottomRowY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor' });
+            obstacles.push({ x: 4 * tileSize, y: bottomRowY - (tileSize - 1), width: tileSize, height: tileSize, type: 'dirtDoor' });
             obstacles.push({ x: 3 * tileSize, y: bottomRowY - 100, width: tileSize, height: tileSize, type: 'box' });
         }
     }
