@@ -94,79 +94,74 @@
 <audio id="level3Music" src="mixkit-praise-the-lord-262.mp3" loop></audio>
 <audio id="level4Music" src="mixkit-villa-penthouse-339.mp3" loop></audio>
 <audio id="levelCompleteMusic" src="mixkit-completion-of-a-level-2063.mp3" loop></audio>
-    
+
 <script>
 const startScreenMusic = document.getElementById("startScreenMusic");
-        const level1Music = document.getElementById("level1Music");
-        const level2Music = document.getElementById("level2Music");
-        const level3Music = document.getElementById("level3Music");
-        const level4Music = document.getElementById("level4Music");
-        const levelCompleteMusic = document.getElementById("levelCompleteMusic");
+const level1Music = document.getElementById("level1Music");
+const level2Music = document.getElementById("level2Music");
+const level3Music = document.getElementById("level3Music");
+const level4Music = document.getElementById("level4Music");
+const levelCompleteMusic = document.getElementById("levelCompleteMusic");
 
-        function playStartScreenMusic() {
-            startScreenMusic.play();
-        }
+function playStartScreenMusic() {
+    startScreenMusic.play();
+}
 
-        function stopAllMusic() {
-            startScreenMusic.pause();
-            level1Music.pause();
-            level2Music.pause();
-            level3Music.pause();
-            level4Music.pause();
-            levelCompleteMusic.pause();
-            
-            // Reset the current time to 0
-            startScreenMusic.currentTime = 0;
-            level1Music.currentTime = 0;
-            level2Music.currentTime = 0;
-            level3Music.currentTime = 0;
-            level4Music.currentTime = 0;
-            levelCompleteMusic.currentTime = 0;
-        }
+function stopAllMusic() {
+    startScreenMusic.pause();
+    level1Music.pause();
+    level2Music.pause();
+    level3Music.pause();
+    level4Music.pause();
+    levelCompleteMusic.pause();
+    startScreenMusic.currentTime = 0;
+    level1Music.currentTime = 0;
+    level2Music.currentTime = 0;
+    level3Music.currentTime = 0;
+    level4Music.currentTime = 0;
+    levelCompleteMusic.currentTime = 0;
+}
 
-        function playLevelMusic(level) {
-            stopAllMusic(); // Stop all music
-            switch (level) {
-                case 1:
-                    level1Music.play();
-                    break;
-                case 2:
-                    level2Music.play();
-                    break;
-                case 3:
-                    level3Music.play();
-                    break;
-                case 4:
-                    level4Music.play();
-                    break;
-            }
-        }
+function playLevelMusic(level) {
+    stopAllMusic();
+    switch (level) {
+        case 1:
+            level1Music.play();
+            break;
+        case 2:
+            level2Music.play();
+            break;
+        case 3:
+            level3Music.play();
+            break;
+        case 4:
+            level4Music.play();
+            break;
+    }
+}
 
-        function playLevelCompleteMusic() {
-            stopAllMusic(); // Stop all music
-            levelCompleteMusic.play();
-        }
+function playLevelCompleteMusic() {
+    stopAllMusic();
+    levelCompleteMusic.play();
+}
 
-        // Call this function when the game starts
-        playStartScreenMusic();
+playStartScreenMusic();
 
-        // Example of how to play level music when a level is selected
-        document.querySelectorAll(".levelButton").forEach(button => {
-            button.addEventListener("click", () => {
-                currentLevel = parseInt(button.getAttribute("data-level"));
-                stopAllMusic(); // Stop any music playing
-                playLevelMusic(currentLevel); // Play the selected level music
-                document.getElementById("gameMap").style.display = "none";
-                document.getElementById("topLeftButtons").style.display = "flex";
-                createCanvas(currentLevel);
-            });
-        });
+document.querySelectorAll(".levelButton").forEach(button => {
+    button.addEventListener("click", () => {
+        currentLevel = parseInt(button.getAttribute("data-level"));
+        stopAllMusic();
+        playLevelMusic(currentLevel);
+        document.getElementById("gameMap").style.display = "none";
+        document.getElementById("topLeftButtons").style.display = "flex";
+        createCanvas(currentLevel);
+    });
+});
 
-        // Call this function when the level is completed
-        if (lunaReachedDoor && solaraReachedDoor) {
-            playLevelCompleteMusic();
-        }
-    
+if (lunaReachedDoor && solaraReachedDoor) {
+    playLevelCompleteMusic();
+}
+
 const backgroundImageURL = "SunMoon-Background.webp";
 const gameMapBackgroundImageURL = "SunMoon-Background.webp";
 const grassImageURL = "Grass.png";
