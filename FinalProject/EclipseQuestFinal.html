@@ -119,7 +119,6 @@ let lunaGemsCollected = 0;
 let solaraGemsCollected = 0;
 let lunaReachedDoor = false;
 let solaraReachedDoor = false;
-let buttonPressed = false;
 
 const images = {};
 
@@ -138,8 +137,8 @@ function preloadImages() {
         { name: 'button', url: buttonImageURL },
         { name: 'buttonPressed', url: buttonPressedImageURL },
         { name: 'dirtDoor', url: dirtDoorImageURL },
-        { name: 'Leverup', url: leverUpImageURL },
-        { name: 'Leverdown', url: leverDownImageURL }
+        { name: 'leverUp', url: leverUpImageURL },
+        { name: 'leverDown', url: leverDownImageURL }
     ];
 
     let loadedImagesCount = 0;
@@ -198,12 +197,14 @@ function createCanvas(level) {
     const collectibles = [];
     const doors = [];
     const buttons = [];
+    const levers = [];
 
     function createObstacles(level) {
         obstacles.length = 0;
         collectibles.length = 0;
         doors.length = 0;
         buttons.length = 0;
+        levers.length = 0;
 
         if (level === 1) {
             const rowY = canvas.height - 300;
@@ -236,8 +237,8 @@ function createCanvas(level) {
 
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 2) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
             collectibles.push({ x: 3 * tileSize, y: rowY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
-            doors.push({ x: startX + tileSize, y: startY - tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
-            doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
+            doors.push({ x: startX + tileSize, y: startY - tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna', visible: true });
+            doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara', visible: true });
         } else if (level === 2) {
             const tileSize = 100;
 
@@ -268,10 +269,10 @@ function createCanvas(level) {
 
             const buttonX = 4 * tileSize;
             const buttonY = fiveSpacesUpY - tileSize;
-            buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button' });
+            buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button', state: 'up' });
 
             const buttonYAbove = fiveSpacesUpY - 3 * tileSize;
-            buttons.push({ x: buttonX, y: buttonYAbove, width: tileSize, height: tileSize, type: 'button' });
+            buttons.push({ x: buttonX, y: buttonYAbove, width: tileSize, height: tileSize, type: 'button', state: 'up' });
 
             const twoSpacesDownY = 1 * tileSize;
             for (let i = 1; i < canvas.width / tileSize; i++) {
@@ -279,8 +280,8 @@ function createCanvas(level) {
                 obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: type });
             }
 
-            doors.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
-            doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
+            doors.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna', visible: true });
+            doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara', visible: true });
 
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 1) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
             collectibles.push({ x: tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
@@ -305,8 +306,8 @@ function createCanvas(level) {
             }
 
             doors.push({ x: tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
-            doors.push({ x: 0, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
-            doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
+            doors.push({ x: 0, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara', visible: true });
+            doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna', visible: true });
 
             const firstRowX = 4 * tileSize;
             const firstRowY = canvas.height - 3 * tileSize;
@@ -321,7 +322,7 @@ function createCanvas(level) {
 
             const leverX = 3 * tileSize;
             const leverY = twoSpacesDownY - tileSize;
-            buttons.push({ x: leverX, y: leverY, width: tileSize, height: tileSize, type: 'lever', state: 'up' });
+            levers.push({ x: leverX, y: leverY, width: tileSize, height: tileSize, type: 'lever', state: 'up' });
 
             blueSquare.x = canvas.width - 2 * tileSize;
             blueSquare.y = twoSpacesDownY - tileSize;
@@ -362,8 +363,12 @@ function createCanvas(level) {
             }
         });
         buttons.forEach(button => {
-            const image = button.state === 'down' ? images['Leverdown'] : images['Leverup'];
+            const image = button.state === 'down' ? images['buttonPressed'] : images['button'];
             context.drawImage(image, button.x, button.y, button.width, button.height);
+        });
+        levers.forEach(lever => {
+            const image = lever.state === 'down' ? images['leverDown'] : images['leverUp'];
+            context.drawImage(image, lever.x, lever.y, lever.width, lever.height);
         });
         if (blueSquare.visible) {
             blueSquare.speedY += blueSquare.gravity;
@@ -401,7 +406,7 @@ function createCanvas(level) {
                     blueSquare.y + blueSquare.size > button.y &&
                     blueSquare.y < button.y + button.height) {
                     isOnButton = true;
-                    buttonPressed = true;
+                    button.state = 'down'; // Change button state to pressed
                     if (currentLevel === 2) {
                         const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
                         if (leftRowGrass) {
@@ -411,11 +416,9 @@ function createCanvas(level) {
                 }
             });
             if (!isOnButton) {
-                buttonPressed = false;
-                const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize - tileSize);
-                if (leftRowGrass) {
-                    leftRowGrass.y += tileSize;
-                }
+                buttons.forEach(button => {
+                    button.state = 'up'; // Reset button state to unpressed
+                });
             }
             collectibles.forEach((collectible, index) => {
                 if (blueSquare.x < collectible.x + collectible.width &&
@@ -474,7 +477,7 @@ function createCanvas(level) {
                     redSquare.y + redSquare.size > button.y &&
                     redSquare.y < button.y + button.height) {
                     isOnButtonRed = true;
-                    buttonPressed = true;
+                    button.state = 'down'; // Change button state to pressed
                     if (currentLevel === 2) {
                         const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
                         if (leftRowGrass) {
@@ -484,11 +487,9 @@ function createCanvas(level) {
                 }
             });
             if (!isOnButtonRed) {
-                buttonPressed = false;
-                const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize - tileSize);
-                if (leftRowGrass) {
-                    leftRowGrass.y += tileSize;
-                }
+                buttons.forEach(button => {
+                    button.state = 'up'; // Reset button state to unpressed
+                });
             }
             collectibles.forEach((collectible, index) => {
                 if (redSquare.x < collectible.x + collectible.width &&
@@ -550,33 +551,40 @@ function createCanvas(level) {
                 }
                 break;
             case " ":
-                buttons.forEach(button => {
-                    if (button.type === 'lever' && 
-                        ((blueSquare.x < button.x + button.width &&
-                          blueSquare.x + blueSquare.size > button.x &&
-                          blueSquare.y + blueSquare.size > button.y &&
-                          blueSquare.y < button.y + button.height) ||
-                         (redSquare.x < button.x + button.width &&
-                          redSquare.x + redSquare.size > button.x &&
-                          redSquare.y + redSquare.size > button.y &&
-                          redSquare.y < button.y + button.height))) {
-                        if (button.state === 'up') {
-                            button.state = 'down';
-                            button.image = images['Leverdown'];
-                            const dirtDoor = doors.find(door => door.type === 'dirtDoor');
-                            if (dirtDoor) {
-                                dirtDoor.visible = false;
-                            }
-                        } else {
-                            button.state = 'up';
-                            button.image = images['Leverup'];
-                            const dirtDoor = doors.find(door => door.type === 'dirtDoor');
-                            if (dirtDoor) {
-                                dirtDoor.visible = true;
+                if (currentLevel === 2) {
+                    buttons.forEach(button => {
+                        if (button.type === 'button' && 
+                            ((blueSquare.x < button.x + button.width &&
+                              blueSquare.x + blueSquare.size > button.x &&
+                              blueSquare.y + blueSquare.size > button.y &&
+                              blueSquare.y < button.y + button.height) ||
+                             (redSquare.x < button.x + button.width &&
+                              redSquare.x + redSquare.size > button.x &&
+                              redSquare.y + redSquare.size > button.y &&
+                              redSquare.y < button.y + button.height))) {
+                            button.state = 'down'; // Change button state to pressed
+                            const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                            if (leftRowGrass) {
+                                leftRowGrass.y -= tileSize;
                             }
                         }
-                    }
-                });
+                    });
+                } else if (currentLevel === 3) {
+                    levers.forEach(lever => {
+                        if (lever.x < blueSquare.x + blueSquare.size &&
+                            lever.x + lever.width > blueSquare.x &&
+                            lever.y < blueSquare.y + blueSquare.size &&
+                            lever.y + lever.height > blueSquare.y) {
+                            lever.state = (lever.state === 'up') ? 'down' : 'up'; // Toggle lever state
+                        }
+                        if (lever.x < redSquare.x + redSquare.size &&
+                            lever.x + lever.width > redSquare.x &&
+                            lever.y < redSquare.y + redSquare.size &&
+                            lever.y + lever.height > redSquare.y) {
+                            lever.state = (lever.state === 'up') ? 'down' : 'up'; // Toggle lever state
+                        }
+                    });
+                }
                 break;
         }
     }
