@@ -421,7 +421,7 @@ function createCanvas(level) {
     redSquare.y = blueSquare.y;
 
     // Add Solara grass and Solara gem
-    const solaraGrassX = 6 * tileSize;
+    const solaraGrassX = 5 * tileSize;
     const solaraGrassY = canvas.height - 3 * tileSize;
     obstacles.push({ x: solaraGrassX, y: solaraGrassY, width: tileSize, height: tileSize, type: 'solaraGrass' });
     collectibles.push({ x: solaraGrassX, y: canvas.height - 4 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
