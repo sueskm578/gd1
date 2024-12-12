@@ -377,7 +377,7 @@ function createCanvas(level) {
             doors.push({ x: dirtDoorX, y: dirtDoorY, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
 
             const boxX = (canvas.width / tileSize - 12) * tileSize;
-            const boxY = bottomRowY;
+            const boxY = bottomRowY - tileSize;
             obstacles.push({ x: boxX, y: boxY, width: tileSize, height: tileSize, type: 'box' }); // Keep box at original size
         }
     }
