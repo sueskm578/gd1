@@ -459,9 +459,9 @@ function createCanvas(level) {
                     isOnButton = true;
                     button.state = 'down';
                     if (currentLevel === 2) {
-                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 4 * tileSize);
+                         const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.y === canvas.height - 5 * tileSize);
                         if (leftRowGrass) {
-                            leftRowGrass.y -= tileSize; // Move the leftmost grass obstacle up
+                            leftRowGrass.y -= tileSize; // Move the grass obstacle up
                         }
                     }
                 }
@@ -470,9 +470,9 @@ function createCanvas(level) {
                 buttons.forEach(button => {
                     button.state = 'up';
                     if (currentLevel === 2) {
-                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.y === canvas.height - 4 * tileSize);
                         if (leftRowGrass) {
-                            leftRowGrass.y += tileSize; // Move the leftmost grass obstacle back down
+                            leftRowGrass.y += tileSize; // Move the grass obstacle back down
                         }
                     }
                 });
@@ -641,9 +641,9 @@ function createCanvas(level) {
                               redSquare.y + redSquare.size > button.y &&
                               redSquare.y < button.y + button.height))) {
                             button.state = 'down';
-                            const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                            const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.y === canvas.height - 5 * tileSize);
                             if (leftRowGrass) {
-                                leftRowGrass.y -= tileSize; // Move the leftmost grass obstacle up
+                                leftRowGrass.y -= tileSize; // Move the grass obstacle up
                             }
                         }
                     });
