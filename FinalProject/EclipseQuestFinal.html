@@ -348,9 +348,6 @@ function createCanvas(level) {
 
             redSquare.x = tileSize;
             redSquare.y = bottomRowY - redSquare.size;
-
-            const upperRowLast = (canvas.width / tileSize - 1) * tileSize;
-            obstacles.push({ x: upperRowLast, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
             
             const upperRowY = bottomRowY - 2 * tileSize;
             for (let i = 0; i < 13; i++) {
