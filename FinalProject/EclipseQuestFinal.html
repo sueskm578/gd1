@@ -360,8 +360,10 @@ function createCanvas(level) {
             const buttonY = upperRowY - tileSize;
             buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button', state: 'up' });
 
-            const dirtDoorX = (canvas.width / tileSize - 5) * tileSize;
-            const dirtDoorY = upperRowY - 4 * tileSize;
+            obstacles.push({ x: 4 * tileSize, y: bottomRowY - 400, width: canvas.width - 8 * tileSize, height: tileSize, type: 'grass' });
+            
+            const dirtDoorX = (canvas.width / tileSize - 10) * tileSize;
+            const dirtDoorY = upperRowY - 1 * tileSize;
             doors.push({ x: dirtDoorX, y: dirtDoorY, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
 
             const boxX = (canvas.width / tileSize - 12) * tileSize;
