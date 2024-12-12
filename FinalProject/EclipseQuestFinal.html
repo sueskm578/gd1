@@ -339,23 +339,22 @@ function createCanvas(level) {
     blueSquare.y = twoSpacesDownY - tileSize;
     redSquare.x = blueSquare.x + tileSize;
     redSquare.y = blueSquare.y;
-        
-    }
 
-    function endGame(message) {
-        document.getElementById("endScreen").style.display = "flex";
-        document.getElementById("topLeftButtons").style.display = "none";
-        document.body.removeChild(canvas);
-        alert(message);
-    }
+} // This closes the else if (level === 3) block
 
-    function levelComplete() {
-        document.getElementById("levelCompleteScreen").style.display = "flex";
-        document.getElementById("topLeftButtons").style.display = "none";
-        document.body.removeChild(canvas);
-        document.getElementById("gemCount").innerText = `Luna Gems: ${lunaGemsCollected} | Solara Gems: ${solaraGemsCollected}`;
-    }
+function endGame(message) {
+    document.getElementById("endScreen").style.display = "flex";
+    document.getElementById("topLeftButtons").style.display = "none";
+    document.body.removeChild(canvas);
+    alert(message);
+}
 
+function levelComplete() {
+    document.getElementById("levelCompleteScreen").style.display = "flex";
+    document.getElementById("topLeftButtons").style.display = "none";
+    document.body.removeChild(canvas);
+    document.getElementById("gemCount").innerText = `Luna Gems: ${lunaGemsCollected} | Solara Gems: ${solaraGemsCollected}`;
+}
     function update() {
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.drawImage(levelBackgroundImage, 0, 0, canvas.width, canvas.height);
