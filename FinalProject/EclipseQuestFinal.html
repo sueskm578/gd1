@@ -309,15 +309,18 @@ function createCanvas(level) {
             doors.push({ x: 0, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara', visible: true });
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna', visible: true });
 
+                        // Updated first row with solaragrass
             const firstRowX = 4 * tileSize;
             const firstRowY = canvas.height - 3 * tileSize;
             for (let i = 0; i < 3; i++) {
-                obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'grass' });
+                obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: (i === 1 ? 'solaragrass' : 'grass') });
             }
+            
+            // Updated second row with lunagrass
             const secondRowX = 9 * tileSize;
             const secondRowY = firstRowY;
             for (let i = 0; i < 3; i++) {
-                obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
+                obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: (i === 1 ? 'lunagrass' : 'grass') });
             }
 
             const leverX = 3 * tileSize;
