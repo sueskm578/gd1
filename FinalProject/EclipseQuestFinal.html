@@ -360,6 +360,10 @@ function createCanvas(level) {
             const newObstacleY = bottomRowY - 5 * tileSize; // 5 spaces up from the bottom
             obstacles.push({ x: newObstacleX, y: newObstacleY, width: 2 * tileSize, height: tileSize, type: 'grass' });
             
+            const leverX = canvas.width - 6 * tileSize; // 6 spaces from the right
+            const leverY = bottomRowY - 3 * tileSize; // 3 spaces up
+            levers.push({ x: leverX, y: leverY, width: tileSize, height: tileSize, type: 'lever', state: 'up' });
+            
             const buttonX = (canvas.width / tileSize - 6) * tileSize;
             const buttonY = upperRowY - (3 * tileSize);
             buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button', state: 'up' });
@@ -613,6 +617,36 @@ function createCanvas(level) {
                     });
                 }
                 break;
+                case " ":
+            if (currentLevel === 4) {
+                levers.forEach(lever => {
+                    if (lever.x < blueSquare.x + blueSquare.size &&
+                        lever.x + lever.width > blueSquare.x &&
+                        lever.y < blueSquare.y + blueSquare.size &&
+                        lever.y + lever.height > blueSquare.y) {
+                        lever.state = (lever.state === 'up') ? 'down' : 'up';
+                        if (lever.state === 'down') {
+                            const dirtDoor = doors.find(door => door.type === 'dirtDoor');
+                            if (dirtDoor) {
+                                dirtDoor.visible = false; // Hide the dirt door
+                            }
+                        }
+                    }
+                    if (lever.x < redSquare.x + redSquare.size &&
+                        lever.x + lever.width > redSquare.x &&
+                        lever.y < redSquare.y + redSquare.size &&
+                        lever.y + lever.height > redSquare.y) {
+                        lever.state = (lever.state === 'up') ? 'down' : 'up';
+                        if (lever.state === 'down') {
+                            const dirtDoor = doors.find(door => door.type === 'dirtDoor');
+                            if (dirtDoor) {
+                                dirtDoor.visible = false; // Hide the dirt door
+                            }
+                        }
+                    }
+                });
+            }
+            break;
             case " ":
                 if (currentLevel === 2) {
                     buttons.forEach(button => {
