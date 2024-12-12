@@ -477,6 +477,7 @@ function createCanvas(level) {
                     const boxY = bottomRowY - tileSize * 1;
                     obstacles.push({ x: boxX, y: boxY, width: tileSize, height: tileSize, type: 'box' }); // Keep box at original size
                 }
+    }
 
     function endGame(message) {
         document.getElementById("endScreen").style.display = "flex";
