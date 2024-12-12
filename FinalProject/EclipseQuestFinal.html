@@ -508,7 +508,33 @@ function createCanvas(level) {
         // Add Solara gems
         collectibles.push({ x: (canvas.width / tileSize - 8) * tileSize, y: bottomRowY - 5 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
         collectibles.push({ x: newObstacleX + tileSize, y: newObstacleY - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
-    }
+   } elseif (level === 5) {
+        const tileSize = 100;
+        const canvasWidthInTiles = canvas.width / tileSize;
+        const canvasHeightInTiles = canvas.height / tileSize;
+
+        // Place a row of grass obstacles at the bottom of the screen
+        for (let i = 0; i < canvasWidthInTiles; i++) {
+            obstacles.push({ x: i * tileSize, y: (canvasHeightInTiles - 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+        }
+
+        // Create a stack of dirt doors at the 9th spot from the left
+        const dirtDoorX = 8 * tileSize;
+        for (let i = 0; i < canvasHeightInTiles; i++) {
+            doors.push({ x: dirtDoorX, y: i * tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
+        }
+
+        // Create a row of three grass obstacles at 6, 7, and 8 spaces from the left and 2 spaces up
+        const rowY = (canvasHeightInTiles - 3) * tileSize;
+        for (let i = 5; i <= 7; i++) {
+            obstacles.push({ x: i * tileSize, y: rowY, width: tileSize, height: tileSize, type: 'grass' });
+        }
+
+        // Create a row of three grass obstacles at 6, 7, and 8 spaces from the right and 2 spaces up
+        const rowYRight = (canvasHeightInTiles - 3) * tileSize;
+        for (let i = canvasWidthInTiles - 7; i <= canvasWidthInTiles - 5; i++) {
+            obstacles.push({ x: i * tileSize, y: rowYRight, width: tileSize, height: tileSize, type: 'grass' });
+        }
 }
 
     function endGame(message) {
