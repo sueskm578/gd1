@@ -535,8 +535,8 @@ function createCanvas(level) {
         for (let i = canvasWidthInTiles - 7; i <= canvasWidthInTiles - 5; i++) {
             obstacles.push({ x: i * tileSize, y: rowYRight, width: tileSize, height: tileSize, type: 'grass' });
         }
-}
-
+    }
+ }
     function endGame(message) {
         document.getElementById("endScreen").style.display = "flex";
         document.getElementById("topLeftButtons").style.display = "none";
