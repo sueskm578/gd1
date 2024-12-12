@@ -200,14 +200,6 @@ function createCanvas(level) {
     const doors = [];
     const buttons = [];
     const levers = [];
-    const box = {
-        x: 3 * tileSize,
-        y: canvas.height - 200,
-        width: tileSize * 2,
-        height: tileSize * 2,
-        type: 'box',
-        pushedBy: null
-    };
 
     function createObstacles(level) {
         obstacles.length = 0;
@@ -359,8 +351,8 @@ function createCanvas(level) {
 
             obstacles.push({ x: (canvas.width / tileSize - 1) * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
 
-            obstacles.push({ x: 4 * tileSize, y: bottomRowY - tileSize * 2, width: tileSize, height: tileSize, type: 'dirtDoor' });
-            obstacles.push({ x: 3 * tileSize, y: bottomRowY - 200, width: tileSize * 2, height: tileSize * 2, type: 'box' });
+            obstacles.push({ x: 4 * tileSize, y: bottomRowY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor' });
+            obstacles.push({ x: 3 * tileSize, y: bottomRowY - 100, width: tileSize, height: tileSize, type: 'box' });
             obstacles.push({ x: 4 * tileSize, y: bottomRowY - 400, width: canvas.width - 8 * tileSize, height: tileSize, type: 'grass' });
         }
     }
@@ -386,7 +378,6 @@ function createCanvas(level) {
             const image = images[obstacle.type];
             context.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
         });
-        context.drawImage(images.box, box.x, box.y, box.width, box.height);
         collectibles.forEach(collectible => {
             const image = images[collectible.type];
             context.drawImage(image, collectible.x, collectible.y, collectible.width, collectible.height);
@@ -434,13 +425,6 @@ function createCanvas(level) {
                     }
                 }
             });
-            if (blueSquare.x < box.x + box.width &&
-                blueSquare.x + blueSquare.size > box.x &&
-                blueSquare.y + blueSquare.size > box.y &&
-                blueSquare.y < box.y + box.height) {
-                box.pushedBy = 'luna';
-                box.x += blueSquare.speedX;
-            }
             let isOnButton = false;
             buttons.forEach(button => {
                 if (blueSquare.x < button.x + button.width &&
@@ -512,13 +496,6 @@ function createCanvas(level) {
                     }
                 }
             });
-            if (redSquare.x < box.x + box.width &&
-                redSquare.x + redSquare.size > box.x &&
-                redSquare.y + redSquare.size > box.y &&
-                redSquare.y < box.y + box.height) {
-                box.pushedBy = 'solara';
-                box.x += redSquare.speedX;
-            }
             let isOnButtonRed = false;
             buttons.forEach(button => {
                 if (redSquare.x < button.x + button.width &&
