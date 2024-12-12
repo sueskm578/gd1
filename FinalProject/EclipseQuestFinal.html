@@ -597,10 +597,26 @@ for (let i = 1; i <= 3; i++) {
         const image = images[collectible.type];
         context.drawImage(image, collectible.x, collectible.y, collectible.width, collectible.height);
     });
+     // Door interaction logic
     doors.forEach(door => {
-        if (door.visible) {
-            const image = images[door.type];
-            context.drawImage(image, door.x, door.y, door.width, door.height);
+        if (character.x < door.x + door.width &&
+            character.x + character.size > door.x &&
+            character.y + character.size > door.y &&
+            character.y < door.y + door.height &&
+            door.character === (character === blueSquare ? 'luna' : 'solara')) {
+            
+            // Prevent passing through the dirt door
+            if (door.type === 'dirtDoor') {
+                // Do nothing, just keep the character in place
+                return; // Exit the function to prevent further processing
+            }
+
+            character.visible = false;
+            if (character === blueSquare) {
+                lunaReachedDoor = true;
+            } else {
+                solaraReachedDoor = true;
+            }
         }
     });
     buttons.forEach(button => {
