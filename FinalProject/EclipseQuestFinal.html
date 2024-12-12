@@ -386,8 +386,7 @@ function createCanvas(level) {
 
         // Add the grass obstacle that starts 5 spaces up from the bottom with a unique identifier
         obstacles.push({ x: 0, y: canvas.height - 5 * tileSize, width: tileSize, height: tileSize, type: 'grass', id: 'leftmostGrass' });
-   } else  if (level === 3) {
-        const tileSize = 100;
+    const tileSize = 100;
 
     for (let i = 0; i < canvas.width / tileSize; i++) {
         const type = (i < 2 || i >= Math.floor(canvas.width / tileSize) - 2) ? 'grass' : 'radioactiveGrass';
@@ -619,7 +618,7 @@ for (let i = 1; i <= 3; i++) {
         context.drawImage(image, lever.x, lever.y, lever.width, lever.height);
     });
 
- function handleCharacter(character) {
+   function handleCharacter(character) {
     if (character.visible) {
         character.speedY += character.gravity;
         character.x += character.speedX;
@@ -647,15 +646,6 @@ for (let i = 1; i <= 3; i++) {
                 } else if (character.speedY < 0) {
                     character.y = obstacle.y + obstacle.height;
                     character.speedY = 0;
-                }
-
-                // Handle horizontal collision
-                if (character.speedX > 0) {
-                    character.x = obstacle.x - character.size;
-                    character.speedX = 0;
-                } else if (character.speedX < 0) {
-                    character.x = obstacle.x + obstacle.width;
-                    character.speedX = 0;
                 }
 
                 // Handle specific obstacle types
@@ -701,10 +691,9 @@ for (let i = 1; i <= 3; i++) {
                 button.state = 'down';
                 if (currentLevel === 2) {
                     const leftmostGrass = obstacles.find(obstacle => obstacle.id === 'leftmostGrass');
-                    if (leftmostGrass && !leftmostGrass.movedUp) {
-                        console.log("Button pressed: Moving leftmost grass obstacle up");
-                        leftmostGrass.y -= tileSize; // Move the grass obstacle up
-                        leftmostGrass.movedUp = true; // Mark as moved up
+                    if (leftmostGrass) {
+                        console.log("Button pressed: Moving leftmost grass obstacle down");
+                        leftmostGrass.y += tileSize; // Move the grass obstacle down
                         console.log("New position of leftmost grass obstacle:", leftmostGrass.y);
                     }
                 }
@@ -716,10 +705,9 @@ for (let i = 1; i <= 3; i++) {
                 button.state = 'up';
                 if (currentLevel === 2) {
                     const leftmostGrass = obstacles.find(obstacle => obstacle.id === 'leftmostGrass');
-                    if (leftmostGrass && leftmostGrass.movedUp) {
-                        console.log("Button released: Moving leftmost grass obstacle down");
-                        leftmostGrass.y += tileSize; // Move the leftmost grass obstacle back down
-                        leftmostGrass.movedUp = false; // Mark as moved down
+                    if (leftmostGrass) {
+                        console.log("Button released: Moving leftmost grass obstacle up");
+                        leftmostGrass.y -= tileSize; // Move the leftmost grass obstacle back up
                         console.log("New position of leftmost grass obstacle:", leftmostGrass.y);
                     }
                 }
@@ -731,15 +719,13 @@ for (let i = 1; i <= 3; i++) {
             if (character.x < collectible.x + collectible.width &&
                 character.x + character.size > collectible.x &&
                 character.y + collectible.size > collectible.y &&
-                character.y < collectible.y + collectible.height) {
-                if (collectible.collectedBy === 'luna' && character === blueSquare) {
-                    collectibles.splice(index, 1);
+                character.y < collectible.y + collectible.height &&
+                collectible.collectedBy === (character === blueSquare ? 'luna' : 'solara')) {
+                collectibles.splice(index, 1);
+                if (character === blueSquare) {
                     lunaGemsCollected++;
-                    console.log("Luna collected a gem. Total Luna gems:", lunaGemsCollected);
-                } else if (collectible.collectedBy === 'solara' && character === redSquare) {
-                    collectibles.splice(index, 1);
+                } else {
                     solaraGemsCollected++;
-                    console.log("Solara collected a gem. Total Solara gems:", solaraGemsCollected);
                 }
             }
         });
@@ -756,9 +742,9 @@ for (let i = 1; i <= 3; i++) {
                 // Prevent passing through the dirt door
                 if (door.type === 'dirtDoor') {
                     // Determine the direction of movement
-                    if (character.speedX > 0) { // Moving right
+                    if (character.velocityX > 0) { // Moving right
                         character.x = door.x - character.size; // Move character to the left of the door
-                    } else if (character.speedX < 0) { // Moving left
+                    } else if (character.velocityX < 0) { // Moving left
                         character.x = door.x + door.width; // Move character to the right of the door
                     }
                     // Optionally, you can also check for vertical movement if needed
