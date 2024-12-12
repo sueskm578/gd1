@@ -630,7 +630,7 @@ for (let i = 1; i <= 3; i++) {
             character.onGround = true;
         }
 
-        obstacles.forEach(obstacle => {
+       obstacles.forEach(obstacle => {
     // Check for collision with obstacles
     if (character.x < obstacle.x + obstacle.width &&
         character.x + character.size > obstacle.x &&
@@ -665,13 +665,19 @@ for (let i = 1; i <= 3; i++) {
             // Teleport Solara to in front of Luna portal
             character.x = lunaPortalX; // Position in front of Luna portal
             character.y = lunaPortalY - character.size; // Adjust Y to be above the portal
+            console.log("Solara teleported to:", character.x, character.y); // Debugging output
         } else if (obstacle.type === 'lunaPortal' && character === blueSquare) {
             // Teleport Luna to in front of Solara portal
             character.x = solaraPortalX; // Position in front of Solara portal
             character.y = solaraPortalY - character.size; // Adjust Y to be above the portal
+            console.log("Luna teleported to:", character.x, character.y); // Debugging output
         }
     }
 });
+        // Add visibility checks after the teleportation logic
+console.log("Solara visible:", redSquare.visible);
+console.log("Luna visible:", blueSquare.visible);
+        
         // Button interaction logic
         let isOnButton = false;
         buttons.forEach(button => {
