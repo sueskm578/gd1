@@ -200,7 +200,7 @@ function createCanvas(level) {
     const doors = [];
     const buttons = [];
     const levers = [];
-
+    
     function createObstacles(level) {
         obstacles.length = 0;
         collectibles.length = 0;
@@ -356,20 +356,13 @@ function createCanvas(level) {
 
             obstacles.push({ x: (canvas.width / tileSize - 1) * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
 
-            const newObstacleX = canvas.width - 2 * tileSize; // 2 spaces wide
-            const newObstacleY = bottomRowY - 5 * tileSize; // 5 spaces up from the bottom
-            obstacles.push({ x: newObstacleX, y: newObstacleY, width: 2 * tileSize, height: tileSize, type: 'grass' });
-            
-            const buttonX = (canvas.width / tileSize - 6) * tileSize;
-            const buttonY = upperRowY - (3 * tileSize);
+            const buttonX = (canvas.width / tileSize - 5) * tileSize;
+            const buttonY = upperRowY - tileSize;
             buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button', state: 'up' });
 
-            obstacles.push({ x: 4 * tileSize, y: bottomRowY - 400, width: canvas.width - 8 * tileSize, height: tileSize, type: 'grass' });
-
-            const dirtDoorX = (canvas.width / tileSize - 10) * tileSize;
-            const dirtDoorY = upperRowY - 1 * tileSize;
+            const dirtDoorX = (canvas.width / tileSize - 5) * tileSize;
+            const dirtDoorY = upperRowY - 4 * tileSize;
             doors.push({ x: dirtDoorX, y: dirtDoorY, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
-
             const boxX = (canvas.width / tileSize - 12) * tileSize;
             const boxY = bottomRowY - tileSize * 2;
             obstacles.push({ x: boxX, y: boxY, width: tileSize, height: tileSize * 2, type: 'box' });
