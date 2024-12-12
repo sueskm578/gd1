@@ -211,6 +211,14 @@ function createCanvas(level) {
         levers.length = 0;
 
         if (level === 1) {
+            blueSquare.x = 50; // Luna's starting position (above Solara)
+        blueSquare.y = canvas.height - 200; // Luna's starting height (on top of the grass obstacle)
+        blueSquare.visible = true;
+
+        redSquare.x = 50; // Solara's starting position (on the bottom grass obstacle)
+        redSquare.y = canvas.height - 150; // Solara's starting height
+        redSquare.visible = true;
+            
             const rowY = canvas.height - 300;
             const tileSize = 100;
 
@@ -244,6 +252,14 @@ function createCanvas(level) {
             doors.push({ x: startX + tileSize, y: startY - tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna', visible: true });
             doors.push({ x: (Math.floor(canvas.width / tileSize)) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara', visible: true });
         } else if (level === 2) {
+            blueSquare.x = 50; // Luna's starting position (above Solara)
+        blueSquare.y = canvas.height - 200; // Luna's starting height (on top of the grass obstacle)
+        blueSquare.visible = true;
+
+        redSquare.x = 50; // Solara's starting position (on the bottom grass obstacle)
+        redSquare.y = canvas.height - 150; // Solara's starting height
+        redSquare.visible = true;
+            
             const tileSize = 100;
 
             for (let i = 0; i < canvas.width / tileSize; i++) {
@@ -292,6 +308,14 @@ function createCanvas(level) {
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 3) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 4) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
         } else if (level === 3) {
+            blueSquare.x = canvas.width - 100; // Luna's starting position (top right)
+        blueSquare.y = 50; // Luna's starting height (on top of the top grass obstacle)
+        blueSquare.visible = true;
+
+        redSquare.x = canvas.width - 150; // Solara's starting position (to the left of Luna)
+        redSquare.y = 50; // Solara's starting height (on the same level)
+        redSquare.visible = true;
+            
             const tileSize = 100;
 
             for (let i = 0; i < canvas.width / tileSize; i++) {
@@ -333,6 +357,14 @@ function createCanvas(level) {
             redSquare.x = blueSquare.x + tileSize;
             redSquare.y = blueSquare.y;
         } else if (level === 4) {
+            blueSquare.x = 50; // Luna's starting position (on the bottom grass obstacle)
+        blueSquare.y = canvas.height - 150; // Luna's starting height
+        blueSquare.visible = true;
+
+        redSquare.x = 100; // Solara's starting position (to the right of Luna)
+        redSquare.y = canvas.height - 150; // Solara's starting height
+        redSquare.visible = true;
+            
             const tileSize = 100;
 
             const topRowY = 1 * tileSize;
