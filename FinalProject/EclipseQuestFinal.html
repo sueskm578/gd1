@@ -459,9 +459,9 @@ function createCanvas(level) {
                     isOnButton = true;
                     button.state = 'down';
                     if (currentLevel === 2) {
-                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 4 * tileSize);
-                        if (leftRowGrass) {
-                            leftRowGrass.y -= tileSize; // Move the leftmost grass obstacle up
+                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.y === canvas.height - 5 * tileSize);
+                            if (leftRowGrass) {
+                                leftRowGrass.y -= tileSize; // Move the grass obstacle up
                         }
                     }
                 }
