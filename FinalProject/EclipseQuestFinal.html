@@ -534,6 +534,29 @@ function createCanvas(level) {
         const rowYRight = (canvasHeightInTiles - 3) * tileSize;
         for (let i = canvasWidthInTiles - 7; i <= canvasWidthInTiles - 5; i++) {
             obstacles.push({ x: i * tileSize, y: rowYRight, width: tileSize, height: tileSize, type: 'grass' });
+            
+        // Create a row of grass obstacles 1, 2, and 3 spaces from the left 4 spaces up
+        const rowYLeft4Up = (canvasHeightInTiles - 5) * tileSize;
+        for (let i = 0; i <= 2; i++) {
+            obstacles.push({ x: i * tileSize, y: rowYLeft4Up, width: tileSize, height: tileSize, type: 'grass' });
+        }
+
+        // Create a row of grass obstacles 1, 2, and 3 spaces from the right 4 spaces up
+        const rowYRight4Up = (canvasHeightInTiles - 5) * tileSize;
+        for (let i = canvasWidthInTiles - 3; i <= canvasWidthInTiles - 1; i++) {
+            obstacles.push({ x: i * tileSize, y: rowYRight4Up, width: tileSize, height: tileSize, type: 'grass' });
+        }
+
+        // Add two grass obstacles that are positioned 7 and 8 spaces from the right and 5 spaces up
+        const rowYRight5Up = (canvasHeightInTiles - 6) * tileSize;
+        for (let i = canvasWidthInTiles - 8; i <= canvasWidthInTiles - 7; i++) {
+            obstacles.push({ x: i * tileSize, y: rowYRight5Up, width: tileSize, height: tileSize, type: 'grass' });
+        }
+
+        // Add two grass obstacles that are positioned 7 and 8 spaces from the left and 5 spaces up
+        const rowYLeft5Up = (canvasHeightInTiles - 6) * tileSize;
+        for (let i = 6; i <= 7; i++) {
+            obstacles.push({ x: i * tileSize, y: rowYLeft5Up, width: tileSize, height: tileSize, type: 'grass' });
         }
     }
  }
