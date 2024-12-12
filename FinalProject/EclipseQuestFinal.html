@@ -622,18 +622,6 @@ function createCanvas(level) {
     requestAnimationFrame(update);
 }
 
-window.addEventListener("keydown", handleKeyDown);
-window.addEventListener("keyup", handleKeyUp);
-
-createObstacles(currentLevel);
-
-const levelBackgroundImage = new Image();
-levelBackgroundImage.src = levelBackgroundImages[currentLevel];
-levelBackgroundImage.onload = () => {
-    context.drawImage(levelBackgroundImage, 0, 0, canvas.width, canvas.height);
-    update();
-};
-
     function handleKeyDown(event) {
         switch (event.key) {
             case "a":
