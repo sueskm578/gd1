@@ -517,11 +517,49 @@ function createCanvas(level) {
         const canvasWidthInTiles = canvas.width / tileSize;
         const canvasHeightInTiles = canvas.height / tileSize;
 
-        // Place a row of grass obstacles at the bottom of the screen
-        for (let i = 0; i < canvasWidthInTiles; i++) {
-            obstacles.push({ x: i * tileSize, y: (canvasHeightInTiles - 1) * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+        // Add a row of grass obstacles at the bottom of the screen
+        for (let i = 0; i < canvas.width / tileSize; i++) {
+            let type = 'grass';
+            if (i === Math.floor(canvas.width / tileSize) - 7 || i === Math.floor(canvas.width / tileSize) - 6) {
+                type = 'radioactiveGrass'; // Make radioactiveGrass two spaces wide
+            } else if (i === 1 || i === 2) {
+                type = 'lunaGrass'; // Replace grass with lunaGrass 1 and 2 spaces from the left
+            } else if (i === Math.floor(canvas.width / tileSize) - 2 || i === Math.floor(canvas.width / tileSize) - 1) {
+                type = 'solaraGrass'; // Replace grass with solaraGrass 1 and 2 spaces from the right
+            }
+            obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
         }
 
+        // Add Solara door positioned on the bottom grass row, 8 spaces from the left
+        const solaraDoorX = 8 * tileSize;
+        const solaraDoorY = canvas.height - 2 * tileSize;
+        doors.push({ x: solaraDoorX, y: solaraDoorY, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara' });
+
+        // Add Luna door positioned on the bottom grass row, 8 spaces from the right
+        const lunaDoorX = (Math.floor(canvas.width / tileSize) - 8) * tileSize;
+        const lunaDoorY = canvas.height - 2 * tileSize;
+        doors.push({ x: lunaDoorX, y: lunaDoorY, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna' });
+
+        // Add radioactive grass 7 spaces from the right and 2 spaces up
+        const radioactiveGrassRightX = (Math.floor(canvas.width / tileSize) - 7) * tileSize;
+        const radioactiveGrassRightY = canvas.height - 3 * tileSize;
+        obstacles.push({ x: radioactiveGrassRightX, y: radioactiveGrassRightY, width: tileSize, height: tileSize, type: 'radioactiveGrass' });
+
+        // Add radioactive grass 7 spaces from the left and 2 spaces up
+        const radioactiveGrassLeftX = 7 * tileSize;
+        const radioactiveGrassLeftY = canvas.height - 3 * tileSize;
+        obstacles.push({ x: radioactiveGrassLeftX, y: radioactiveGrassLeftY, width: tileSize, height: tileSize, type: 'radioactiveGrass' });
+
+        // Add Lunagem in space 1 on the bottom row
+        const lunagemX = tileSize;
+        const lunagemY = canvas.height - 2 * tileSize;
+        collectibles.push({ x: lunagemX, y: lunagemY, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
+
+        // Add Solaragem in space 1 on the bottom row from the right
+        const solaragemX = (Math.floor(canvas.width / tileSize) - 1) * tileSize;
+        const solaragemY = canvas.height - 2 * tileSize;
+        collectibles.push({ x: solaragemX, y: solaragemY, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
+            
         // Create a stack of dirt doors at the 9th spot from the left
         const dirtDoorX = 8 * tileSize;
         for (let i = 0; i < canvasHeightInTiles; i++) {
