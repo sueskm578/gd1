@@ -534,6 +534,7 @@ function createCanvas(level) {
         const rowYRight = (canvasHeightInTiles - 3) * tileSize;
         for (let i = canvasWidthInTiles - 7; i <= canvasWidthInTiles - 5; i++) {
             obstacles.push({ x: i * tileSize, y: rowYRight, width: tileSize, height: tileSize, type: 'grass' });
+        }
             
         // Create a row of grass obstacles 1, 2, and 3 spaces from the left 4 spaces up
         const rowYLeft4Up = (canvasHeightInTiles - 5) * tileSize;
