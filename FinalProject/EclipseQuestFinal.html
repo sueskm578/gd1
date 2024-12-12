@@ -550,6 +550,40 @@ function createCanvas(level) {
                     redSquare.onGround = false;
                 }
                 break;
+                case " ": // Space key for lever interaction
+    if (currentLevel === 3) {
+        levers.forEach(lever => {
+            if (lever.x < blueSquare.x + blueSquare.size &&
+                lever.x + lever.width > blueSquare.x &&
+                lever.y < blueSquare.y + blueSquare.size &&
+                lever.y + lever.height > blueSquare.y) {
+                lever.state = (lever.state === 'up') ? 'down' : 'up'; // Toggle lever state
+                
+                // Check if the lever is down and hide the dirt door
+                if (lever.state === 'down') {
+                    const dirtDoor = doors.find(door => door.type === 'dirtDoor');
+                    if (dirtDoor) {
+                        dirtDoor.visible = false; // Hide the dirt door
+                    }
+                }
+            }
+            if (lever.x < redSquare.x + redSquare.size &&
+                lever.x + lever.width > redSquare.x &&
+                lever.y < redSquare.y + redSquare.size &&
+                lever.y + lever.height > redSquare.y) {
+                lever.state = (lever.state === 'up') ? 'down' : 'up'; // Toggle lever state
+                
+                // Check if the lever is down and hide the dirt door
+                if (lever.state === 'down') {
+                    const dirtDoor = doors.find(door => door.type === 'dirtDoor');
+                    if (dirtDoor) {
+                        dirtDoor.visible = false; // Hide the dirt door
+                    }
+                }
+            }
+        });
+    }
+    break;
             case " ":
                 if (currentLevel === 2) {
                     buttons.forEach(button => {
