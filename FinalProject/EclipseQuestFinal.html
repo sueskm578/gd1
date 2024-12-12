@@ -443,6 +443,12 @@ function createCanvas(level) {
                 obstacles.push({ x: i * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
+            // Place Luna door one space down from the top of the screen
+            doors.push({ x: 0, y: tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna', visible: true });
+
+            // Place Solara door next to Luna door
+            doors.push({ x: tileSize, y: tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara', visible: true });
+
             obstacles.push({ x: (canvas.width / tileSize - 1) * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
 
             const newObstacleX = canvas.width - 2 * tileSize;
