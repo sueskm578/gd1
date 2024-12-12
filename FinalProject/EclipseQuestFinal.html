@@ -438,8 +438,10 @@ function createCanvas(level) {
 
     // Add Solara gems
     collectibles.push({ x: (canvas.width / tileSize - 8) * tileSize, y: bottomRowY - 5 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
-}
-        const tileSize = 100;
+    collectibles.push({ x: newObstacleX + tileSize, y: newObstacleY - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
+        
+    } else if (level === 4) {
+    const tileSize = 100;
 
         const topRowY = 1 * tileSize;
         for (let i = 0; i < 12; i++) {
