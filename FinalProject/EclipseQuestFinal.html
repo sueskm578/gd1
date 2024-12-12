@@ -428,7 +428,7 @@ function createCanvas(level) {
         document.getElementById("gemCount").innerText = `Luna Gems: ${lunaGemsCollected} | Solara Gems: ${solaraGemsCollected}`;
     }
 
-update() {
+    function update() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(levelBackgroundImage, 0, 0, canvas.width, canvas.height);
     obstacles.forEach(obstacle => {
