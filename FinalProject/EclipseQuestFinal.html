@@ -582,11 +582,11 @@ for (let i = 1; i <= 3; i++) {
     }
 
     function levelComplete() {
-        document.getElementById("levelCompleteScreen").style.display = "flex";
-        document.getElementById("topLeftButtons").style.display = "none";
-        document.body.removeChild(canvas);
-        document.getElementById("gemCount").innerText = `Luna Gems: ${lunaGemsCollected} | Solara Gems: ${solaraGemsCollected}`;
-    }
+    document.getElementById("levelCompleteScreen").style.display = "flex";
+    document.getElementById("topLeftButtons").style.display = "none";
+    document.body.removeChild(canvas);
+    document.getElementById("gemCount").innerText = `Luna Gems: ${lunaGemsCollected} | Solara Gems: ${solaraGemsCollected}`;
+}
 
     function update() {
     context.clearRect(0, 0, canvas.width, canvas.height);
