@@ -352,13 +352,16 @@ function createCanvas(level) {
                 obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
-            const fiveSpacesUpY = canvas.height - 5 * tileSize;
-            for (let i = 0; i < 12; i++) {
-                obstacles.push({ x: i * tileSize, y: fiveSpacesUpY, width: tileSize, height: tileSize, type: 'grass' });
-            }
+            // Define the Y position for the row of obstacles, five spaces up from the bottom
+const fiveSpacesUpY = canvas.height - 5 * tileSize;
 
-            const startXNewRow = 12 * tileSize;
-            obstacles.push({ x: startXNewRow + tileSize, y: fiveSpacesUpY + tileSize, width: tileSize, height: tileSize, type: 'grass' });
+// Create a row of twelve grass obstacles starting from the left side
+for (let i = 0; i < 12; i++) {
+    obstacles.push({ x: i * tileSize, y: fiveSpacesUpY, width: tileSize, height: tileSize, type: 'grass' });
+}
+
+// Add one descending grass obstacle to the right of the last grass obstacle
+obstacles.push({ x: 12 * tileSize, y: fiveSpacesUpY + tileSize, width: tileSize, height: tileSize, type: 'grass' });
 
             const buttonX = 4 * tileSize;
             const buttonY = fiveSpacesUpY - tileSize;
