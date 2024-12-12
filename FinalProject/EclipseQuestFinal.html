@@ -460,10 +460,19 @@ function createCanvas(level) {
         const newObstacleY = bottomRowY - 5 * tileSize;
         obstacles.push({ x: newObstacleX, y: newObstacleY, width: 2 * tileSize, height: tileSize, type: 'grass' });
 
-         // Modify the single grass obstacle to be two spaces wide
-    const wideGrassX = 4 * tileSize;
+         // Modify the grass obstacle closest to the right to be two spaces wide
+    const wideGrassX = (canvas.width / tileSize - 2) * tileSize;
     const wideGrassY = bottomRowY - 2 * tileSize;
     obstacles.push({ x: wideGrassX, y: wideGrassY, width: 2 * tileSize, height: tileSize, type: 'grass' });
+
+    // Replace grass with Luna grass
+    const lunaGrassX1 = (canvas.width / tileSize - 3) * tileSize;
+    const lunaGrassX2 = (canvas.width / tileSize - 4) * tileSize;
+    const lunaGrassX3 = (canvas.width / tileSize - 5) * tileSize;
+    const lunaGrassY = bottomRowY - 2 * tileSize;
+    obstacles.push({ x: lunaGrassX1, y: lunaGrassY, width: tileSize, height: tileSize, type: 'lunaGrass' });
+    obstacles.push({ x: lunaGrassX2, y: lunaGrassY, width: tileSize, height: tileSize, type: 'lunaGrass' });
+    obstacles.push({ x: lunaGrassX3, y: lunaGrassY, width: tileSize, height: tileSize, type: 'lunaGrass' });
             
         const leverX = canvas.width - 6 * tileSize;
         const leverY = bottomRowY - 7 * tileSize;
