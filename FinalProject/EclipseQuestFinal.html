@@ -563,12 +563,12 @@ for (let i = 1; i <= 3; i++) {
         }
             // Add Solara portal on top of the grass obstacle (8 spaces from the right, 5 spaces up)
         const solaraPortalX = (canvasWidthInTiles - 8) * tileSize;
-        const solaraPortalY = (canvasHeightInTiles - 6) * tileSize; // 5 spaces up
+        const solaraPortalY = (canvasHeightInTiles - 7) * tileSize; // 5 spaces up
         obstacles.push({ x: solaraPortalX, y: solaraPortalY, width: tileSize, height: tileSize, type: 'solaraPortal' });
         
         // Add Luna portal on top of the grass obstacle (8 spaces from the left, 5 spaces up)
-        const lunaPortalX = 8 * tileSize; // 8 spaces from the left
-        const lunaPortalY = (canvasHeightInTiles - 6) * tileSize; // 5 spaces up
+        const lunaPortalX = 7 * tileSize; // 8 spaces from the left
+        const lunaPortalY = (canvasHeightInTiles - 7) * tileSize; // 5 spaces up
         obstacles.push({ x: lunaPortalX, y: lunaPortalY, width: tileSize, height: tileSize, type: 'lunaPortal' });
         }
  }
@@ -618,119 +618,144 @@ for (let i = 1; i <= 3; i++) {
     });
 
     function handleCharacter(character) {
-        if (character.visible) {
-            character.speedY += character.gravity;
-            character.x += character.speedX;
-            character.y += character.speedY;
-            if (character.y + character.size > canvas.height) {
-                character.y = canvas.height - character.size;
-                character.speedY = 0;
-                character.onGround = true;
-            }
-            obstacles.forEach(obstacle => {
-                if (character.x < obstacle.x + obstacle.width &&
-                    character.x + character.size > obstacle.x &&
-                    character.y + character.size > obstacle.y &&
-                    character.y < obstacle.y + obstacle.height) {
-                    if (character.speedY > 0) {
-                        character.y = obstacle.y - character.size;
-                        character.speedY = 0;
-                        character.onGround = true;
-                    } else if (character.speedY < 0) {
-                        character.y = obstacle.y + obstacle.height;
-                        character.speedY = 0;
-                    }
-                    if (obstacle.type === 'solaraGrass' && character === blueSquare) {
-                        endGame("Luna hit the SolaraGrass! Game Over.");
-                    } else if (obstacle.type === 'lunaGrass' && character === redSquare) {
-                        endGame("Solara hit the LunaGrass! Game Over.");
-                    } else if (obstacle.type === 'radioactiveGrass') {
-                        endGame(`${character === blueSquare ? 'Luna' : 'Solara'} hit the RadioactiveGrass! Game Over.`);
-                    } else if (obstacle.type === 'box') {
-                        if (character.speedX !== 0) {
-                            obstacle.x += character.speedX;
-                        }
-                    }
-                }
-            });
-            let isOnButton = false;
-            buttons.forEach(button => {
-                if (character.x < button.x + button.width &&
-                    character.x + character.size > button.x &&
-                    character.y + character.size > button.y &&
-                    character.y < button.y + button.height) {
-                    isOnButton = true;
-                    button.state = 'down';
-                    if (currentLevel === 2) {
-                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.y === canvas.height - 5 * tileSize);
-                        if (leftRowGrass) {
-                            leftRowGrass.y -= tileSize; // Move the grass obstacle up
-                        }
-                    }
-                }
-            });
-            if (!isOnButton) {
-                buttons.forEach(button => {
-                    button.state = 'up';
-                    if (currentLevel === 2) {
-                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
-                        if (leftRowGrass) {
-                            leftRowGrass.y += tileSize; // Move the leftmost grass obstacle back down
-                        }
-                    }
-                });
-            }
-            collectibles.forEach((collectible, index) => {
-                if (character.x < collectible.x + collectible.width &&
-                    character.x + character.size > collectible.x &&
-                    character.y + character.size > collectible.y &&
-                    character.y < collectible.y + collectible.height &&
-                    collectible.collectedBy === (character === blueSquare ? 'luna' : 'solara')) {
-                    collectibles.splice(index, 1);
-                    if (character === blueSquare) {
-                        lunaGemsCollected++;
-                    } else {
-                        solaraGemsCollected++;
-                    }
-                }
-            });
-            doors.forEach(door => {
-                if (character.x < door.x + door.width &&
-                    character.x + character.size > door.x &&
-                    character.y + character.size > door.y &&
-                    character.y < door.y + door.height &&
-                    door.character === (character === blueSquare ? 'luna' : 'solara')) {
-                    character.visible = false;
-                    if (character === blueSquare) {
-                        lunaReachedDoor = true;
-                    } else {
-                        solaraReachedDoor = true;
-                    }
-                }
-            });
-            if (obstacle.type === 'solaraPortal' && character === redSquare) {
-                redSquare.x = lunaPortalX;
-                redSquare.y = lunaPortalY;
-            } else if (obstacle.type === 'lunaPortal' && character === blueSquare) {
-                blueSquare.x = solaraPortalX;
-                blueSquare.y = solaraPortalY;
-            }
+    if (character.visible) {
+        character.speedY += character.gravity;
+        character.x += character.speedX;
+        character.y += character.speedY;
+
+        // Check for ground collision
+        if (character.y + character.size > canvas.height) {
+            character.y = canvas.height - character.size;
+            character.speedY = 0;
+            character.onGround = true;
         }
-    }
 
-    handleCharacter(blueSquare);
-    handleCharacter(redSquare);
+        obstacles.forEach(obstacle => {
+            // Check for collision with obstacles
+            if (character.x < obstacle.x + obstacle.width &&
+                character.x + character.size > obstacle.x &&
+                character.y + character.size > obstacle.y &&
+                character.y < obstacle.y + obstacle.height) {
+                
+                // Handle vertical collision
+                if (character.speedY > 0) {
+                    character.y = obstacle.y - character.size;
+                    character.speedY = 0;
+                    character.onGround = true;
+                } else if (character.speedY < 0) {
+                    character.y = obstacle.y + obstacle.height;
+                    character.speedY = 0;
+                }
 
-    if (blueSquare.visible) {
-        context.drawImage(images.luna, blueSquare.x, blueSquare.y, blueSquare.size, blueSquare.size);
+                // Handle specific obstacle types
+                if (obstacle.type === 'solaraGrass' && character === blueSquare) {
+                    endGame("Luna hit the SolaraGrass! Game Over.");
+                } else if (obstacle.type === 'lunaGrass' && character === redSquare) {
+                    endGame("Solara hit the LunaGrass! Game Over.");
+                } else if (obstacle.type === 'radioactiveGrass') {
+                    endGame(`${character === blueSquare ? 'Luna' : 'Solara'} hit the RadioactiveGrass! Game Over.`);
+                } else if (obstacle.type === 'box') {
+                    if (character.speedX !== 0) {
+                        obstacle.x += character.speedX;
+                    }
+                }
+
+                // Check for portal collision
+                if (obstacle.type === 'solaraPortal' && character === redSquare) {
+                    // Teleport Solara to Luna portal
+                    character.x = lunaPortalX;
+                    character.y = lunaPortalY;
+                } else if (obstacle.type === 'lunaPortal' && character === blueSquare) {
+                    // Teleport Luna to Solara portal
+                    character.x = solaraPortalX;
+                    character.y = solaraPortalY;
+                }
+            }
+        });
+
+        // Button interaction logic
+        let isOnButton = false;
+        buttons.forEach(button => {
+            if (character.x < button.x + button.width &&
+                character.x + character.size > button.x &&
+                character.y + character.size > button.y &&
+                character.y < button.y + button.height) {
+                isOnButton = true;
+                button.state = 'down';
+                if (currentLevel === 2) {
+                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.y === canvas.height - 5 * tileSize);
+                    if (leftRowGrass) {
+                        leftRowGrass.y -= tileSize; // Move the grass obstacle up
+                    }
+                }
+            }
+        });
+
+        if (!isOnButton) {
+            buttons.forEach(button => {
+                button.state = 'up';
+                if (currentLevel === 2) {
+                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
+                    if (leftRowGrass) {
+                        leftRowGrass.y += tileSize; // Move the leftmost grass obstacle back down
+                    }
+                }
+            });
+        }
+
+        // Collectible interaction logic
+        collectibles.forEach((collectible, index) => {
+            if (character.x < collectible.x + collectible.width &&
+                character.x + character.size > collectible.x &&
+                character.y + character.size > collectible.y &&
+                character.y < collectible.y + collectible.height &&
+                collectible.collectedBy === (character === blueSquare ? 'luna' : 'solara')) {
+                collectibles.splice(index, 1);
+                if (character === blueSquare) {
+                    lunaGemsCollected++;
+                } else {
+                    solaraGemsCollected++;
+                }
+            }
+        });
+
+        // Door interaction logic
+        doors.forEach(door => {
+            if (character.x < door.x + door.width &&
+                character.x + character.size > door.x &&
+                character.y + character.size > door.y &&
+                character.y < door.y + door.height &&
+                door.character === (character === blueSquare ? 'luna' : 'solara')) {
+                character.visible = false;
+                if (character === blueSquare) {
+                    lunaReachedDoor = true;
+                } else {
+                    solaraReachedDoor = true;
+                }
+            }
+        });
     }
-    if (redSquare.visible) {
-        context.drawImage(images.solara, redSquare.x, redSquare.y, redSquare.size, redSquare.size);
-    }
-    if (lunaReachedDoor && solaraReachedDoor) {
-        levelComplete();
-    }
-    requestAnimationFrame(update);
+}
+
+// Call the handleCharacter function for both characters
+handleCharacter(blueSquare);
+handleCharacter(redSquare);
+
+// Draw the characters
+if (blueSquare.visible) {
+    context.drawImage(images.luna, blueSquare.x, blueSquare.y, blueSquare.size, blueSquare.size);
+}
+if (redSquare.visible) {
+    context.drawImage(images.solara, redSquare.x, redSquare.y, redSquare.size, redSquare.size);
+}
+
+// Check for level completion
+if (lunaReachedDoor && solaraReachedDoor) {
+    levelComplete();
+}
+
+// Request the next animation frame
+requestAnimationFrame(update);
 }
 
     function handleKeyDown(event) {
