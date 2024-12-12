@@ -557,10 +557,10 @@ function createCanvas(level) {
                     character.y < button.y + button.height) {
                     isOnButton = true;
                     button.state = 'down';
-                    if (currentLevel === 2) {
-                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.y === canvas.height - 5 * tileSize);
-                        if (leftRowGrass) {
-                            leftRowGrass.y -= tileSize; // Move the grass obstacle up
+                    if (currentLevel === 4) {
+                        const specificGrass = obstacles.find(obstacle => obstacle.x === newObstacleX && obstacle.y === newObstacleY);
+                        if (specificGrass) {
+                            specificGrass.y -= 2 * tileSize; // Move the grass obstacle up by two spaces
                         }
                     }
                 }
@@ -568,10 +568,10 @@ function createCanvas(level) {
             if (!isOnButton) {
                 buttons.forEach(button => {
                     button.state = 'up';
-                    if (currentLevel === 2) {
-                        const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
-                        if (leftRowGrass) {
-                            leftRowGrass.y += tileSize; // Move the leftmost grass obstacle back down
+                    if (currentLevel === 4) {
+                        const specificGrass = obstacles.find(obstacle => obstacle.x === newObstacleX && obstacle.y === newObstacleY - 2 * tileSize);
+                        if (specificGrass) {
+                            specificGrass.y += 2 * tileSize; // Move the grass obstacle back down by two spaces
                         }
                     }
                 });
