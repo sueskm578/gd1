@@ -198,7 +198,7 @@
             1: "creepy cave.jpg",
             2: "creepy cave.jpg",
             3: "creepy cave.jpg",
-            4: "creepy cave 2.jpg",
+            4: "creepy cave.jpg",
             5: "creepy cave 5.jpg"
         };
 
@@ -495,10 +495,6 @@ function createCanvas(level) {
         const leverY = bottomRowY - 7 * tileSize;
         levers.push({ x: leverX, y: leverY, width: tileSize, height: tileSize, type: 'lever', state: 'up' });
 
-        const buttonX = (canvas.width / tileSize - 6) * tileSize;
-        const buttonY = bottomRowY - 5 * tileSize;
-        buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button', state: 'up' });
-
         obstacles.push({ x: 4 * tileSize, y: bottomRowY - 400, width: canvas.width - 8 * tileSize, height: tileSize, type: 'grass' });
 
         const dirtDoorX = (canvas.width / tileSize - 13) * tileSize;
@@ -697,6 +693,7 @@ for (let i = 1; i <= 3; i++) {
                 if (currentLevel === 2) {
                     const leftmostGrass = obstacles.find(obstacle => obstacle.id === 'leftmostGrass');
                     if (leftmostGrass) {
+                        console.log("Button pressed: Moving leftmost grass obstacle down");
                         leftmostGrass.y += tileSize; // Move the grass obstacle down
                     }
                 }
@@ -709,6 +706,7 @@ for (let i = 1; i <= 3; i++) {
                 if (currentLevel === 2) {
                     const leftmostGrass = obstacles.find(obstacle => obstacle.id === 'leftmostGrass');
                     if (leftmostGrass) {
+                        console.log("Button released: Moving leftmost grass obstacle up");
                         leftmostGrass.y -= tileSize; // Move the leftmost grass obstacle back up
                     }
                 }
