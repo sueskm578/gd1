@@ -105,6 +105,7 @@ const buttonPressedImageURL = "Buttonpress.png";
 const dirtDoorImageURL = "Dirt Door.png";
 const leverUpImageURL = "Leverup.png";
 const leverDownImageURL = "Leverdown.png";
+const boxImageURL = "box.jpg";
 
 const levelBackgroundImages = {
     1: "creepy cave.jpg",
@@ -138,7 +139,8 @@ function preloadImages() {
         { name: 'buttonPressed', url: buttonPressedImageURL },
         { name: 'dirtDoor', url: dirtDoorImageURL },
         { name: 'leverUp', url: leverUpImageURL },
-        { name: 'leverDown', url: leverDownImageURL }
+        { name: 'leverDown', url: leverDownImageURL },
+        { name: 'box', url: boxImageURL }
     ];
 
     let loadedImagesCount = 0;
@@ -198,7 +200,7 @@ function createCanvas(level) {
     const doors = [];
     const buttons = [];
     const levers = [];
-
+    
     function createObstacles(level) {
         obstacles.length = 0;
         collectibles.length = 0;
@@ -331,7 +333,7 @@ function createCanvas(level) {
         } else if (level === 4) {
             const tileSize = 100;
 
-            const topRowY = 2 * tileSize;
+            const topRowY = 1 * tileSize;
             for (let i = 0; i < 12; i++) {
                 obstacles.push({ x: i * tileSize, y: topRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
@@ -358,7 +360,13 @@ function createCanvas(level) {
             const buttonY = upperRowY - tileSize;
             buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button', state: 'up' });
 
-            obstacles.push({ x: 4 * tileSize, y: bottomRowY - 400, width: canvas.width - 8 * tileSize, height: tileSize, type: 'grass' });
+            const dirtDoorX = (canvas.width / tileSize - 5) * tileSize;
+            const dirtDoorY = upperRowY - 4 * tileSize;
+            doors.push({ x: dirtDoorX, y: dirtDoorY, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
+
+            const boxX = (canvas.width / tileSize - 12) * tileSize;
+            const boxY = bottomRowY - tileSize * 2;
+            obstacles.push({ x: boxX, y: boxY, width: tileSize, height: tileSize * 2, type: 'box' });
         }
     }
 
