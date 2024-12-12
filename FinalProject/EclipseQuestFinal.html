@@ -384,8 +384,8 @@ function createCanvas(level) {
         collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 3) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
         collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 4) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
 
-        // Add the grass obstacle that starts 5 spaces up from the bottom
-        obstacles.push({ x: 0, y: canvas.height - 5 * tileSize, width: tileSize, height: tileSize, type: 'grass' });
+        // Add the grass obstacle that starts 5 spaces up from the bottom with a unique identifier
+        obstacles.push({ x: 0, y: canvas.height - 5 * tileSize, width: tileSize, height: tileSize, type: 'grass', id: 'leftmostGrass' });
         } else if (level === 3) {
     const tileSize = 100;
 
@@ -695,9 +695,9 @@ for (let i = 1; i <= 3; i++) {
                 isOnButton = true;
                 button.state = 'down';
                 if (currentLevel === 2) {
-                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 5 * tileSize);
-                    if (leftRowGrass) {
-                        leftRowGrass.y += tileSize; // Move the grass obstacle down
+                    const leftmostGrass = obstacles.find(obstacle => obstacle.id === 'leftmostGrass');
+                    if (leftmostGrass) {
+                        leftmostGrass.y += tileSize; // Move the grass obstacle down
                     }
                 }
             }
@@ -707,9 +707,9 @@ for (let i = 1; i <= 3; i++) {
             buttons.forEach(button => {
                 button.state = 'up';
                 if (currentLevel === 2) {
-                    const leftRowGrass = obstacles.find(obstacle => obstacle.type === 'grass' && obstacle.x === 0 && obstacle.y === canvas.height - 4 * tileSize);
-                    if (leftRowGrass) {
-                        leftRowGrass.y -= tileSize; // Move the leftmost grass obstacle back up
+                    const leftmostGrass = obstacles.find(obstacle => obstacle.id === 'leftmostGrass');
+                    if (leftmostGrass) {
+                        leftmostGrass.y -= tileSize; // Move the leftmost grass obstacle back up
                     }
                 }
             });
