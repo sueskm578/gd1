@@ -379,46 +379,58 @@ function createCanvas(level) {
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 3) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
             collectibles.push({ x: (Math.floor(canvas.width / tileSize) - 4) * tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
         } else if (level === 3) {
-            const tileSize = 100;
+    const tileSize = 100;
 
-            for (let i = 0; i < canvas.width / tileSize; i++) {
-                const type = (i < 2 || i >= Math.floor(canvas.width / tileSize) - 2) ? 'grass' : 'radioactiveGrass';
-                obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
-            }
+    for (let i = 0; i < canvas.width / tileSize; i++) {
+        const type = (i < 2 || i >= Math.floor(canvas.width / tileSize) - 2) ? 'grass' : 'radioactiveGrass';
+        obstacles.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize, type: type });
+    }
 
-            const leftRowY = canvas.height - 5 * tileSize;
-            for (let i = 0; i < 3; i++) {
-                obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
-            }
+    const leftRowY = canvas.height - 5 * tileSize;
+    for (let i = 0; i < 3; i++) {
+        obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
+    }
 
-            const twoSpacesDownY = 1 * tileSize;
-            for (let i = 1; i < canvas.width / tileSize; i++) {
-                obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: 'grass' });
-            }
+    const twoSpacesDownY = 1 * tileSize;
+    for (let i = 1; i < canvas.width / tileSize; i++) {
+        obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: 'grass' });
+    }
 
-            doors.push({ x: tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
-            doors.push({ x: 0, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara', visible: true });
-            doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna', visible: true });
+    doors.push({ x: tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
+    doors.push({ x: 0, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara', visible: true });
+    doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna', visible: true });
 
-            const firstRowX = 4 * tileSize;
-            const firstRowY = canvas.height - 3 * tileSize;
-            for (let i = 0; i < 3; i++) {
-                obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'grass' });
-            }
-            const secondRowX = 9 * tileSize;
-            const secondRowY = firstRowY;
-            for (let i = 0; i < 3; i++) {
-                obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
-            }
+    const firstRowX = 4 * tileSize;
+    const firstRowY = canvas.height - 3 * tileSize;
+    for (let i = 0; i < 3; i++) {
+        obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'grass' });
+    }
+    const secondRowX = 9 * tileSize;
+    const secondRowY = firstRowY;
+    for (let i = 0; i < 3; i++) {
+        obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
+    }
 
-            const leverX = 3 * tileSize;
-            const leverY = twoSpacesDownY - tileSize;
-            levers.push({ x: leverX, y: leverY, width: tileSize, height: tileSize, type: 'lever', state: 'up' });
+    const leverX = 3 * tileSize;
+    const leverY = twoSpacesDownY - tileSize;
+    levers.push({ x: leverX, y: leverY, width: tileSize, height: tileSize, type: 'lever', state: 'up' });
 
-            blueSquare.x = canvas.width - 2 * tileSize;
-            blueSquare.y = twoSpacesDownY - tileSize;
-            redSquare.x = blueSquare.x + tileSize;
-            redSquare.y = blueSquare.y;
+    blueSquare.x = canvas.width - 2 * tileSize;
+    blueSquare.y = twoSpacesDownY - tileSize;
+    redSquare.x = blueSquare.x + tileSize;
+    redSquare.y = blueSquare.y;
+
+    // Add Solara grass and Solara gem
+    const solaraGrassX = 6 * tileSize;
+    const solaraGrassY = canvas.height - 3 * tileSize;
+    obstacles.push({ x: solaraGrassX, y: solaraGrassY, width: tileSize, height: tileSize, type: 'solaraGrass' });
+    collectibles.push({ x: solaraGrassX, y: canvas.height - 4 * tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
+
+    // Add Luna grass and Luna gem
+    const lunaGrassX = (canvas.width / tileSize - 7) * tileSize;
+    const lunaGrassY = canvas.height - 3 * tileSize;
+    obstacles.push({ x: lunaGrassX, y: lunaGrassY, width: tileSize, height: tileSize, type: 'lunaGrass' });
+    collectibles.push({ x: lunaGrassX, y: canvas.height - 4 * tileSize, width: tileSize, height: tileSize, type: 'lunagem', collectedBy: 'luna' });
     } else if (level === 4) {
     const tileSize = 100;
 
