@@ -631,47 +631,47 @@ for (let i = 1; i <= 3; i++) {
         }
 
         obstacles.forEach(obstacle => {
-            // Check for collision with obstacles
-            if (character.x < obstacle.x + obstacle.width &&
-                character.x + character.size > obstacle.x &&
-                character.y + character.size > obstacle.y &&
-                character.y < obstacle.y + obstacle.height) {
-                
-                // Handle vertical collision
-                if (character.speedY > 0) {
-                    character.y = obstacle.y - character.size;
-                    character.speedY = 0;
-                    character.onGround = true;
-                } else if (character.speedY < 0) {
-                    character.y = obstacle.y + obstacle.height;
-                    character.speedY = 0;
-                }
+    // Check for collision with obstacles
+    if (character.x < obstacle.x + obstacle.width &&
+        character.x + character.size > obstacle.x &&
+        character.y + character.size > obstacle.y &&
+        character.y < obstacle.y + obstacle.height) {
+        
+        // Handle vertical collision
+        if (character.speedY > 0) {
+            character.y = obstacle.y - character.size;
+            character.speedY = 0;
+            character.onGround = true;
+        } else if (character.speedY < 0) {
+            character.y = obstacle.y + obstacle.height;
+            character.speedY = 0;
+        }
 
-                // Handle specific obstacle types
-                if (obstacle.type === 'solaraGrass' && character === blueSquare) {
-                    endGame("Luna hit the SolaraGrass! Game Over.");
-                } else if (obstacle.type === 'lunaGrass' && character === redSquare) {
-                    endGame("Solara hit the LunaGrass! Game Over.");
-                } else if (obstacle.type === 'radioactiveGrass') {
-                    endGame(`${character === blueSquare ? 'Luna' : 'Solara'} hit the RadioactiveGrass! Game Over.`);
-                } else if (obstacle.type === 'box') {
-                    if (character.speedX !== 0) {
-                        obstacle.x += character.speedX;
-                    }
-                }
-
-                // Check for portal collision
-                if (obstacle.type === 'solaraPortal' && character === redSquare) {
-                    // Teleport Solara to Luna portal
-                    character.x = lunaPortalX;
-                    character.y = lunaPortalY;
-                } else if (obstacle.type === 'lunaPortal' && character === blueSquare) {
-                    // Teleport Luna to Solara portal
-                    character.x = solaraPortalX;
-                    character.y = solaraPortalY;
-                }
+        // Handle specific obstacle types
+        if (obstacle.type === 'solaraGrass' && character === blueSquare) {
+            endGame("Luna hit the SolaraGrass! Game Over.");
+        } else if (obstacle.type === 'lunaGrass' && character === redSquare) {
+            endGame("Solara hit the LunaGrass! Game Over.");
+        } else if (obstacle.type === 'radioactiveGrass') {
+            endGame(`${character === blueSquare ? 'Luna' : 'Solara'} hit the RadioactiveGrass! Game Over.`);
+        } else if (obstacle.type === 'box') {
+            if (character.speedX !== 0) {
+                obstacle.x += character.speedX;
             }
-        });
+        }
+
+        // Check for portal collision
+        if (obstacle.type === 'solaraPortal' && character === redSquare) {
+            // Teleport Solara to in front of Luna portal
+            character.x = lunaPortalX; // Position in front of Luna portal
+            character.y = lunaPortalY - character.size; // Adjust Y to be above the portal
+        } else if (obstacle.type === 'lunaPortal' && character === blueSquare) {
+            // Teleport Luna to in front of Solara portal
+            character.x = solaraPortalX; // Position in front of Solara portal
+            character.y = solaraPortalY - character.size; // Adjust Y to be above the portal
+        }
+    }
+});
 
         // Button interaction logic
         let isOnButton = false;
