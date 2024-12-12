@@ -1,63 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Eclipse Quest</title>
-    <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f1f1f1;
-        }
-        #titleScreen, #gameMap, #endScreen, #levelCompleteScreen {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-        #startButton, .levelButton, #retryButton, #menuButton, #retryLevelButton, #mainMenuButton {
-            padding: 10px 20px;
-            font-size: 20px;
-            margin-top: 20px;
-            cursor: pointer;
-        }
-        .levelButton, #retryButton, #menuButton, #retryLevelButton, #mainMenuButton {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        #topLeftButtons {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            display: flex;
-            flex-direction: column;
-            z-index: 10;
-        }
-        .button {
-            z-index: 10;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Eclipse Quest</title>
+<style>
+    body, html {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f1f1f1;
+    }
+    #titleScreen, #gameMap, #endScreen, #levelCompleteScreen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        color: white;
+        font-family: Arial, sans-serif;
+    }
+    #startButton, .levelButton, #retryButton, #menuButton, #retryLevelButton, #mainMenuButton {
+        padding: 10px 20px;
+        font-size: 20px;
+        margin-top: 20px;
+        cursor: pointer;
+    }
+    .levelButton, #retryButton, #menuButton, #retryLevelButton, #mainMenuButton {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+    }
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+    #topLeftButtons {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        display: flex;
+        flex-direction: column;
+        z-index: 10;
+    }
+    .button {
+        z-index: 10;
+    }
+</style>
 </head>
 <body>
 <div id="titleScreen">
@@ -309,26 +309,15 @@ function createCanvas(level) {
             doors.push({ x: 0, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara', visible: true });
             doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna', visible: true });
 
-            // Updated first row with solaragrass
             const firstRowX = 4 * tileSize;
             const firstRowY = canvas.height - 3 * tileSize;
             for (let i = 0; i < 3; i++) {
-                if (i === 1) {
-                    obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'solaragrass' });
-                } else {
-                    obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'grass' });
-                }
+                obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
-
-            // Updated second row with lunagrass
             const secondRowX = 9 * tileSize;
             const secondRowY = firstRowY;
             for (let i = 0; i < 3; i++) {
-                if (i === 1) {
-                    obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'lunagrass' });
-                } else {
-                    obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
-                }
+                obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
             const leverX = 3 * tileSize;
@@ -339,10 +328,8 @@ function createCanvas(level) {
             blueSquare.y = twoSpacesDownY - tileSize;
             redSquare.x = blueSquare.x + tileSize;
             redSquare.y = blueSquare.y;
-
-        } // This closes the else if (level === 3) block
-
-    } // End of createObstacles function
+        }
+    }
 
     function endGame(message) {
         document.getElementById("endScreen").style.display = "flex";
@@ -360,10 +347,7 @@ function createCanvas(level) {
 
     function update() {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        const levelBackgroundImage = new Image();
-        levelBackgroundImage.src = levelBackgroundImages[level];
         context.drawImage(levelBackgroundImage, 0, 0, canvas.width, canvas.height);
-        
         obstacles.forEach(obstacle => {
             const image = images[obstacle.type];
             context.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
