@@ -203,7 +203,7 @@ function createCanvas(level) {
     const box = {
         x: 3 * tileSize,
         y: canvas.height - 200,
-        width: tileSize,
+        width: tileSize * 2,
         height: tileSize * 2,
         type: 'box',
         pushedBy: null
@@ -341,10 +341,6 @@ function createCanvas(level) {
         } else if (level === 4) {
             const tileSize = 100;
 
-            const topRowY = 2 * tileSize;
-            for (let i = 0; i < 12; i++) {
-                obstacles.push({ x: i * tileSize, y: topRowY, width: tileSize, height: tileSize, type: 'grass' });
-            }
             const bottomRowY = canvas.height - tileSize;
             for (let i = 0; i < canvas.width / tileSize; i++) {
                 obstacles.push({ x: i * tileSize, y: bottomRowY, width: tileSize, height: tileSize, type: 'grass' });
@@ -363,8 +359,8 @@ function createCanvas(level) {
 
             obstacles.push({ x: (canvas.width / tileSize - 1) * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
 
-            obstacles.push({ x: 4 * tileSize, y: bottomRowY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor' });
-            obstacles.push({ x: 3 * tileSize, y: bottomRowY - 200, width: tileSize, height: tileSize * 2, type: 'box' });
+            obstacles.push({ x: 4 * tileSize, y: bottomRowY - tileSize * 2, width: tileSize, height: tileSize, type: 'dirtDoor' });
+            obstacles.push({ x: 3 * tileSize, y: bottomRowY - 200, width: tileSize * 2, height: tileSize * 2, type: 'box' });
             obstacles.push({ x: 4 * tileSize, y: bottomRowY - 400, width: canvas.width - 8 * tileSize, height: tileSize, type: 'grass' });
         }
     }
