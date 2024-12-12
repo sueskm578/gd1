@@ -619,7 +619,7 @@ for (let i = 1; i <= 3; i++) {
         context.drawImage(image, lever.x, lever.y, lever.width, lever.height);
     });
 
-   function handleCharacter(character) {
+ function handleCharacter(character) {
     if (character.visible) {
         character.speedY += character.gravity;
         character.x += character.speedX;
@@ -647,6 +647,15 @@ for (let i = 1; i <= 3; i++) {
                 } else if (character.speedY < 0) {
                     character.y = obstacle.y + obstacle.height;
                     character.speedY = 0;
+                }
+
+                // Handle horizontal collision
+                if (character.speedX > 0) {
+                    character.x = obstacle.x - character.size;
+                    character.speedX = 0;
+                } else if (character.speedX < 0) {
+                    character.x = obstacle.x + obstacle.width;
+                    character.speedX = 0;
                 }
 
                 // Handle specific obstacle types
@@ -722,13 +731,15 @@ for (let i = 1; i <= 3; i++) {
             if (character.x < collectible.x + collectible.width &&
                 character.x + character.size > collectible.x &&
                 character.y + collectible.size > collectible.y &&
-                character.y < collectible.y + collectible.height &&
-                collectible.collectedBy === (character === blueSquare ? 'luna' : 'solara')) {
-                collectibles.splice(index, 1);
-                if (character === blueSquare) {
+                character.y < collectible.y + collectible.height) {
+                if (collectible.collectedBy === 'luna' && character === blueSquare) {
+                    collectibles.splice(index, 1);
                     lunaGemsCollected++;
-                } else {
+                    console.log("Luna collected a gem. Total Luna gems:", lunaGemsCollected);
+                } else if (collectible.collectedBy === 'solara' && character === redSquare) {
+                    collectibles.splice(index, 1);
                     solaraGemsCollected++;
+                    console.log("Solara collected a gem. Total Solara gems:", solaraGemsCollected);
                 }
             }
         });
@@ -745,9 +756,9 @@ for (let i = 1; i <= 3; i++) {
                 // Prevent passing through the dirt door
                 if (door.type === 'dirtDoor') {
                     // Determine the direction of movement
-                    if (character.velocityX > 0) { // Moving right
+                    if (character.speedX > 0) { // Moving right
                         character.x = door.x - character.size; // Move character to the left of the door
-                    } else if (character.velocityX < 0) { // Moving left
+                    } else if (character.speedX < 0) { // Moving left
                         character.x = door.x + door.width; // Move character to the right of the door
                     }
                     // Optionally, you can also check for vertical movement if needed
