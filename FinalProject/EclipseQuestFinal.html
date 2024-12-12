@@ -314,11 +314,16 @@ function createCanvas(level) {
             for (let i = 0; i < 3; i++) {
                 obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
+            // Add solaragem collectible to the first row
+    collectibles.push({ x: firstRowX + 1 * tileSize, y: firstRowY - tileSize, width: tileSize, height: tileSize, type: 'solaragem', collectedBy: 'solara' });
+
             const secondRowX = 9 * tileSize;
             const secondRowY = firstRowY;
             for (let i = 0; i < 3; i++) {
                 obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
+            // Add lunaGems collectible to the second row
+    collectibles.push({ x: secondRowX + 1 * tileSize, y: secondRowY - tileSize, width: tileSize, height: tileSize, type: 'lunaGems', collectedBy: 'luna' });
 
             const leverX = 3 * tileSize;
             const leverY = twoSpacesDownY - tileSize;
