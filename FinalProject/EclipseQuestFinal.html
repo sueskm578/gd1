@@ -451,12 +451,12 @@ function createCanvas(level) {
 
     // Place another lever 9 spaces from the right and one space down from the top
     const leverX1 = (canvas.width / tileSize - 9) * tileSize; // 9 spaces from the right
-    const leverY1 = tileSize; // 1 space down from the top
+    const leverY1 = 0; // 1 space down from the top
     levers.push({ x: leverX1, y: leverY1, width: tileSize, height: tileSize, type: 'lever', state: 'up', controls: 'dirtDoor2' });
 
     // Place another dirt door 5 spaces from the right and one space down from the top
-    const dirtDoorX1 = (canvas.width / tileSize - 5) * tileSize; // 5 spaces from the right
-    const dirtDoorY1 = tileSize; // 1 space down from the top
+    const dirtDoorX1 = (canvas.width / tileSize - 13) * tileSize; // 5 spaces from the right
+    const dirtDoorY1 = 0; // 1 space down from the top
     doors.push({ x: dirtDoorX1, y: dirtDoorY1, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true, id: 'dirtDoor2' });
 
     obstacles.push({ x: (canvas.width / tileSize - 1) * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
@@ -758,7 +758,7 @@ function createCanvas(level) {
                         lever.y + lever.height > blueSquare.y) {
                         lever.state = (lever.state === 'up') ? 'down' : 'up';
                         if (lever.state === 'down') {
-                            const dirtDoor = doors.find(door => door.type === 'dirtDoor' && door.character === 'dirt' && !door.id);
+                            const dirtDoor = doors.find(door => door.type === 'dirtDoor' && door.id === 'dirtDoor1');
                             if (dirtDoor) {
                                 dirtDoor.visible = false; // Control the first dirt door
                             }
