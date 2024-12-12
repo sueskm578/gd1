@@ -386,7 +386,8 @@ function createCanvas(level) {
 
         // Add the grass obstacle that starts 5 spaces up from the bottom with a unique identifier
         obstacles.push({ x: 0, y: canvas.height - 5 * tileSize, width: tileSize, height: tileSize, type: 'grass', id: 'leftmostGrass' });
-    const tileSize = 100;
+   } else  if (level === 3) {
+        const tileSize = 100;
 
     for (let i = 0; i < canvas.width / tileSize; i++) {
         const type = (i < 2 || i >= Math.floor(canvas.width / tileSize) - 2) ? 'grass' : 'radioactiveGrass';
@@ -691,9 +692,10 @@ for (let i = 1; i <= 3; i++) {
                 button.state = 'down';
                 if (currentLevel === 2) {
                     const leftmostGrass = obstacles.find(obstacle => obstacle.id === 'leftmostGrass');
-                    if (leftmostGrass) {
-                        console.log("Button pressed: Moving leftmost grass obstacle down");
-                        leftmostGrass.y += tileSize; // Move the grass obstacle down
+                    if (leftmostGrass && !leftmostGrass.movedUp) {
+                        console.log("Button pressed: Moving leftmost grass obstacle up");
+                        leftmostGrass.y -= tileSize; // Move the grass obstacle up
+                        leftmostGrass.movedUp = true; // Mark as moved up
                         console.log("New position of leftmost grass obstacle:", leftmostGrass.y);
                     }
                 }
@@ -705,9 +707,10 @@ for (let i = 1; i <= 3; i++) {
                 button.state = 'up';
                 if (currentLevel === 2) {
                     const leftmostGrass = obstacles.find(obstacle => obstacle.id === 'leftmostGrass');
-                    if (leftmostGrass) {
-                        console.log("Button released: Moving leftmost grass obstacle up");
-                        leftmostGrass.y -= tileSize; // Move the leftmost grass obstacle back up
+                    if (leftmostGrass && leftmostGrass.movedUp) {
+                        console.log("Button released: Moving leftmost grass obstacle down");
+                        leftmostGrass.y += tileSize; // Move the leftmost grass obstacle back down
+                        leftmostGrass.movedUp = false; // Mark as moved down
                         console.log("New position of leftmost grass obstacle:", leftmostGrass.y);
                     }
                 }
