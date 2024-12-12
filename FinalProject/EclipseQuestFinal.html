@@ -370,8 +370,7 @@ function createCanvas(level) {
             const buttonY = upperRowY - (3 * tileSize);
             buttons.push({ x: buttonX, y: buttonY, width: tileSize, height: tileSize, type: 'button', state: 'up' });
 
-            obstacles.push({ x: 4 * tileSize, y: bottomRowY - 100, width: tileSize, height: tileSize, type: 'box' }); // Place the box on top of the bottom grass row
-            doors.push({ x: (canvas.width / tileSize - 10) * tileSize, y: upperRowY - 1 * tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
+            obstacles.push({ x: 4 * tileSize, y: bottomRowY - 300, width: tileSize, height: tileSize, type: 'box' }); // Lower the box by one space
         }
     }
 
