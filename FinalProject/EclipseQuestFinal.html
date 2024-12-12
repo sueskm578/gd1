@@ -735,12 +735,13 @@ doors.forEach(door => {
         
         // Prevent passing through the dirt door
         if (door.type === 'dirtDoor') {
-            // Move the character back to their previous position if they are colliding with the door
-            if (character === blueSquare) {
-                character.x = Math.max(character.x, door.x - character.size); // Prevent Luna from moving through the door
-            } else {
-                character.x = Math.min(character.x, door.x + door.width); // Prevent Solara from moving through the door
+            // Determine the direction of movement
+            if (character.velocityX > 0) { // Moving right
+                character.x = door.x - character.size; // Move character to the left of the door
+            } else if (character.velocityX < 0) { // Moving left
+                character.x = door.x + door.width; // Move character to the right of the door
             }
+            // Optionally, you can also check for vertical movement if needed
             return; // Exit the function to prevent further processing
         }
 
