@@ -300,24 +300,24 @@ function createCanvas(level) {
                 obstacles.push({ x: i * tileSize, y: leftRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
+            const twoSpacesDownY = 1 * tileSize;
+            for (let i = 1; i < canvas.width / tileSize; i++) {
+                obstacles.push({ x: i * tileSize, y: twoSpacesDownY, width: tileSize, height: tileSize, type: 'grass' });
+            }
+
+            doors.push({ x: tileSize, y: twoSpacesDownY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor', character: 'dirt', visible: true });
+            doors.push({ x: 0, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'solaraDoor', character: 'solara', visible: true });
+            doors.push({ x: (Math.floor(canvas.width / tileSize) - 0) * tileSize, y: canvas.height - 2 * tileSize, width: tileSize, height: tileSize, type: 'lunaDoor', character: 'luna', visible: true });
+
             const firstRowX = 4 * tileSize;
             const firstRowY = canvas.height - 3 * tileSize;
             for (let i = 0; i < 3; i++) {
-                if (i === 1) {
-                    obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'lunaGrass' });
-                } else {
-                    obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'grass' });
-                }
+                obstacles.push({ x: firstRowX + i * tileSize, y: firstRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
-
             const secondRowX = 9 * tileSize;
             const secondRowY = firstRowY;
             for (let i = 0; i < 3; i++) {
-                if (i === 1) {
-                    obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'solaragrass' });
-                } else {
-                    obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
-                }
+                obstacles.push({ x: secondRowX + i * tileSize, y: secondRowY, width: tileSize, height: tileSize, type: 'grass' });
             }
 
             const leverX = 3 * tileSize;
