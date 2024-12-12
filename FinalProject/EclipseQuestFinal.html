@@ -351,9 +351,8 @@ function createCanvas(level) {
 
             obstacles.push({ x: (canvas.width / tileSize - 1) * tileSize, y: upperRowY, width: tileSize, height: tileSize, type: 'grass' });
 
-            obstacles.push({ x: 4 * tileSize, y: bottomRowY - tileSize, width: tileSize, height: tileSize, type: 'dirtDoor' });
+            obstacles.push({ x: 4 * tileSize, y: bottomRowY - (tileSize - 1), width: tileSize, height: tileSize, type: 'dirtDoor' });
             obstacles.push({ x: 3 * tileSize, y: bottomRowY - 100, width: tileSize, height: tileSize, type: 'box' });
-            obstacles.push({ x: 4 * tileSize, y: bottomRowY - 400, width: canvas.width - 8 * tileSize, height: tileSize, type: 'grass' });
         }
     }
 
